@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>게임 동향 분석 리포트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #06060c;
+    color: #e0e0e8;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .bg-grid {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(120, 80, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 80, 255, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* Header */
+  .header {
+    position: relative; z-index: 2;
+    height: 60px;
+    display: flex; align-items: center;
+    padding: 0 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: rgba(6,6,12,0.9);
+    backdrop-filter: blur(12px);
+  }
+  .header h1 {
+    font-size: 16px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #c8b0ff, #7c5cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header .sub {
+    font-size: 11px;
+    color: #555;
+    margin-left: 16px;
+    font-weight: 300;
+  }
+
+  /* Layout */
+  .app { display: flex; height: calc(100vh - 60px); position: relative; z-index: 1; }
+
+  /* Left Panel */
+  .sidebar {
+    width: 320px;
+    min-width: 320px;
+    border-right: 1px solid rgba(255,255,255,0.04);
+    overflow-y: auto;
+    padding: 20px 16px;
+    background: rgba(10,8,18,0.8);
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(120,80,255,0.2); border-radius: 2px; }
+
+  .sidebar-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 12px;
+    margin-bottom: 16px;
+  }
+
+  .game-card {
+    padding: 16px 20px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .game-card:hover {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.04);
+  }
+  .game-card.active {
+    border-color: rgba(120,80,255,0.25);
+    background: rgba(120,80,255,0.06);
+  }
+  .game-card.active::before {
+    background: linear-gradient(135deg, rgba(120,80,255,0.08), transparent);
+    opacity: 1;
+  }
+
+  .game-card .badge {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+  .game-card .badge.nt { color: #7c5cff; }
+  .game-card .badge.zeta { color: #ff8c00; }
+
+  .game-card .title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .game-card .genre {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  .game-card .desc {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .game-card .game-date {
+    font-size: 11px;
+    color: #444;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+  .game-card .tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .game-card .tags span {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    color: #666;
+  }
+
+  /* Right Panel */
+  .main {
+    flex: 1;
+    position: relative;
+    background: #06060c;
+    overflow: hidden;
+  }
+  .main .frame-wrap {
+    width: 100%;
+    height: 100%;
+    background: #06060c;
+    border-left: 1px solid rgba(120, 80, 255, 0.06);
+  }
+  .main iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: #06060c;
+  }
+
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #444;
+  }
+  .placeholder .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+  .placeholder p {
+    font-size: 14px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { width: 240px; min-width: 240px; padding: 16px 12px; }
+    .game-card .title { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<div class="header">
+  <h1>게임 동향 분석 리포트</h1>
+  <span class="sub">Post-Launch Analysis · 2026</span>
+</div>
+
+<div class="app">
+  <!-- Left Panel -->
+  <div class="sidebar">
+    <div class="sidebar-label">Analysis Reports</div>
+
+    <div class="game-card active" onclick="loadReport('yihwan')">
+      <div class="badge nt">PERFECT WORLD · HOTTA STUDIO</div>
+      <div class="title">이환</div>
+      <div class="genre">Neverness to Everness</div>
+      <div class="desc">초자연 어반 오픈월드 RPG<br>출시 후 첫 2주 동향 분석</div>
+      <div class="game-date">2026. 5. 7.</div>
+      <div class="tags">
+        <span>오픈월드</span>
+        <span>서브컬처</span>
+        <span>210억 매출</span>
+        <span>UE5</span>
+      </div>
+    </div>
+
+    <div class="game-card" onclick="loadReport('zeta')">
+      <div class="badge zeta">KRAFTON · NIRVANANA</div>
+      <div class="title">프로젝트 제타</div>
+      <div class="genre">Project ZETA</div>
+      <div class="desc">3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석</div>
+      <div class="game-date">2026. 5. 7.</div>
+      <div class="tags">
+        <span>MOBA</span>
+        <span>5팀 경쟁</span>
+        <span>얼리액세스</span>
+        <span>크래프톤</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="main" id="report-frame-container">
+    <div class="frame-wrap">
+      <iframe id="report-frame" src="content/20260507_yihwan-analysis.html"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  function loadReport(name) {
+    const frame = document.getElementById('report-frame');
+    const cards = document.querySelectorAll('.game-card');
+    cards.forEach(c => c.classList.remove('active'));
+
+    if (name === 'yihwan') {
+      frame.src = 'content/20260507_yihwan-analysis.html';
+      cards[0].classList.add('active');
+    } else if (name === 'zeta') {
+      frame.src = 'content/20260507_project-zeta-analysis.html';
+      cards[1].classList.add('active');
+    }
+  }
+</script>
+
+</body>
+</html>

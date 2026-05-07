@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이환(Yihwan) 출시 후 동향 분석 리포트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #06060c;
+    color: #e0e0e8;
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #06060c; }
+  ::-webkit-scrollbar-thumb { background: rgba(120, 80, 255, 0.15); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(120, 80, 255, 0.3); }
+  }
+  .bg-grid {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(120, 80, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 80, 255, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none; z-index: 0;
+  }
+  .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(100, 60, 255, 0.15) 0%, transparent 70%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 60, 120, 0.08) 0%, transparent 50%);
+  }
+  .hero-particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: rgba(140, 100, 255, 0.4);
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out;
+  }
+  .hero-particle:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+  .hero-particle:nth-child(2) { top: 25%; right: 15%; animation-delay: 1.5s; width: 6px; height: 6px; }
+  .hero-particle:nth-child(3) { bottom: 30%; left: 20%; animation-delay: 3s; }
+  .hero-particle:nth-child(4) { top: 10%; right: 30%; animation-delay: 4.5s; }
+  .hero-particle:nth-child(5) { bottom: 20%; right: 10%; animation-delay: 6s; width: 3px; height: 3px; }
+  .hero-particle:nth-child(6) { top: 50%; left: 5%; animation-delay: 2s; width: 5px; height: 5px; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { transform: translateY(-40px) scale(1.5); opacity: 1; }
+  }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    border: 1px solid rgba(140, 100, 255, 0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    color: #a080ff;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #c8b0ff 0%, #7c5cff 40%, #ff6b9d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { -webkit-text-fill-color: #fff; color: #fff; }
+  .hero-sub {
+    font-size: 18px;
+    color: #8888a0;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+  .hero-meta {
+    display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+    margin-top: 32px;
+    font-size: 14px;
+    color: #6666aa;
+  }
+  .hero-meta span { display: flex; align-items: center; gap: 8px; }
+  .hero-meta .dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; background: #7c5cff;
+  }
+
+  /* Sections */
+  section { padding: 80px 0; }
+  .section-title {
+    font-size: 28px; font-weight: 700;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title .accent {
+    display: inline-block; width: 4px; height: 28px;
+    background: linear-gradient(180deg, #7c5cff, #ff6b9d);
+    border-radius: 2px;
+  }
+  .section-desc {
+    color: #8888a0;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(140, 100, 255, 0.2), transparent);
+    margin: 0;
+  }
+
+  /* Stat Cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, rgba(30, 24, 50, 0.8), rgba(20, 16, 40, 0.8));
+    border: 1px solid rgba(140, 100, 255, 0.1);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover {
+    border-color: rgba(140, 100, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(100, 60, 255, 0.1);
+  }
+  .stat-card .number {
+    font-size: 36px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #c8b0ff, #7c5cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .stat-card .number.gold {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .stat-card .number.pink {
+    background: linear-gradient(135deg, #ff6b9d, #ff3b6f);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .stat-card .label {
+    font-size: 13px;
+    color: #8888a0;
+    margin-top: 8px;
+  }
+  .stat-card .sub {
+    font-size: 11px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  /* Grid Cards */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  @media (max-width: 768px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(30, 24, 50, 0.6), rgba(20, 16, 40, 0.6));
+    border: 1px solid rgba(140, 100, 255, 0.08);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(8px);
+  }
+  .glass-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #c8b0ff;
+  }
+  .glass-card p, .glass-card li {
+    font-size: 14px;
+    color: #b0b0c8;
+    line-height: 1.9;
+  }
+  .glass-card ul { list-style: none; padding: 0; }
+  .glass-card ul li::before {
+    content: '▸ ';
+    color: #7c5cff;
+  }
+  .glass-card ul li { margin-bottom: 8px; }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+  .tag.green { background: rgba(0, 200, 120, 0.15); color: #00c878; }
+  .tag.red { background: rgba(255, 80, 80, 0.15); color: #ff6060; }
+  .tag.blue { background: rgba(80, 120, 255, 0.15); color: #6080ff; }
+  .tag.purple { background: rgba(140, 100, 255, 0.15); color: #a080ff; }
+  .tag.yellow { background: rgba(255, 200, 0, 0.15); color: #ffc800; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #7c5cff, #ff6b9d, transparent);
+  }
+  .timeline-item { position: relative; margin-bottom: 32px; }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -38px; top: 6px;
+    width: 12px; height: 12px;
+    background: #7c5cff;
+    border-radius: 50%;
+    border: 3px solid #0a0a12;
+    box-shadow: 0 0 0 2px #7c5cff;
+  }
+  .timeline-item .date {
+    font-size: 12px;
+    color: #7c5cff;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .timeline-item h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .timeline-item p {
+    font-size: 13px;
+    color: #8888a0;
+  }
+
+  /* Chart bars */
+  .bar-chart { margin: 16px 0; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 12px; gap: 12px; }
+  .bar-label { width: 100px; font-size: 13px; color: #b0b0c8; text-align: right; }
+  .bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 12px; overflow: hidden; position: relative; }
+  .bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 1s ease;
+    position: relative;
+  }
+  .bar-fill::after {
+    content: attr(data-value);
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; font-weight: 600; color: #fff;
+  }
+  .bar-value { width: 50px; font-size: 12px; color: #6666aa; }
+  .bf-purple { background: linear-gradient(90deg, #7c5cff, #a080ff); }
+  .bf-pink { background: linear-gradient(90deg, #ff6b9d, #ff9eb8); }
+  .bf-gold { background: linear-gradient(90deg, #ff8c00, #ffd700); }
+  .bf-blue { background: linear-gradient(90deg, #4a7aff, #80b0ff); }
+  .bf-teal { background: linear-gradient(90deg, #00b894, #55efc4); }
+  .bf-red { background: linear-gradient(90deg, #e17055, #ff7675); }
+
+  /* SWOT */
+  .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 768px) { .swot-grid { grid-template-columns: 1fr; } }
+  .swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }
+  .swot-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .swot-card ul { list-style: none; padding: 0; }
+  .swot-card ul li { font-size: 13px; color: #b0b0c8; margin-bottom: 8px; padding-left: 20px; position: relative; }
+  .swot-card ul li::before { position: absolute; left: 0; }
+  .swot-s { background: rgba(0, 200, 120, 0.06); border-color: rgba(0, 200, 120, 0.15); }
+  .swot-s h3 { color: #00c878; }
+  .swot-s ul li::before { content: '+'; color: #00c878; }
+  .swot-w { background: rgba(255, 80, 80, 0.06); border-color: rgba(255, 80, 80, 0.15); }
+  .swot-w h3 { color: #ff6060; }
+  .swot-w ul li::before { content: '-'; color: #ff6060; }
+  .swot-o { background: rgba(80, 120, 255, 0.06); border-color: rgba(80, 120, 255, 0.15); }
+  .swot-o h3 { color: #6080ff; }
+  .swot-o ul li::before { content: '!'; color: #6080ff; }
+  .swot-t { background: rgba(255, 200, 0, 0.06); border-color: rgba(255, 200, 0, 0.15); }
+  .swot-t h3 { color: #ffc800; }
+  .swot-t ul li::before { content: '!'; color: #ffc800; }
+
+  /* Metric row */
+  .metric-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+  .metric-item {
+    flex: 1; min-width: 150px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(140,100,255,0.06);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .metric-item .val { font-size: 22px; font-weight: 700; }
+  .metric-item .lbl { font-size: 11px; color: #6666aa; margin-top: 4px; }
+  .metric-item .val.grn { color: #00c878; }
+  .metric-item .val.red { color: #ff6060; }
+  .metric-item .val.blu { color: #6080ff; }
+  .metric-item .val.yel { color: #ffc800; }
+
+  /* Insight Box */
+  .insight-box {
+    background: linear-gradient(135deg, rgba(100, 60, 255, 0.08), rgba(255, 60, 120, 0.05));
+    border: 1px solid rgba(140, 100, 255, 0.15);
+    border-radius: 16px;
+    padding: 32px;
+    margin-top: 32px;
+  }
+  .insight-box h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #c8b0ff;
+    margin-bottom: 12px;
+  }
+  .insight-box p {
+    font-size: 14px;
+    color: #b0b0c8;
+    line-height: 2;
+  }
+
+  /* Platform */
+  .platform-row {
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    margin: 24px 0;
+  }
+  .platform-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 12px;
+    color: #444;
+    border-top: 1px solid rgba(140,100,255,0.06);
+  }
+
+  /* Scroll anim */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* Rating */
+  .rating-row { display: flex; align-items: center; gap: 16px; }
+  .rating-stars { display: flex; gap: 4px; }
+  .rating-stars .star { color: #ffc800; font-size: 18px; }
+  .rating-stars .star.empty { color: #333; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-particle"></div>
+  <div class="hero-particle"></div>
+  <div class="hero-particle"></div>
+  <div class="hero-particle"></div>
+  <div class="hero-particle"></div>
+  <div class="hero-particle"></div>
+  <div class="hero-content">
+    <div class="hero-badge">POST-LAUNCH ANALYSIS · 2026</div>
+    <h1>이환</h1>
+    <div style="font-size: 20px; color: #6666aa; margin-bottom: 8px; font-weight: 300;">
+      Neverness to Everness
+    </div>
+    <p class="hero-sub">초자연 어반 오픈월드 RPG, 출시 후 첫 2주 동향 분석</p>
+    <div class="hero-meta">
+      <span><span class="dot"></span>호타 스튜디오 개발</span>
+      <span><span class="dot"></span>퍼펙트월드 퍼블리싱</span>
+      <span><span class="dot"></span>2026.04.29 출시</span>
+      <span><span class="dot"></span>PC · PS5 · 모바일</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<div class="container">
+
+<!-- Key Metrics -->
+<section>
+  <div class="section-title"><span class="accent"></span>핵심 지표</div>
+  <p class="section-desc">출시 첫 주 기준 주요 성과 및 시장 반응</p>
+  <div class="stat-grid">
+    <div class="stat-card fade-in">
+      <div class="number gold">1억+</div>
+      <div class="label">출시 첫날 글로벌 매출 (위안)</div>
+      <div class="sub">≈ 215억 KRW</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="number">3,500만</div>
+      <div class="label">글로벌 사전예약자</div>
+      <div class="sub">원신 · 명조 · 엔드필드급 기록</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="number">Top 2</div>
+      <div class="label">한국 · 일본 구글플레이 인기순위</div>
+      <div class="sub">출시일 기준</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="number pink">75%</div>
+      <div class="label">해외 PC · PS5 매출 비중</div>
+      <div class="sub">모바일보다 콘솔/PC 선호</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="number">7,000+</div>
+      <div class="label">홍대 팝업스토어 방문객</div>
+      <div class="sub">5일간 운영</div>
+    </div>
+    <div class="stat-card fade-in">
+      <div class="number">#1</div>
+      <div class="label">한·일·대만 앱스토어 인기순위</div>
+      <div class="sub">출시일 기준</div>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-item fade-in"><div class="val grn">Japan #1</div><div class="lbl">지역별 매출 1위</div></div>
+    <div class="metric-item fade-in"><div class="val blu">USA #2</div><div class="lbl">지역별 매출 2위</div></div>
+    <div class="metric-item fade-in"><div class="val yel">Korea ↑</div><div class="lbl">예상 상회 매출</div></div>
+    <div class="metric-item fade-in"><div class="val grn">65%</div><div class="lbl">중국 PC 매출 비중</div></div>
+    <div class="metric-item fade-in"><div class="val blu">400+</div><div class="lbl">무료 뽑기 재화</div></div>
+  </div>
+
+  <div class="bar-chart">
+    <div class="bar-row">
+      <span class="bar-label">일본</span>
+      <div class="bar-track"><div class="bar-fill bf-purple" style="width: 95%" data-value="95%"></div></div>
+      <span class="bar-value">매출 1위</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">미국</span>
+      <div class="bar-track"><div class="bar-fill bf-blue" style="width: 80%" data-value="80%"></div></div>
+      <span class="bar-value">매출 2위</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">한국</span>
+      <div class="bar-track"><div class="bar-fill bf-pink" style="width: 70%" data-value="70%"></div></div>
+      <span class="bar-value">예상 상회</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">대만</span>
+      <div class="bar-track"><div class="bar-fill bf-gold" style="width: 85%" data-value="85%"></div></div>
+      <span class="bar-value">인기 1위</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">중국</span>
+      <div class="bar-track"><div class="bar-fill bf-teal" style="width: 65%" data-value="65%"></div></div>
+      <span class="bar-value">iOS 인기 3위</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Timeline -->
+<section>
+  <div class="section-title"><span class="accent"></span>출시 일정</div>
+  <p class="section-desc">사전예약부터 오프라인 이벤트까지 주요 타임라인</p>
+  <div class="timeline">
+    <div class="timeline-item fade-in">
+      <div class="date">2025년 하반기</div>
+      <h4>최초 공개</h4>
+      <p>어반 판타지 오픈월드 RPG로 첫 티저 공개. '서브컬처 GTA'라는 별칭과 함께 폭발적 관심.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 2월 6일 ~ 2월 20일</div>
+      <h4>공생 테스트 (CBT)</h4>
+      <p>2주간 비공개 베타 테스트 진행. 참가 유저들로부터 압도적 호평. 캐릭터 상호작용 및 오픈월드 자유도 높은 점수.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 18일</div>
+      <h4>스페셜 프리뷰 방송</h4>
+      <p>게임 플레이, 캐릭터, 육성 콘텐츠, 개선 사항 상세 공개. 포르쉐 콜라보 및 한국 테마곡 'PLAY ON!' 공개.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 21일</div>
+      <h4>사전예약 3,500만 돌파</h4>
+      <p>원신, 명조, 엔드필드와 어깨를 나란히 하는 사전예약 기록 달성.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 23일</div>
+      <h4>중국 선출시</h4>
+      <p>중국 지역 우선 출시. PC 매출 비중 65% 기록.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 29일</div>
+      <h4>글로벌 정식 출시</h4>
+      <p>PC, PS5, iOS, Android 동시 출시. 크로스 플레이 지원. 한국 · 일본 · 대만 앱마켓 인기순위 최상위권 석권.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 29일 ~ 5월 3일</div>
+      <h4>홍대 팝업스토어 '이상 관리국 IN 홍대'</h4>
+      <p>5일간 운영, 누적 7,000+ 방문객. 성우 토크쇼, 코스프레 포토존, 스탬프 투어 등 진행.</p>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="date">2026년 4월 30일</div>
+      <h4>퍼펙트월드 실적 컨퍼런스</h4>
+      <p>첫날 매출 1억 위안(210억 KRW) 돌파 발표. 일본·미국 매출 1, 2위. 한국 예상 상회. 신규 유저·잔존율 타워오브판타지 크게 상회.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Game Overview -->
+<section>
+  <div class="section-title"><span class="accent"></span>게임 개요</div>
+  <p class="section-desc">이환이라는 게임의 기본 정보</p>
+  <div class="glass-card fade-in" style="margin-bottom: 24px;">
+    <div class="grid-2">
+      <div>
+        <h3>기본 정보</h3>
+        <ul>
+          <li><span style="color: #6666aa;">장르:</span> 초자연 어반 오픈월드 RPG</li>
+          <li><span style="color: #6666aa;">개발:</span> 호타 스튜디오 (Hotta Studio)</li>
+          <li><span style="color: #6666aa;">퍼블리싱:</span> 퍼펙트월드 (Perfect World)</li>
+          <li><span style="color: #6666aa;">엔진:</span> 언리얼 엔진 5</li>
+          <li><span style="color: #6666aa;">등급:</span> 15세 이용가</li>
+          <li><span style="color: #6666aa;">별칭:</span> 서브컬처 GTA</li>
+        </ul>
+      </div>
+      <div>
+        <h3>플랫폼 및 특징</h3>
+        <ul>
+          <li>PC (Steam · 에픽 · 클라이언트)</li>
+          <li>PS5 (PlayStation 5)</li>
+          <li>iOS · Android (모바일)</li>
+          <li>멀티 플랫폼 크로스 플레이</li>
+          <li>풀 한국어 더빙 지원</li>
+          <li>한국어 텍스트 · UI 완전 지원</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="glass-card fade-in">
+    <h3>세계관 및 스토리</h3>
+    <p>초자연 현상 '이상 현상(Anomaly)'과 인류가 공존하는 가상의 도시 <strong>헤테로 시티(Hetero City)</strong>.
+    플레이어는 무면허 '이상 헌터'가 되어 도시 곳곳에서 발생하는 기이한 사건을 추적하고,
+    초자연 능력을 지닌 '이능력자' 동료들과 함께 팀을 이루어 이상체를 소탕한다.
+    현대 도시의 일상적인 풍경 뒤에 숨겨진 비일상이 공존하는 세계가 핵심 설정이다.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SWOT Analysis -->
+<section>
+  <div class="section-title"><span class="accent"></span>SWOT 분석</div>
+  <p class="section-desc">출시 초기 데이터 기반 강점, 약점, 기회, 위협 요인</p>
+  <div class="swot-grid">
+    <div class="swot-card swot-s fade-in">
+      <h3>Strengths (강점)</h3>
+      <ul>
+        <li>언리얼 엔진 5 기반 압도적 비주얼 퀄리티</li>
+        <li>살아있는 듯한 도시 오픈월드 구현 — '서브컬처 GTA'</li>
+        <li>캐릭터 간 깊은 상호작용 및 인연 퀘스트 시스템</li>
+        <li>천장 90회 · 픽뚫 없는 가챠 시스템 (호평)</li>
+        <li>400회 이상 무료 뽑기 제공 — 초반 과금 부담 낮춤</li>
+        <li>일일 퀘스트 1분컷 가능 — 낮은 숙제 피로도</li>
+        <li>풀 한국어 더빙 · 폰트 · UI 현지화 완벽</li>
+        <li>다양한 생활 콘텐츠 (레이싱 · 낚시 · 하우징 · 카페 운영)</li>
+        <li>타워 오브 판타지 대비 높은 신규 유저 유입 및 잔존율</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-w fade-in">
+      <h3>Weaknesses (약점)</h3>
+      <ul>
+        <li>방대한 콘텐츠가 오히려 피로감으로 작용</li>
+        <li>파밍 강도(노가다)가 높은 편</li>
+        <li>모바일 최적화 이슈 — 기기 사양에 따른 호불호</li>
+        <li>보드게임 방식의 가챠 시스템 — 초기 진입장벽 (이해도)</li>
+        <li>오픈월드 생활 콘텐츠의 깊이가 얕다는 평가</li>
+        <li>일부 애니메이션 작품 연상시키는 연출 (표절 논란)</li>
+        <li>중국 iOS 매출 순위 기대치 대비 부진 (20위권)</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-o fade-in">
+      <h3>Opportunities (기회)</h3>
+      <ul>
+        <li>GTA 시리즈 팬덤 — 신작 갈증 해소 대상으로 부상</li>
+        <li>북미 · 유럽 레이싱 콘텐츠 기반 유저층 확장 가능성</li>
+        <li>포르쉐 · 네네치킨 · GS25 등 다양한 브랜드 콜라보</li>
+        <li>PS5 점유율 확대 — 거치기기 매출 비중 75%</li>
+        <li>서브컬처 시장의 지속적 성장세</li>
+        <li>피드백 기반 콘텐츠 조정 의지 (퍼펙트월드 공식 언급)</li>
+        <li>PC · 콘솔 하이엔드 게이머 층 공략</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-t fade-in">
+      <h3>Threats (위협)</h3>
+      <ul>
+        <li>서브컬처 시장 포화 — 블루아카이브 · 니케 · 원신 · ZZZ 등 숙제 경쟁</li>
+        <li>이용자 시간 자원 고갈 — 멀티 게임 병행 피로감</li>
+        <li>동시기 경쟁작 — 명조 · 붕괴: 스타레일 주년 이벤트</li>
+        <li>GTA 6 출시 임박 — 본가와의 정면 비교 불가피</li>
+        <li>무한대 ANANTA · 망월 등 유사 장르 후발주자</li>
+        <li>중국 게임 규제 리스크</li>
+        <li>장기 콘텐츠 소모 속도 대비 업데이트 역량</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Reception -->
+<section>
+  <div class="section-title"><span class="accent"></span>이용자 반응</div>
+  <p class="section-desc">출시 후 커뮤니티 및 언론 반응 종합</p>
+  <div class="grid-2">
+    <div class="glass-card fade-in">
+      <h3 style="color: #00c878;">긍정 평가</h3>
+      <ul>
+        <li>"언리얼 5의 정수를 보여준다" — 그래픽 퀄리티 극찬</li>
+        <li>"서브컬처계의 GTA 맞다" — 도시 자유도 호평</li>
+        <li>"일퀘 1분컷... 숙제 부담 확실히 적다"</li>
+        <li>"픽뚫 없는 천장 시스템은 혁명"</li>
+        <li>"캐릭터들 개성 넘치고 상호작용이 살아있다"</li>
+        <li>"한국어 더빙 퀄리티가 매우 우수"</li>
+        <li>"도시 탐험만으로도 시간 가는 줄 모름"</li>
+      </ul>
+    </div>
+    <div class="glass-card fade-in">
+      <h3 style="color: #ff6060;">부정 평가</h3>
+      <ul>
+        <li>"할 게 너무 많아서 오히려 피곤하다"</li>
+        <li>"파밍 강도가 높아 장기적으로 힘들 듯"</li>
+        <li>"모바일 최적화가 아쉽다"</li>
+        <li>"이미 다른 서브컬처 게임들로 지친 상태"</li>
+        <li>"가챠 방식이 생소해서 적응 필요"</li>
+        <li>"일부 애니메이션 장면과 너무 비슷하다"</li>
+        <li>"생활 콘텐츠 깊이가 얕다"</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="insight-box fade-in" style="margin-top: 32px;">
+    <h3>핵심 인사이트: '콘텐츠 과잉 시대'의 딜레마</h3>
+    <p>
+      <strong>이환은 '많은 콘텐츠 = 좋은 게임'이라는 공식이 더 이상 통하지 않음을 보여준다.</strong>
+      출시 전 3,500만 사전예약과 첫날 210억 원 매출은 명백한 흥행 신호다.
+      그러나 '서브컬처 시장의 숙제 피로도'는 이미 한계점에 도달했다.
+      블루아카이브, 니케, 원신, ZZZ 등 경쟁작들을 병행하는 유저들에게
+      이환의 방대한 오픈월드는 '또 하나의 숙제'로 인식될 위험이 있다.
+      퍼펙트월드가 밝힌 대로, 향후 파밍 강도 조정과 '선택과 집중' 전략이
+      이 게임의 장기 흥행을 결정지을 핵심 변수가 될 것이다.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Key Systems -->
+<section>
+  <div class="section-title"><span class="accent"></span>핵심 시스템</div>
+  <p class="section-desc">게임 플레이의 주요 특징</p>
+  <div class="grid-3">
+    <div class="glass-card fade-in">
+      <h3>전투 시스템</h3>
+      <ul>
+        <li>4인 1팀 태그 매치 방식</li>
+        <li>실시간 캐릭터 교체 콤보</li>
+        <li>극한 회피 · 반격기</li>
+        <li>6속성 에스퍼 사이클 연계</li>
+        <li>필살기 '블라썸' 시스템</li>
+      </ul>
+    </div>
+    <div class="glass-card fade-in">
+      <h3>도시 콘텐츠</h3>
+      <ul>
+        <li>차량 커스터마이징 · 레이싱</li>
+        <li>카페 경영 (도시 타이쿤)</li>
+        <li>하우징 시스템 (펜트하우스 · 별장)</li>
+        <li>낚시 · 택배 · 마작</li>
+        <li>범죄-수배-체포 시스템</li>
+      </ul>
+    </div>
+    <div class="glass-card fade-in">
+      <h3>캐릭터 · 수집</h3>
+      <ul>
+        <li>보드 게임 방식 가챠 시스템</li>
+        <li>천장 90회, 픽뚫 없음</li>
+        <li>인연 퀘스트 · 동승 시스템</li>
+        <li>400+ 무료 뽑기 재화 지급</li>
+        <li>출시 캐릭터: 나나리 · 호토리 · 하니엘</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Competitor Landscape -->
+<section>
+  <div class="section-title"><span class="accent"></span>경쟁 구도</div>
+  <p class="section-desc">2026년 상반기 서브컬처 게임 시장 내 위치</p>
+  <div class="glass-card fade-in">
+    <h3>서브컬처 시장 포화도</h3>
+    <p style="margin-bottom: 16px;">이환이 출시된 2026년 4월, 서브컬처 시장은 사상 최대 규모의 경쟁 구도를 형성 중이다.</p>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <span class="bar-label">이환</span>
+        <div class="bar-track"><div class="bar-fill bf-purple" style="width: 75%" data-value="신작"></div></div>
+        <span class="bar-value">04.29 출시</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">원신</span>
+        <div class="bar-track"><div class="bar-fill bf-blue" style="width: 90%" data-value="글로벌 1위"></div></div>
+        <span class="bar-value">서비스 중</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">붕괴: 스타레일</span>
+        <div class="bar-track"><div class="bar-fill bf-pink" style="width: 80%" data-value="주년"></div></div>
+        <span class="bar-value">1주년 이벤트</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">승리의 여신: 니케</span>
+        <div class="bar-track"><div class="bar-fill bf-gold" style="width: 75%" data-value="주년"></div></div>
+        <span class="bar-value">이벤트 진행중</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">명조</span>
+        <div class="bar-track"><div class="bar-fill bf-teal" style="width: 70%" data-value="경쟁"></div></div>
+        <span class="bar-value">오픈월드 경쟁</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">블루아카이브</span>
+        <div class="bar-track"><div class="bar-fill bf-red" style="width: 65%" data-value="확고"></div></div>
+        <span class="bar-value">국내 인기</span>
+      </div>
+    </div>
+    <p style="font-size: 13px; color: #8888a0; margin-top: 16px;">
+      * 경쟁강도는 게임트릭스, 센서타워 등 공개 데이터 기반 추정치
+    </p>
+  </div>
+  <div class="insight-box fade-in" style="margin-top: 24px;">
+    <h3>전망: 선택과 집중의 시대</h3>
+    <p>
+      업계 전문가들은 이제 <strong>'무조건 많은 콘텐츠'가 능사가 아니라는 점</strong>을 지적한다.
+      방대한 세계관과 플레이 시간 사이의 균형, 타깃층을 선명하게 설정한 '선택과 집중',
+      피로도를 낮추면서 캐릭터 매력을 극대화하는 전략이 후발 주자의 생존을 결정지을 것이다.
+      이환이 첫날 210억 원이라는 폭발적 스타트를 장기 흥행으로 이어갈 수 있을지는
+      향후 3~6개월 간의 업데이트 방향성과 운영 정책에 달려 있다.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Offline & Collab -->
+<section>
+  <div class="section-title"><span class="accent"></span>오프라인 & 콜라보레이션</div>
+  <p class="section-desc">출시 기념 오프라인 이벤트 및 브랜드 협업 현황</p>
+  <div class="grid-3">
+    <div class="glass-card fade-in">
+      <div class="tag green">오프라인</div>
+      <h3>홍대 팝업스토어</h3>
+      <p>'이상 관리국 IN 홍대' — 4.29~5.03, 5일간 7,000+ 방문.
+      레로레로 전화부스, 헤테로 시티 구치소, 성우 토크쇼, 코스프레 포토존 등.
+      긴 대기 줄 형성할 정도로 높은 인기.</p>
+    </div>
+    <div class="glass-card fade-in">
+      <div class="tag yellow">콜라보</div>
+      <h3>네네치킨 · GS25</h3>
+      <p>세트 메뉴 구매 시 게임 내 쿠폰 코드 지급.
+      GS25와의 협업을 통한 유통 채널 확장.
+      오프라인 접점을 통한 신규 유저 유입 효과 기대.</p>
+    </div>
+    <div class="glass-card fade-in">
+      <div class="tag blue">프리미엄</div>
+      <h3>포르쉐 콜라보</h3>
+      <p>글로벌 스포츠카 브랜드 포르쉐와의 협업 발표.
+      게임 내 차량 커스터마이징 콘텐츠와 연계.
+      북미 레이싱 팬덤 공략 전략의 일환.</p>
+    </div>
+  </div>
+  <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
+    <span class="tag purple">타워오브판타지 콜라보 음악</span>
+    <span class="tag purple">P5R · P5X 콜라보 음악</span>
+    <span class="tag purple">한국 테마곡 PLAY ON! (RAON)</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Future Outlook -->
+<section>
+  <div class="section-title"><span class="accent"></span>향후 전망</div>
+  <p class="section-desc">2026년 하반기 이환의 방향성</p>
+  <div class="glass-card fade-in">
+    <div class="grid-2">
+      <div>
+        <h3>긍정적 시나리오</h3>
+        <ul>
+          <li>파밍 강도 조정으로 장기 체류율 확보</li>
+          <li>일본 · 북미 시장 공략 성공 — 글로벌 Top 10 정착</li>
+          <li>포르쉐 · 패션 브랜드와의 지속적 콜라보</li>
+          <li>정기 업데이트로 생활 콘텐츠 깊이 보강</li>
+          <li>PS5 점유율 확대 — 콘솔 서브컬처 1위 탈환</li>
+          <li>e스포츠 · 레이싱 대회 등 신규 IP 확장</li>
+        </ul>
+      </div>
+      <div>
+        <h3>부정적 시나리오</h3>
+        <ul>
+          <li>콘텐츠 과잉 피로감으로 초반 이탈 가속화</li>
+          <li>GTA 6 출시와의 정면 비교에서 밀림</li>
+          <li>서브컬처 시장 내 경쟁 심화로 점유율 하락</li>
+          <li>모바일 최적화 이슈 지속 — 접근성 제한</li>
+          <li>업데이트 속도가 콘텐츠 소모 속도 따라가지 못함</li>
+          <li>중국 규제 리스크 현실화</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="insight-box fade-in" style="margin-top: 24px;">
+    <h3>종합 평가</h3>
+    <p>
+      <strong>이환은 2026년 상반기 가장 주목받은 서브컬처 신작</strong>으로서,
+      첫날 210억 원 매출과 3,500만 사전예약이라는 인상적인 출발을 했다.
+      그러나 이미 포화 상태에 가까운 서브컬처 시장에서 장기 흥행을 담보하기는 쉽지 않다.
+      '무조건 많은 콘텐츠'가 아닌 '선택과 집중'의 운영 전략,
+      이용자 피드백을 반영한 파밍 강도 조정, 그리고 차별화된 캐릭터 IP의
+      지속적 확장이 이환의 미래를 결정지을 핵심 변수다.
+      당분간은 일본-북미-한국 3각 축을 중심으로 한 글로벌 운영에 주목할 필요가 있다.
+    </p>
+  </div>
+</section>
+
+</div>
+
+<div class="divider"></div>
+
+<footer>
+  <div class="container">
+    <p style="margin-bottom: 8px;">이환 (Neverness to Everness) — Post-Launch Analysis Report</p>
+    <p>2026년 5월 기준 · 데이터 출처: 인벤, 게임플, 글로벌E, 경향게임스, 루리웹, 퍼펙트월드 공식 발표</p>
+    <p style="margin-top: 8px;">본 페이지는 정보 제공 목적으로 작성되었으며, 모든 데이터는 공개된 기사 및 공식 자료를 기반으로 합니다.</p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
