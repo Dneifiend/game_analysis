@@ -219,22 +219,33 @@
       </div>
     </div>
 
-    <div class="game-card" onclick="loadReport('zeta')">
-      <div class="badge zeta">KRAFTON · NIRVANANA</div>
-      <div class="title">프로젝트 제타</div>
-      <div class="genre">Project ZETA</div>
-      <div class="desc">3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석</div>
-      <div class="game-date">2026. 5. 7.</div>
-      <div class="tags">
-        <span>MOBA</span>
-        <span>5팀 경쟁</span>
-        <span>얼리액세스</span>
-        <span>크래프톤</span>
+<div class="game-card" onclick="loadReport('zeta')">
+        <div class="badge zeta">KRAFTON · NIRVANANA</div>
+        <div class="title">프로젝트 제타</div>
+        <div class="genre">Project ZETA</div>
+        <div class="desc">3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석</div>
+        <div class="game-date">2026. 5. 7.</div>
+<div class="tags">
+          <span>MOBA</span>
+          <span>5팀 경쟁</span>
+          <span>얼리액세스</span>
+          <span>크래프톤</span>
+        </div>
       </div>
-    </div>
+    <div class="game-card" onclick="loadReport('gta6')">
+        <div class="badge">ROCKSTAR GAMES</div>
+        <div class="title">GTA VI</div>
+        <div class="genre">액션 어드벤처</div>
+        <div class="desc">바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시</div>
+        <div class="game-date">2026. 11. 19.</div>
+        <div class="tags">
+          <span>오픈월드</span>
+          <span>멀티플레이</span>
+          <span>PS5</span>
+          <span>Xbox</span>
+        </div>
+      </div>
   </div>
-
-  <!-- Right Panel -->
   <div class="main" id="report-frame-container">
     <div class="frame-wrap">
       <iframe id="report-frame" src="content/20260507_yihwan-analysis.html"></iframe>
@@ -254,6 +265,9 @@
     } else if (name === 'zeta') {
       frame.src = 'content/20260507_project-zeta-analysis.html';
       cards[1].classList.add('active');
+    } else if (name === 'gta6') {
+      frame.src = 'content/20260607_gta6-analysis.html';
+      cards[2].classList.add('active');
     }
   }
 </script>
