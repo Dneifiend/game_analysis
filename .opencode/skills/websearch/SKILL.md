@@ -13,7 +13,7 @@ description: Creates post-launch game analysis HTML pages with a dark-themed das
 이 스킬은 `google-search-scraper.py` 스크립트를 실행하는 것을 모방합니다.
 
 ### 1. 스크립트 실행
-스크립트가 저장된 현재 작업 디렉터리에서 `python .opencode/skills/websearch/google-search-scraper.py`를 실행합니다.
+스크립트가 저장된 현재 작업 디렉터리에서 `python .opencode/skills/websearch/google-search-scraper.py 검색어`를 실행합니다.
 
 ### 2. 입력
 스크립트가 실행될 때, 검색할 키워드를 파라미터로 전달합니다.
@@ -29,5 +29,5 @@ description: Creates post-launch game analysis HTML pages with a dark-themed das
 
 ## 사용 명령어 예시
 ```bash
-python google-search-scraper.py 검색어
+python python .opencode/skills/websearch/google-search-scraper.py 검색어
 ```
