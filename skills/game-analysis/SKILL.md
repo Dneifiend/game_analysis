@@ -89,9 +89,11 @@ Generate a single self-contained HTML file with the following structure:
 - Dark theme with low-opacity colored accents
 - Grid overlay on fixed position
 
-### Step 3: Create Index Page (if multiple games)
+### Step 3: Create or Update Index Page (if needed)
 
-When the user says "상위 페이지" or wants a dashboard linking multiple reports:
+`index.html` already exists. Only create or modify it when the user says "상위 페이지" or explicitly wants the dashboard layout changed.
+
+When updating:
 
 ```
 Layout: header + left-right split
@@ -104,20 +106,27 @@ Right panel: iframe loading selected game's HTML
   - No border on iframe, border-left on wrap
 ```
 
-### Step 4: Save Files
+### Step 4: Register Report to Dashboard
+
+After creating the analysis HTML, register it to the dashboard:
+
+1. Add entry to `reports.json` with fields: `id`, `badge` (with `class` and `text`), `title`, `genre`, `desc`, `written` (ISO 8601, e.g., `"2026-05-08T14:30:00"`), `tags`, `url`
+2. Add badge CSS class in `index.html`: `.game-card .badge.{class} { color: #hex; }` — use color name (`purple`, `gold`, `blue`, `pink`, `teal`)
+
+### Step 5: Save Files
 
 Place all files in the current workspace directory.
 
 File naming convention:
 - `index.html` — dashboard/index page
-- `{game-slug}-analysis.html` — individual game pages (e.g., `yihwan-analysis.html`, `project-zeta-analysis.html`)
+- `content/yyyymmdd_{slug}-analysis.html` — individual game pages
 
 ## Example Output Structure
 
 ```
-index.html                    ← left-right dashboard (optional)
-yihwan-analysis.html          ← game analysis page
-project-zeta-analysis.html    ← game analysis page
+index.html                              ← left-right dashboard
+content/yihwan-analysis.html             ← game analysis page
+content/project-zeta-analysis.html       ← game analysis page
 ```
 
 Each analysis page is fully self-contained (no external dependencies except Google Fonts CDN) and can be opened directly in a browser.
