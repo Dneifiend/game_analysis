@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deadlock (데드락) - 게임 분석 리포트</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff8c00;
+            --secondary: #ffd700;
+            --bg-dark: #06060c;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --glass-bg: rgba(20, 20, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-green: #4caf50;
+            --accent-red: #f44336;
+            --accent-blue: #2196f3;
+            --accent-gold: #ffc107;
+            --gradient-main: linear-gradient(135deg, #ff8c00 0%, #ffd700 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { opacity: 0; animation: fadeInUp 0.8s ease forwards; }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: var(--bg-dark);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 140, 0, 0.15) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -2px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .hero .badge-container {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 140, 0, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            margin-bottom: 2rem;
+        }
+
+        .hero .badge-text {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .hero .meta-row {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .accent-bar {
+            width: 4px;
+            height: 30px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255, 140, 0, 0.3);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), transparent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .timeline-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .swot-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .swot-card {
+            padding: 2rem;
+        }
+
+        .swot-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .swot-card.strength h3 { color: var(--accent-green); }
+        .swot-card.weakness h3 { color: var(--accent-red); }
+        .swot-card.opportunity h3 { color: var(--accent-blue); }
+        .swot-card.threat h3 { color: var(--accent-gold); }
+
+        .swot-card ul {
+            list-style: none;
+        }
+
+        .swot-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+        }
+
+        .swot-card li:last-child { border-bottom: none; }
+
+        .tag {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tag.green { background: rgba(76, 175, 80, 0.2); color: var(--accent-green); }
+        .tag.red { background: rgba(244, 67, 54, 0.2); color: var(--accent-red); }
+        .tag.blue { background: rgba(33, 150, 243, 0.2); color: var(--accent-blue); }
+        .tag.gold { background: rgba(255, 193, 7, 0.2); color: var(--accent-gold); }
+        .tag.purple { background: rgba(156, 39, 176, 0.2); color: #ce93d8; }
+
+        .insight-box {
+            border: 1px solid;
+            border-image: var(--gradient-main);
+            border-image-slice: 1;
+            background: rgba(255, 140, 0, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .insight-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .insight-box p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .bar-chart {
+            margin-top: 1rem;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .bar-label {
+            width: 120px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--gradient-main);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .bar-value {
+            width: 50px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .swot-grid { grid-template-columns: 1fr; }
+            .stat-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+
+    <section class="hero">
+        <div class="hero-content fade-in">
+            <div class="badge-container">
+                <span class="badge-text">VALVE · SOURCE 2</span>
+            </div>
+            <h1>DEADLOCK</h1>
+            <p class="subtitle">6v6 서드퍼슨 MOBA 슈팅의 새로운 표준</p>
+            <div class="meta-row">
+                <span>장르: 3인칭 슈팅, MOBA</span>
+                <span>플랫폼: PC (Steam)</span>
+                <span>상태: 클로즈드 알파</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>핵심 지표</h2>
+        </div>
+        <div class="stat-grid">
+            <div class="glass-card stat-card">
+                <span class="stat-value">170K+</span>
+                <span class="stat-label">동시 접속자 Peak</span>
+            </div>
+            <div class="glass-card stat-card">
+                <span class="stat-value">38+</span>
+                <span class="stat-label">플레이어블 영웅 수</span>
+            </div>
+            <div class="glass-card stat-card">
+                <span class="stat-value">4→3</span>
+                <span class="stat-label">맵 레인 변경</span>
+            </div>
+            <div class="glass-card stat-card">
+                <span class="stat-value">3</span>
+                <span class="stat-label">주요 게임 모드</span>
+            </div>
+        </div>
+        
+        <div class="glass-card">
+            <h3 style="margin-bottom: 1rem; color: var(--primary);">플랫폼별 관심도</h3>
+            <div class="bar-chart">
+                <div class="bar-item">
+                    <span class="bar-label">Steam</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 95%;"></div></div>
+                    <span class="bar-value">95%</span>
+                </div>
+                <div class="bar-item">
+                    <span class="bar-label">Twitch</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 70%;"></div></div>
+                    <span class="bar-value">70%</span>
+                </div>
+                <div class="bar-item">
+                    <span class="bar-label">Reddit</span>
+                    <div class="bar-track"><div class="bar-fill" style="width: 50%;"></div></div>
+                    <span class="bar-value">50%</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>타임라인</h2>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-date">2024년 5월</div>
+                <div class="timeline-title">프로토타입 유출 (Neon Prime)</div>
+                <div class="timeline-desc">개발 중이던 프로토타입 이미지가 유출되며 게임의 존재가 확인됨.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">2024년 8월</div>
+                <div class="timeline-title">스팀 공식 공개 및 NDA 해제</div>
+                <div class="timeline-desc">정식 스팀 페이지 공개. 동시 접속자 17만 명 돌파.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">2025년 2월</div>
+                <div class="timeline-title">레인 개편 (4 → 3)</div>
+                <div class="timeline-desc">맵의 레인이 4개에서 3개로 축소되어 전통적인 MOBA 형태로 변화.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">2025년 8월</div>
+                <div class="timeline-title">대규모 아트 개편</div>
+                <div class="timeline-desc">시각적 스타일 전면 교체. 6명의 신규 영웅 추가.</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-date">2026년 1월</div>
+                <div class="timeline-title">Street Brawl 모드 추가</div>
+                <div class="timeline-desc">빠른 템포의 PvP 모드 추가 및 6명 영웅 추가.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>게임 개요</h2>
+        </div>
+        <div class="glass-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div>
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">주요 시스템</h3>
+                <ul style="list-style: none; color: var(--text-muted);">
+                    <li style="padding: 0.5rem 0;">• 6vs6 팀전</li>
+                    <li style="padding: 0.5rem 0;">• 3레인 맵</li>
+                    <li style="padding: 0.5rem 0;">• 파밍 및 아이템 구매 시스템</li>
+                    <li style="padding: 0.5rem 0;">• 서드퍼슨 슈팅 조작감</li>
+                    <li style="padding: 0.5rem 0;">• 점프, 대시, 수직 이동</li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">배경 스토리</h3>
+                <p style="color: var(--text-muted);">
+                    20세기 초반 Alternate New York을 배경으로, '히든 킹'과 '아치마더' 두 신적 존재가 강림하기 위한 의식을 둘러싼 6v6 전투.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>SWOT 분석</h2>
+        </div>
+        <div class="swot-grid">
+            <div class="glass-card swot-card strength">
+                <h3>강점 (Strengths)</h3>
+                <ul>
+                    <li>밸브의 브랜드 가치</li>
+                    <li>독특한 장르 혼합 (TPS + MOBA)</li>
+                    <li>Source 2 엔진 그래픽</li>
+                    <li>대규모 클로즈드 알파 피드백</li>
+                    <li>높은 유동성 커뮤니티</li>
+                </ul>
+            </div>
+            <div class="glass-card swot-card weakness">
+                <h3>약점 (Weaknesses)</h3>
+                <ul>
+                    <li>복잡한 진입 장벽</li>
+                    <li>초기 개발 단계의 불안정성</li>
+                    <li>오래 걸리는 매치 시간</li>
+                    <li>밸브의 느린 개발 속도</li>
+                    <li>모호한 역할 시스템</li>
+                </ul>
+            </div>
+            <div class="glass-card swot-card opportunity">
+                <h3>기회 (Opportunities)</h3>
+                <ul>
+                    <li>경쟁稀疏한 TPS-MOBA 시장</li>
+                    <li>e 스포츠 성장 가능성</li>
+                    <li>免费-to-Play 모델</li>
+                    <li>도타2 유저 전환</li>
+                    <li>오버워치 대체재 수요</li>
+                </ul>
+            </div>
+            <div class="glass-card swot-card threat">
+                <h3>위협 (Threats)</h3>
+                <ul>
+                    <li>경쟁 게임 (LoL, Dota 2)</li>
+                    <li>밸브 타임으로 인한 시장 이탈</li>
+                    <li>핵 및作弊 문제</li>
+                    <li>장르의 포화 상태</li>
+                    <li>장기 베타로 인한 用户疲弊</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>커뮤니티 평가</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="glass-card">
+                <h3 style="color: var(--accent-green); margin-bottom: 1rem;">긍정적 평가</h3>
+                <ul style="list-style: none; color: var(--text-muted);">
+                    <li style="padding: 0.5rem 0;">✓ 혁신적인 장르 확장</li>
+                    <li style="padding: 0.5rem 0;">✓ TPS 조작감의优秀함</li>
+                    <li style="padding: 0.5rem 0;">✓ 깊은 세계관</li>
+                    <li style="padding: 0.5rem 0;">✓ 지속적인 업데이트</li>
+                </ul>
+            </div>
+            <div class="glass-card">
+                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">부정적 평가</h3>
+                <ul style="list-style: none; color: var(--text-muted);">
+                    <li style="padding: 0.5rem 0;">✗ 높은 진입 장벽</li>
+                    <li style="padding: 0.5rem 0;">✗ 장기 베타 불안감</li>
+                    <li style="padding: 0.5rem 0;">✗ 복잡한 아이템 시스템</li>
+                    <li style="padding: 0.5rem 0;">✗ 역할 구분 모호함</li>
+                </ul>
+            </div>
+        </div>
+        <div class="insight-box">
+            <h4>평가 종합</h4>
+            <p>대부분의 리뷰어들은 밸브의 역량에 대한 기대감을 가지고 있으나, 복잡한 시스템과 장기 개발은 사용자에게 frustation을 줄 수 있다.</p>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>주요 시스템</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+            <div class="glass-card">
+                <span class="tag purple">모드</span>
+                <h3 style="margin: 1rem 0 0.5rem;">Street Brawl</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">빠른 템포의 4v4 모드. 라인 없이 즉시 전투.</p>
+            </div>
+            <div class="glass-card">
+                <span class="tag gold">경제</span>
+                <h3 style="margin: 1rem 0 0.5rem;">Souls</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">크립 처치 및 적 처치로 획득. 아이템 구매에 사용.</p>
+            </div>
+            <div class="glass-card">
+                <span class="tag blue">커뮤니티</span>
+                <h3 style="margin: 1rem 0 0.5rem;">Showmatch</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">커뮤니티 주관 경기가 활발. 시청자 수 증가.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="accent-bar"></div>
+            <h2>비즈니스 모델 & 전망</h2>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <div class="glass-card">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">현재 상태</h3>
+                <p style="color: var(--text-muted);">
+                    무료 클로즈드 알파. Dota 2, CS2 모델을 고려할 때 F2P 모델 적용 가능성이 높음.
+                </p>
+                <div style="margin-top: 1rem;">
+                    <span class="tag green">Cosmetics</span>
+                    <span class="tag gold">Battle Pass</span>
+                </div>
+            </div>
+            <div class="glass-card">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">향후 전망</h3>
+                <p style="color: var(--text-muted);">
+                    2026년 1분기 업데이트 이후 안정적인 사용자 기반 형성. 정확한 출시 시기는未定.
+                </p>
+            </div>
+        </div>
+        <div class="insight-box">
+            <h4>최종 평가</h4>
+            <p>Deadlock은 실험적 단계임에도 불구하고 차세대 플래그십 게임이 될魄力이 있다.</p>
+        </div>
+    </section>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationDelay = '0.2s';
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.section, .hero-content').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

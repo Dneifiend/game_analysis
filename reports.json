@@ -124,5 +124,23 @@
         "AAA"
       ],
       "url": "content/20260509_crimson-desert-analysis.html"
+    },
+    {
+      "id": "deadlock",
+      "badge": {
+        "class": "gold",
+        "text": "VALVE"
+      },
+      "title": "데드락",
+      "genre": "Deadlock",
+      "desc": "6v6 서드퍼슨 MOBA 슈팅<br>밸브의 차세대 플래그십 분석",
+      "written": "2026-05-09T15:00:00",
+      "tags": [
+        "MOBA",
+        "TPS",
+        "Source 2",
+        "클로즈드 알파"
+      ],
+      "url": "content/20260509_deadlock-analysis.html"
     }
   ]
