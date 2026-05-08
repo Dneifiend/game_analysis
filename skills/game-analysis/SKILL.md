@@ -46,8 +46,11 @@ Collect these data points:
 Generate a single self-contained HTML file with the following structure:
 
 **Color scheme by genre/theme:**
-- Purple/magenta gradient → subculture, fantasy, RPG games (`#7c5cff`, `#ff6b9d`)
-- Gold/orange gradient → action, competitive, MOBA games (`#ff8c00`, `#ffd700`)
+- Purple/magenta (`#7c5cff`) → RPG, fantasy, subculture · badge class: `purple`
+- Gold/orange (`#ff8c00`) → action, competitive, MOBA · badge class: `gold`
+- Blue/cyan (`#00bcd4`) → strategy, simulation, sandbox · badge class: `blue`
+- Red/pink (`#ff6b9d`) → horror, survival, indie · badge class: `pink`
+- Teal/green (`#26a69a`) → sports, racing, casual · badge class: `teal`
 - Background: `#06060c` (deep dark), grid overlay with `0.025` opacity
 
 **Required sections (in order):**

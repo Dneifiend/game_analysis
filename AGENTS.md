@@ -13,7 +13,7 @@
 ## Adding a New Analysis Report (순서대로 정확히 수행)
 1. Create HTML in `content/` — filename: `yyyymmdd_{slug}-analysis.html`
 2. Append entry to `reports.json` (id, badge, title, genre, desc, written, tags, url)
-3. Add badge CSS class in `index.html`: `.game-card .badge.{class} { color: #hex; }` — convention: publisher/studio name (netease, rockstar, perfectworld, krafton, sony)
+3. Add badge CSS class in `index.html`: `.game-card .badge.{class} { color: #hex; }` — convention: color name (purple, gold, blue, pink, teal)
 4. No manual `loadReport` case needed — JS dynamically renders cards from JSON via `data-id` attribute
 5. No manual reordering needed — JS auto-sorts by `written` descending at runtime; conventional to keep JSON ordered newest-first
 6. All content must be in Korean
