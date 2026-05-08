@@ -158,18 +158,11 @@ Choose by genre: RPG/fantasy → `purple`, Action/MOBA → `gold`, Sim/strategy 
 
 Choose by genre: RPG/fantasy → `purple`, Action/MOBA → `gold`, Sim/strategy → `blue`, Horror/indie → `pink`, Sports/casual → `teal`.
 
-**5c. Add `loadReport` case in `index.html`**
+**5c. (Do NOT manually edit index.html loadReport function)**
 
-In the `loadReport()` function, add a new else-if block:
+⚠️ **STRICTLY FORBIDDEN**: Do NOT add manual `else if` cases to the `loadReport()` function in `index.html`. The dashboard system dynamically loads reports based on the `id` field in `reports.json`. Adding manual cases will break the dynamic loading system.
 
-```js
-} else if (name === '{game-slug}') {
-  frame.src = 'content/{yyyymmdd}_{game-slug}-analysis.html';
-  cards[{index}].classList.add('active');
-}
-```
-
-⚠️ **Important**: The `cards[N]` index must match the order of items in `reports.json` (0-based). Always verify the insertion position. If inserting at the end, use the previous last index + 1.
+The `loadReport(name)` function already handles loading by finding the report in `allReports` (loaded from `reports.json`) using the `id`. No code modification in `index.html` is required for new reports.
 
 ## Example Output Structure
 
