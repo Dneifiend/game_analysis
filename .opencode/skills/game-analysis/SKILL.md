@@ -81,6 +81,7 @@ Generate a single self-contained HTML file with the following structure:
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
 - **Floating particles** in Hero section (`.particles`, `.particle`, `@keyframes float`) with theme-appropriate colors
+- **Section divider** after Hero (`.divider` with linear-gradient from transparent to theme color to transparent)
 
 **CSS architecture:**
 - Single embedded `<style>` block
