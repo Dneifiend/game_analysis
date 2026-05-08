@@ -254,16 +254,19 @@
     return url.split('/').pop().replace('.html', '');
   }
 
+  // Format ISO date to Korean style (year, month, day only)
+  function formatDate(isoString) {
+    const d = new Date(isoString);
+    return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`;
+  }
+
   // Load reports from JSON and render game cards
   async function loadReports() {
     try {
       const response = await fetch('reports.json');
       allReports = await response.json();
       // Sort by written date descending (newest first)
-      allReports.sort((a, b) => {
-        const p = s => { const x = s.replace(/\./g,'').trim().split(/\s+/); return new Date(x[0],x[1]-1,x[2]); };
-        return p(b.written) - p(a.written);
-      });
+      allReports.sort((a, b) => new Date(b.written) - new Date(a.written));
       renderCards(allReports);
 
       // Check for page parameter
@@ -297,7 +300,7 @@
         <div class="title">${report.title}</div>
         <div class="genre">${report.genre}</div>
         <div class="desc">${report.desc}</div>
-        <div class="game-date">작성일 ${report.written}</div>
+        <div class="game-date">작성일 ${formatDate(report.written)}</div>
         <div class="tags">
           ${report.tags.map(tag => `<span>${tag}</span>`).join('')}
         </div>
