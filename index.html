@@ -237,6 +237,23 @@
 <script>
   let allReports = [];
 
+  // Get URL parameter
+  function getQueryParam(param) {
+    return new URLSearchParams(window.location.search).get(param);
+  }
+
+  // Update URL parameter without reload
+  function setQueryParam(param, value) {
+    const url = new URL(window.location);
+    url.searchParams.set(param, value);
+    window.history.pushState({}, '', url);
+  }
+
+  // Extract filename without .html from url
+  function getFilenameFromUrl(url) {
+    return url.split('/').pop().replace('.html', '');
+  }
+
   // Load reports from JSON and render game cards
   async function loadReports() {
     try {
@@ -248,7 +265,19 @@
         return p(b.written) - p(a.written);
       });
       renderCards(allReports);
-      loadReport(allReports[0].id);
+
+      // Check for page parameter
+      const pageParam = getQueryParam('page');
+      if (pageParam) {
+        const report = allReports.find(r => getFilenameFromUrl(r.url) === pageParam);
+        if (report) {
+          loadReport(report.id, false);
+        } else {
+          loadReport(allReports[0].id, true);
+        }
+      } else {
+        loadReport(allReports[0].id, true);
+      }
     } catch (error) {
       console.error('Error loading reports:', error);
     }
@@ -259,10 +288,10 @@
     container.innerHTML = '';
     reports.forEach((report, index) => {
       const card = document.createElement('div');
-      card.className = 'game-card' + (index === 0 ? ' active' : '');
+      card.className = 'game-card';
       card.setAttribute('data-id', report.id);
       card.setAttribute('onclick', `loadReport('${report.id}')`);
-      
+
       card.innerHTML = `
         <div class="badge ${report.badge.class}">${report.badge.text}</div>
         <div class="title">${report.title}</div>
@@ -273,7 +302,7 @@
           ${report.tags.map(tag => `<span>${tag}</span>`).join('')}
         </div>
       `;
-      
+
       container.appendChild(card);
     });
   }
@@ -289,7 +318,7 @@
     renderCards(filtered);
   }
 
-  function loadReport(name) {
+  function loadReport(name, updateURL = true) {
     const frame = document.getElementById('report-frame');
     const cards = document.querySelectorAll('.game-card');
     cards.forEach(c => c.classList.remove('active'));
@@ -298,8 +327,24 @@
       frame.src = report.url;
       const target = document.querySelector(`.game-card[data-id="${name}"]`);
       if (target) target.classList.add('active');
+
+      if (updateURL) {
+        setQueryParam('page', getFilenameFromUrl(report.url));
+      }
     }
   }
+
+  // Handle browser back/forward
+  window.addEventListener('popstate', () => {
+    if (allReports.length === 0) return;
+    const pageParam = getQueryParam('page');
+    if (pageParam) {
+      const report = allReports.find(r => getFilenameFromUrl(r.url) === pageParam);
+      if (report) loadReport(report.id, false);
+    } else {
+      loadReport(allReports[0].id, false);
+    }
+  });
 
   // Initialize
   document.addEventListener('DOMContentLoaded', loadReports);
