@@ -27,6 +27,6 @@
 - 과금모델 요청 시 Business Model 섹션 확장 (비교표·심층분석 포함)
 
 ## Workflow Rules
-- No `git commit` / `git push` without explicit user request
+- No `git commit` or `git push` without explicit user request
 - Preserve existing instruction files (`SKILL.md`, etc.)
 - Check `git status` before any commit
