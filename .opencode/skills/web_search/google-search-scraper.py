@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import random
+import sys
 
 def sanitize(text):
     if text:
@@ -76,7 +77,10 @@ def google_search(query, total_pages=1, max_results_per_page=10):
     return all_results
 
 if __name__ == "__main__":
-    search_keyword = 'abcd'
+    if len(sys.argv) < 2:
+        print("Error: Please provide a search keyword as an argument.")
+        sys.exit(1)
+    search_keyword = sys.argv[1]
     results = google_search(search_keyword, total_pages=2)
     
     if results:
