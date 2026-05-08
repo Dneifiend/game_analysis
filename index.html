@@ -229,7 +229,7 @@
   </div>
   <div class="main" id="report-frame-container">
     <div class="frame-wrap">
-      <iframe id="report-frame" src="content/20260507_yihwan-analysis.html"></iframe>
+      <iframe id="report-frame"></iframe>
     </div>
   </div>
 </div>
@@ -248,6 +248,7 @@
         return p(b.written) - p(a.written);
       });
       renderCards(allReports);
+      loadReport(allReports[0].id);
     } catch (error) {
       console.error('Error loading reports:', error);
     }
