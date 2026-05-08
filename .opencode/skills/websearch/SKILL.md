@@ -1,3 +1,9 @@
+
+---
+name: websearch
+description: Creates post-launch game analysis HTML pages with a dark-themed dashboard layout. Searches web for game data, then generates a comprehensive analysis page with hero sections, stat cards, timelines, SWOT analysis, competitor landscape, and future outlook. Optionally creates an index page with left-right panel layout linking multiple game reports.
+---
+
 # 웹 검색 스크래퍼 스킬 (Web Search Scraper Skill)
 
 ## 개요
@@ -7,10 +13,11 @@
 이 스킬은 `google-search-scraper.py` 스크립트를 실행하는 것을 모방합니다.
 
 ### 1. 스크립트 실행
-스크립트가 저장된 현재 작업 디렉터리에서 `python google-search-scraper.py`를 실행합니다.
+스크립트가 저장된 현재 작업 디렉터리에서 `python .opencode/skills/websearch/google-search-scraper.py`를 실행합니다.
 
 ### 2. 입력
-스크립트가 실행될 때, 검색할 키워드(예: 'Generative AI')를 파이썬 코드 내의 `search_keyword` 변수에 직접 입력해야 합니다.
+스크립트가 실행될 때, 검색할 키워드를 파라미터로 전달합니다.
+
 
 ### 3. 출력
 스크립트는 총 2페이지 분량의 검색 결과(최대 10개씩)를 수집한 후, 해당 검색 결과의 목록과 요약된 내용을 출력합니다.
@@ -22,6 +29,5 @@
 
 ## 사용 명령어 예시
 ```bash
-python google-search-scraper.py 
-# (스크립트 내에서 search_keyword 변수의 값을 변경해야 함)
+python google-search-scraper.py 검색어
 ```
