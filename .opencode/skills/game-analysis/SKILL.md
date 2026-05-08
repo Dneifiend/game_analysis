@@ -80,6 +80,7 @@ Generate a single self-contained HTML file with the following structure:
 - Tags with colored backgrounds (`.tag.green`, `.tag.red`, `.tag.blue`, `.tag.gold`, `.tag.purple`)
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
+- **Floating particles** in Hero section (`.particles`, `.particle`, `@keyframes float`) with theme-appropriate colors
 
 **CSS architecture:**
 - Single embedded `<style>` block
