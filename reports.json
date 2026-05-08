@@ -88,5 +88,23 @@
       "PvE"
     ],
     "url": "content/20260509_helldivers2-analysis.html"
+  },
+  {
+    "id": "warframe",
+    "badge": {
+      "class": "digital-extremes",
+      "text": "DIGITAL EXTREMES"
+    },
+    "title": "Warframe",
+    "genre": "WARFRAME",
+    "desc": "3인칭 액션 슈터 RPG<br>모딩, 마스터리 랭크, 파쿠르 심층 분석",
+    "written": "2026. 5. 9.",
+    "tags": [
+      "액션 RPG",
+      "F2P",
+      "모딩",
+      "파쿠르"
+    ],
+    "url": "content/20260509_warframe-analysis.html"
   }
 ]
