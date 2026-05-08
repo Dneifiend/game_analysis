@@ -2,6 +2,7 @@
 
 ## Language
 - 모든 응답은 한국어로 작성 (`Always respond in Korean.`)
+- 커밋 로그는 한국어로 작성
 
 ## Repo Overview
 - Static site dashboard: `index.html` (left-right panel: card list + iframe), `reports.json` (metadata), `content/*.html` (analysis pages)
