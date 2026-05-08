@@ -1,0 +1,74 @@
+[
+  {
+    "id": "yeonun",
+    "badge": {
+      "class": "wwm",
+      "text": "EVERSTONE STUDIO · NETEASE"
+    },
+    "title": "연운",
+    "genre": "Where Winds Meet",
+    "desc": "무협 오픈월드 액션 어드벤처 RPG<br>과금모델 중심 게임 분석",
+    "date": "2026. 5. 8.",
+    "tags": [
+      "무협",
+      "오픈월드",
+      "Free-to-Play",
+      "No P2W"
+    ],
+    "url": "content/20260508_yeonun-analysis.html"
+  },
+  {
+    "id": "gta6",
+    "badge": {
+      "class": "",
+      "text": "ROCKSTAR GAMES"
+    },
+    "title": "GTA VI",
+    "genre": "액션 어드벤처",
+    "desc": "바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시",
+    "date": "2026. 05. 08.",
+    "tags": [
+      "오픈월드",
+      "멀티플레이",
+      "PS5",
+      "Xbox"
+    ],
+    "url": "content/20260607_gta6-analysis.html"
+  },
+  {
+    "id": "yihwan",
+    "badge": {
+      "class": "nt",
+      "text": "PERFECT WORLD · HOTTA STUDIO"
+    },
+    "title": "이환",
+    "genre": "Neverness to Everness",
+    "desc": "초자연 어반 오픈월드 RPG<br>출시 후 첫 2주 동향 분석",
+    "date": "2026. 5. 7.",
+    "tags": [
+      "오픈월드",
+      "서브컬처",
+      "210억 매출",
+      "UE5"
+    ],
+    "url": "content/20260507_yihwan-analysis.html"
+  },
+  {
+    "id": "zeta",
+    "badge": {
+      "class": "zeta",
+      "text": "KRAFTON · NIRVANANA"
+    },
+    "title": "프로젝트 제타",
+    "genre": "Project ZETA",
+    "desc": "3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석",
+    "date": "2026. 5. 7.",
+    "tags": [
+      "MOBA",
+      "5팀 경쟁",
+      "얼리액세스",
+      "크래프톤"
+    ],
+    "url": "content/20260507_project-zeta-analysis.html"
+  }
+]

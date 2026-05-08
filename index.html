@@ -71,8 +71,24 @@
     letter-spacing: 2px;
     text-transform: uppercase;
     padding: 0 12px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
+
+  #search-input {
+    width: calc(100% - 24px);
+    margin: 0 12px 12px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 8px;
+    color: #ccc;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #search-input::placeholder { color: #555; }
+  #search-input:focus { border-color: rgba(120,80,255,.3); }
 
   .game-card {
     padding: 16px 20px;
@@ -113,6 +129,7 @@
   }
   .game-card .badge.nt { color: #7c5cff; }
   .game-card .badge.zeta { color: #ff8c00; }
+  .game-card .badge.wwm { color: #ff6b9d; }
 
   .game-card .title {
     font-size: 18px;
@@ -204,47 +221,8 @@
   <!-- Left Panel -->
   <div class="sidebar">
     <div class="sidebar-label">Analysis Reports</div>
-
-    <div class="game-card active" onclick="loadReport('yihwan')">
-      <div class="badge nt">PERFECT WORLD · HOTTA STUDIO</div>
-      <div class="title">이환</div>
-      <div class="genre">Neverness to Everness</div>
-      <div class="desc">초자연 어반 오픈월드 RPG<br>출시 후 첫 2주 동향 분석</div>
-      <div class="game-date">2026. 5. 7.</div>
-      <div class="tags">
-        <span>오픈월드</span>
-        <span>서브컬처</span>
-        <span>210억 매출</span>
-        <span>UE5</span>
-      </div>
-    </div>
-
-<div class="game-card" onclick="loadReport('zeta')">
-        <div class="badge zeta">KRAFTON · NIRVANANA</div>
-        <div class="title">프로젝트 제타</div>
-        <div class="genre">Project ZETA</div>
-        <div class="desc">3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석</div>
-        <div class="game-date">2026. 5. 7.</div>
-<div class="tags">
-          <span>MOBA</span>
-          <span>5팀 경쟁</span>
-          <span>얼리액세스</span>
-          <span>크래프톤</span>
-        </div>
-      </div>
-    <div class="game-card" onclick="loadReport('gta6')">
-        <div class="badge">ROCKSTAR GAMES</div>
-        <div class="title">GTA VI</div>
-        <div class="genre">액션 어드벤처</div>
-        <div class="desc">바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시</div>
-        <div class="game-date">2026. 05. 08.</div>
-        <div class="tags">
-          <span>오픈월드</span>
-          <span>멀티플레이</span>
-          <span>PS5</span>
-          <span>Xbox</span>
-        </div>
-      </div>
+    <input id="search-input" type="text" placeholder="게임명, 장르, 태그로 검색..." oninput="filterCards()">
+    <div id="game-cards-container"></div>
   </div>
   <div class="main" id="report-frame-container">
     <div class="frame-wrap">
@@ -254,23 +232,76 @@
 </div>
 
 <script>
+  let allReports = [];
+
+  // Load reports from JSON and render game cards
+  async function loadReports() {
+    try {
+      const response = await fetch('reports.json');
+      allReports = await response.json();
+      renderCards(allReports);
+    } catch (error) {
+      console.error('Error loading reports:', error);
+    }
+  }
+
+  function renderCards(reports) {
+    const container = document.getElementById('game-cards-container');
+    container.innerHTML = '';
+    reports.forEach((report, index) => {
+      const card = document.createElement('div');
+      card.className = 'game-card' + (index === 0 ? ' active' : '');
+      card.setAttribute('data-id', report.id);
+      card.setAttribute('onclick', `loadReport('${report.id}')`);
+      
+      card.innerHTML = `
+        <div class="badge ${report.badge.class}">${report.badge.text}</div>
+        <div class="title">${report.title}</div>
+        <div class="genre">${report.genre}</div>
+        <div class="desc">${report.desc}</div>
+        <div class="game-date">${report.date}</div>
+        <div class="tags">
+          ${report.tags.map(tag => `<span>${tag}</span>`).join('')}
+        </div>
+      `;
+      
+      container.appendChild(card);
+    });
+  }
+
+  function filterCards() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const filtered = allReports.filter(r =>
+      r.title.toLowerCase().includes(q) ||
+      r.genre.toLowerCase().includes(q) ||
+      r.desc.toLowerCase().includes(q) ||
+      r.tags.some(t => t.toLowerCase().includes(q))
+    );
+    renderCards(filtered);
+  }
+
   function loadReport(name) {
     const frame = document.getElementById('report-frame');
     const cards = document.querySelectorAll('.game-card');
     cards.forEach(c => c.classList.remove('active'));
 
-    if (name === 'yihwan') {
-      frame.src = 'content/20260507_yihwan-analysis.html';
+    if (name === 'yeonun') {
+      frame.src = 'content/20260508_yeonun-analysis.html';
       cards[0].classList.add('active');
-    } else if (name === 'zeta') {
-      frame.src = 'content/20260507_project-zeta-analysis.html';
-      cards[1].classList.add('active');
     } else if (name === 'gta6') {
       frame.src = 'content/20260607_gta6-analysis.html';
+      cards[1].classList.add('active');
+    } else if (name === 'yihwan') {
+      frame.src = 'content/20260507_yihwan-analysis.html';
       cards[2].classList.add('active');
+    } else if (name === 'zeta') {
+      frame.src = 'content/20260507_project-zeta-analysis.html';
+      cards[3].classList.add('active');
     }
   }
-</script>
 
+  // Initialize
+  document.addEventListener('DOMContentLoaded', loadReports);
+</script>
 </body>
 </html>

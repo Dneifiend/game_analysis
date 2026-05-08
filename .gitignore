@@ -1,0 +1,12 @@
+# Agent-related files
+.agents/
+skills/
+AGENTS.md
+
+# Ignore everything except content/, index.html, and reports.json
+*
+!content/
+!content/**
+!index.html
+!reports.json
+!.gitignore

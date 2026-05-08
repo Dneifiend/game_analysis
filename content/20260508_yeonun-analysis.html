@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>연운(Where Winds Meet) — 게임 분석 리포트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:#06060c;color:#e0e0e0;overflow-x:hidden;line-height:1.7}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,92,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(124,92,255,.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 20px}
+.section{padding:80px 0}
+.section-title{font-size:2.2rem;font-weight:700;margin-bottom:40px;position:relative;display:inline-block}
+.section-title::after{content:'';position:absolute;bottom:-8px;left:0;width:60px;height:4px;border-radius:2px}
+.accent-purple .section-title::after{background:linear-gradient(90deg,#7c5cff,#ff6b9d)}
+.accent-purple .insight-box{border-color:#7c5cff}
+.accent-purple .tag{background:rgba(124,92,255,.2);color:#b8a0ff}
+.glass-card{background:rgba(255,255,255,.04);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;transition:transform .3s,box-shadow .3s}
+.glass-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(124,92,255,.12)}
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.insight-box{background:linear-gradient(135deg,rgba(124,92,255,.1),rgba(255,107,157,.05));border-left:4px solid;border-radius:12px;padding:24px;margin-top:20px}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:500;margin:3px}
+.tag.green{background:rgba(0,200,117,.15);color:#00c875}
+.tag.red{background:rgba(255,71,71,.15);color:#ff4747}
+.tag.blue{background:rgba(71,150,255,.15);color:#4796ff}
+.tag.gold{background:rgba(255,200,0,.15);color:#ffc800}
+.tag.purple{background:rgba(124,92,255,.2);color:#b8a0ff}
+.bf-purple{background:linear-gradient(90deg,#7c5cff,#b8a0ff)}
+.bf-pink{background:linear-gradient(90deg,#ff6b9d,#ff9ebb)}
+.bf-blue{background:linear-gradient(90deg,#4796ff,#7bb8ff)}
+.bf-teal{background:linear-gradient(90deg,#00c875,#5fe9a0)}
+.bf-red{background:linear-gradient(90deg,#ff4747,#ff7a7a)}
+.bar-chart{margin:16px 0}
+.bar-row{display:flex;align-items:center;margin:8px 0}
+.bar-label{width:140px;font-size:.85rem;color:#aaa;flex-shrink:0}
+.bar-track{flex:1;height:24px;background:rgba(255,255,255,.06);border-radius:12px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:12px;position:relative;transition:width 1.2s ease}
+.bar-fill span{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.75rem;font-weight:700;color:#fff}
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;text-align:center}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(124,92,255,.15) 0%,transparent 60%),radial-gradient(ellipse at bottom right,rgba(255,107,157,.1) 0%,transparent 50%);z-index:0}
+.particles{position:absolute;inset:0;overflow:hidden;z-index:0}
+.particle{position:absolute;width:4px;height:4px;background:rgba(124,92,255,.4);border-radius:50%;animation:float 8s infinite}
+.particle:nth-child(1){left:10%;top:20%;animation-delay:0s;width:6px;height:6px}
+.particle:nth-child(2){left:25%;top:60%;animation-delay:1.5s}
+.particle:nth-child(3){left:45%;top:30%;animation-delay:3s;width:5px;height:5px}
+.particle:nth-child(4){left:65%;top:70%;animation-delay:.5s}
+.particle:nth-child(5){left:80%;top:40%;animation-delay:2s;width:7px;height:7px}
+.particle:nth-child(6){left:35%;top:80%;animation-delay:4s}
+.particle:nth-child(7){left:55%;top:15%;animation-delay:2.5s;width:5px;height:5px}
+.particle:nth-child(8){left:90%;top:55%;animation-delay:1s}
+.particle:nth-child(9){left:15%;top:45%;animation-delay:3.5s;width:6px;height:6px}
+.particle:nth-child(10){left:70%;top:85%;animation-delay:4.5s;width:3px;height:3px}
+@keyframes float{0%{transform:translateY(0) scale(1);opacity:.4}50%{transform:translateY(-30px) scale(1.3);opacity:.8}100%{transform:translateY(0) scale(1);opacity:.4}}
+.hero-content{position:relative;z-index:1;padding:20px}
+.hero-badge{display:inline-block;padding:6px 20px;border:1px solid rgba(124,92,255,.4);border-radius:20px;font-size:.85rem;color:#b8a0ff;margin-bottom:20px;text-transform:uppercase;letter-spacing:2px}
+.hero h1{font-size:4.5rem;font-weight:900;background:linear-gradient(135deg,#7c5cff,#ff6b9d,#ffaa5e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.2}
+.hero .subtitle{font-size:1.3rem;color:#888;margin-bottom:16px;font-weight:300}
+.hero .en-title{font-size:1rem;color:#555;margin-bottom:8px;letter-spacing:3px}
+.hero-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:24px}
+.hero-meta span{padding:8px 16px;background:rgba(255,255,255,.05);border-radius:8px;font-size:.85rem;color:#999}
+.hero-meta span strong{color:#ccc}
+/* Stat Grid */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.stat-card{text-align:center;padding:32px 20px}
+.stat-card .number{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#7c5cff,#ff6b9d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-card .label{font-size:.9rem;color:#777;margin-top:8px}
+.stat-card .sub{font-size:.75rem;color:#555;margin-top:4px}
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:30px}
+.metric-card{padding:20px}
+.metric-card .m-label{font-size:.8rem;color:#777}
+.metric-card .m-value{font-size:1.8rem;font-weight:700;margin:6px 0}
+.metric-card .m-bar{width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+.metric-card .m-bar .m-fill{height:100%;border-radius:3px}
+/* Timeline */
+.timeline{position:relative;padding-left:40px}
+.timeline::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#7c5cff,#ff6b9d)}
+.tl-item{position:relative;margin-bottom:40px}
+.tl-item::before{content:'';position:absolute;left:-40px;top:6px;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#7c5cff,#ff6b9d);border:3px solid #06060c}
+.tl-date{font-size:.8rem;color:#7c5cff;font-weight:500}
+.tl-title{font-size:1.1rem;font-weight:700;margin:4px 0}
+.tl-desc{font-size:.9rem;color:#999}
+/* Overview */
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:768px){.overview-grid{grid-template-columns:1fr}}
+.info-row{display:flex;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.info-row:last-child{border-bottom:none}
+.info-row .info-label{width:100px;color:#777;font-size:.85rem;flex-shrink:0}
+.info-row .info-value{font-size:.85rem;color:#ccc}
+/* SWOT */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:640px){.swot-grid{grid-template-columns:1fr}}
+.swot-card{padding:24px;border-radius:16px;position:relative;overflow:hidden}
+.swot-card h4{font-size:1.1rem;margin-bottom:12px}
+.swot-card ul{list-style:none;padding:0}
+.swot-card ul li{padding:6px 0;font-size:.9rem;color:#ccc;padding-left:18px;position:relative}
+.swot-card ul li::before{content:'›';position:absolute;left:0;font-weight:700;font-size:1.2rem}
+.swot-s{background:rgba(0,200,117,.06);border:1px solid rgba(0,200,117,.15)}
+.swot-s h4{color:#00c875}
+.swot-s ul li::before{color:#00c875}
+.swot-w{background:rgba(255,71,71,.06);border:1px solid rgba(255,71,71,.15)}
+.swot-w h4{color:#ff4747}
+.swot-w ul li::before{color:#ff4747}
+.swot-o{background:rgba(71,150,255,.06);border:1px solid rgba(71,150,255,.15)}
+.swot-o h4{color:#4796ff}
+.swot-o ul li::before{color:#4796ff}
+.swot-t{background:rgba(255,200,0,.06);border:1px solid rgba(255,200,0,.15)}
+.swot-t h4{color:#ffc800}
+.swot-t ul li::before{color:#ffc800}
+/* Reception */
+.reception-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:768px){.reception-grid{grid-template-columns:1fr}}
+.review-positive{border-left:3px solid #00c875}
+.review-negative{border-left:3px solid #ff4747}
+/* Key Systems */
+.systems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+/* Competitor */
+.competitor-chart{margin:24px 0}
+/* Business Model - emphasized */
+.biz-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:768px){.biz-grid{grid-template-columns:1fr}}
+.biz-card{padding:24px}
+.biz-card h4{font-size:1.05rem;margin-bottom:10px;color:#fff}
+.biz-card p,.biz-card li{font-size:.9rem;color:#aaa;line-height:1.7}
+.biz-card ul{list-style:none;padding:0}
+.biz-card ul li{padding:8px 0;padding-left:20px;position:relative;border-bottom:1px solid rgba(255,255,255,.03)}
+.biz-card ul li:last-child{border-bottom:none}
+.biz-card ul li::before{content:'•';position:absolute;left:4px;color:#7c5cff;font-weight:700}
+.biz-highlight{background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(255,107,157,.08));border:1px solid rgba(124,92,255,.2);padding:24px;border-radius:16px;margin-top:24px}
+.biz-highlight h4{color:#ff6b9d;font-size:1.1rem;margin-bottom:12px}
+.biz-highlight p{color:#ccc;font-size:.9rem;line-height:1.8}
+.biz-highlight strong{color:#fff}
+/* Footer */
+footer{text-align:center;padding:40px 0;border-top:1px solid rgba(255,255,255,.05);margin-top:40px}
+footer p{font-size:.8rem;color:#555}
+/* Scrollbar */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#06060c}
+::-webkit-scrollbar-thumb{background:rgba(124,92,255,.3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(124,92,255,.5)}
+/* Responsive */
+@media(max-width:600px){
+  .hero h1{font-size:2.8rem}
+  .stat-grid{grid-template-columns:1fr}
+  .section{padding:50px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="particles">
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge">Free-to-Play · Open World · Wuxia ARPG</div>
+    <h1>연운</h1>
+    <div class="en-title">WHERE WINDS MEET</div>
+    <p class="subtitle">연운십육성 — 광활한 무협 오픈월드, 바람이 인도하는 대로</p>
+    <div class="hero-meta">
+      <span><strong>Everstone Studio</strong> 개발</span>
+      <span><strong>NetEase Games</strong> 퍼블리싱</span>
+      <span>PC · PS5 · iOS · Android</span>
+      <span>2025.11.15 글로벌 출시</span>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- Key Metrics -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">핵심 지표</h2>
+  <div class="stat-grid">
+    <div class="stat-card glass-card">
+      <div class="number">900만+</div>
+      <div class="label">출시 2주 누적 이용자</div>
+      <div class="sub">2025년 11월 기준</div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="number">25만</div>
+      <div class="label">Steam 최고 동시접속자</div>
+      <div class="sub">SteamDB 기준</div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="number">87%</div>
+      <div class="label">Steam 긍정 평가</div>
+      <div class="sub">60,687 English Reviews</div>
+    </div>
+    <div class="stat-card glass-card">
+      <div class="number">72</div>
+      <div class="label">메타크리틱 평론가 점수</div>
+      <div class="sub">7.2 / 10 유저 평점</div>
+    </div>
+  </div>
+
+  <div class="metric-row">
+    <div class="metric-card glass-card">
+      <div class="m-label">플랫폼별 이용자 비중 (추정)</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">PC (Steam)</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:45%"><span>45%</span></div></div></div>
+        <div class="bar-row"><span class="bar-label">모바일</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:35%"><span>35%</span></div></div></div>
+        <div class="bar-row"><span class="bar-label">PS5</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:20%"><span>20%</span></div></div></div>
+      </div>
+    </div>
+    <div class="metric-card glass-card">
+      <div class="m-label">글로벌 리뷰 언어별 비중</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">영어</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:56%"><span>56%</span></div></div></div>
+        <div class="bar-row"><span class="bar-label">러시아어</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:8%"><span>8%</span></div></div></div>
+        <div class="bar-row"><span class="bar-label">중국어(번체)</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:6%"><span>6%</span></div></div></div>
+        <div class="bar-row"><span class="bar-label">한국어</span><div class="bar-track"><div class="bar-fill bf-teal" style="width:3%"><span>3%</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Timeline -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">주요 타임라인</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">2022년 8월</div>
+      <div class="tl-title">게임스컴 최초 공개</div>
+      <div class="tl-desc">연운(Where Winds Meet)이 Gamescom 2022에서 최초로 공개됨. 영화감독 겸 무술 안무가 스티븐 텅 참여 발표.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2024년 12월 27일</div>
+      <div class="tl-title">중국 PC/PS5 출시</div>
+      <div class="tl-desc">중국 내 PC 및 PS5 버전 출시. 출시 4일 만에 다운로드 300만 건 돌파.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025년 1월 9일</div>
+      <div class="tl-title">중국 모바일 출시</div>
+      <div class="tl-desc">iOS 및 Android 버전 중국 출시.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025년 7월</div>
+      <div class="tl-title">글로벌 마지막 비공개 베타</div>
+      <div class="tl-desc">PS5/PC 대상 글로벌 출시 전 마지막 CBT 진행 (7/24~7/31).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025년 11월 15일</div>
+      <div class="tl-title">글로벌 PC/PS5 정식 출시</div>
+      <div class="tl-desc">Steam, Epic Games Store, PlayStation Store 글로벌 출시. 24시간 누적 이용자 200만, 동시접속 25만 기록.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025년 12월 12일</div>
+      <div class="tl-title">글로벌 모바일 출시</div>
+      <div class="tl-desc">전 세계 iOS 및 Android 출시. 크로스플레이 및 크로스프로그레션 지원.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Game Overview -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">게임 개요</h2>
+  <div class="overview-grid">
+    <div class="glass-card">
+      <div class="info-row"><span class="info-label">게임명</span><span class="info-value">연운 (Where Winds Meet / 燕云十六声)</span></div>
+      <div class="info-row"><span class="info-label">개발사</span><span class="info-value">Everstone Studio</span></div>
+      <div class="info-row"><span class="info-label">퍼블리셔</span><span class="info-value">NetEase Games</span></div>
+      <div class="info-row"><span class="info-label">장르</span><span class="info-value">3인칭 오픈월드 액션 어드벤처 RPG (무협)</span></div>
+      <div class="info-row"><span class="info-label">엔진</span><span class="info-value">Messiah Engine (자체 개발)</span></div>
+      <div class="info-row"><span class="info-label">등급</span><span class="info-value">청소년 이용불가 / 18+</span></div>
+      <div class="info-row"><span class="info-label">가격</span><span class="info-value"><strong style="color:#00c875">무료 플레이 (Free-to-Play)</strong></span></div>
+    </div>
+    <div class="glass-card">
+      <div class="info-row"><span class="info-label">플랫폼</span><span class="info-value">Windows · PS5 · Android · iOS</span></div>
+      <div class="info-row"><span class="info-label">PC 출시</span><span class="info-value">2025년 11월 15일</span></div>
+      <div class="info-row"><span class="info-label">PS5 출시</span><span class="info-value">2025년 11월 15일</span></div>
+      <div class="info-row"><span class="info-label">모바일 출시</span><span class="info-value">2025년 12월 12일</span></div>
+      <div class="info-row"><span class="info-label">한국어</span><span class="info-value">자막 지원</span></div>
+      <div class="info-row"><span class="info-label">크로스플레이</span><span class="info-value">PC · PS5 · 모바일 크로스플레이/크로스프로그레션</span></div>
+      <div class="info-row"><span class="info-label">온라인</span><span class="info-value">싱글 모드 + 멀티플레이 (협력/PvP)</span></div>
+    </div>
+  </div>
+  <div class="glass-card" style="margin-top:24px">
+    <p style="font-size:.9rem;color:#aaa;line-height:1.8">연운은 중국 오대십국 시대(960년대, 송나라 건국 직후)를 배경으로 한 무협 오픈월드 액션 RPG다. 플레이어는 우연과 숙명으로 얽힌 젊은 협객이 되어 약 20제곱킬로미터 규모의 광활한 세계를 탐험하며, 검·창·쌍도·부채·우산 등 다양한 무기를 자유자재로 다루고 30여 종의 무공과 기예를 익힐 수 있다. 싱글 모드만으로도 대부분의 콘텐츠를 즐길 수 있으며, 최대 4인 협력 플레이와 길드전·결투 등 멀티 콘텐츠도 지원한다.</p>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">SWOT 분석</h2>
+  <div class="swot-grid">
+    <div class="swot-card swot-s">
+      <h4>Strength (강점)</h4>
+      <ul>
+        <li>완전 무료 플레이 — No Pay-to-Win, 코스메틱만 과금</li>
+        <li>AAA급 그래픽 퀄리티 대비 무료 가격</li>
+        <li>GTX 1060으로도 FHD 60fps 구동 가능한 뛰어난 최적화</li>
+        <li>무협 장르 사상 최고 퀄리티의 오픈월드</li>
+        <li>크로스플레이/크로스프로그레션 전 플랫폼 지원</li>
+        <li>풍부한 서브 퀘스트와 캐릭터 서사</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-w">
+      <h4>Weakness (약점)</h4>
+      <ul>
+        <li>UI/UX 혼란 — 과도하게 많은 시스템을 짧은 설명만으로 제시</li>
+        <li>한국어 번역 퀄리티 저하 (중후반 갈수록 악화, 구글번역 수준)</li>
+        <li>PS5 최적화 문제 (개봉 지역 로딩 불량, 텍스처 팝인)</li>
+        <li>일부 시스템(튜토리얼, 도감)의 완성도 부족</li>
+        <li>무협 용어로 인한 초보자 진입장벽</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-o">
+      <h4>Opportunity (기회)</h4>
+      <ul>
+        <li>무료 게임으로 넓은 사용자층 유입 가능</li>
+        <li>아직 미개방된 지역(하서 등) 업데이트를 통한 콘텐츠 확장</li>
+        <li>IGN 6점 논란을 통한 역대급 홍보 효과</li>
+        <li>서구권 무협/쿵푸 장르에 대한 관심 증가</li>
+        <li>코스메틱 아이템 중심의 지속 가능한 과금 모델</li>
+      </ul>
+    </div>
+    <div class="swot-card swot-t">
+      <h4>Threat (위협)</h4>
+      <ul>
+        <li>글로벌 서버 과금 모델 개악 의혹 (중국 比 암시장 삭제)</li>
+        <li>넷이즈의 번역 품질 관리 부실 평판</li>
+        <li>유사 무협 오픈월드 게임들과의 경쟁</li>
+        <li>Free-to-Play 모델로 인한 수익성 불확실성</li>
+        <li>싱글 모드에도 멀티 강제 요소 존재</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Reception -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">유저 및 평론가 반응</h2>
+  <div class="reception-grid">
+    <div class="glass-card review-positive">
+      <h4 style="color:#00c875;margin-bottom:12px">긍정 평가</h4>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"과금 요소를 쳐낸 무료 게임으로서 최상급 퀄리티의 혜자 게임"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"무협 게임 중 가장 퀄리티가 높은 오픈월드"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"서브 퀘스트 하나하나에도 퀄리티 있는 스토리가 부여됨"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"진정한 무료 게임 — 과금으로 성장하는 지갑전사 요소 전무"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"스팀 '매우 긍정적' 87%, Wccftech 8.5/10"</li>
+      </ul>
+    </div>
+    <div class="glass-card review-negative">
+      <h4 style="color:#ff4747;margin-bottom:12px">부정 평가 / 지적</h4>
+      <ul style="list-style:none;padding:0">
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">IGN 6/10 — "모든 요소가 반쪽짜리, 너무 많은 것을 욕심냄"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"한국어 번역이 중후반부에 구글번역 수준으로 떨어짐"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"PS5 최적화 불량 — 개봉 지역 건물 로딩 문제 심각"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"너무 많은 시스템을 짧은 설명으로만 제시하는 UI/UX"</li>
+        <li style="padding:6px 0;font-size:.88rem;color:#ccc">"싱글 모드임에도 멀티 강제 요소 존재"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight-box">
+    <p style="font-size:.9rem;color:#ccc">평론가와 유저 평가 간 괴리가 큰 작품. 메타크리틱 72점/오픈크리틱 73점의 평작대 점수에도 불구, Steam에서는 '매우 긍정적'(87%) 평가를 기록. IGN의 6점 평가는 대형 스트리머 아스몬골드의 직접 저격으로 이어지며 화제가 됨. 무협 장르 특성상 비교적 최신 게임 경험이 적은 30~40대 유저층이 다수 유입되어 UI/UX 혼란 문제가 더욱 두드러짐.</p>
+  </div>
+</section>
+
+<!-- Key Systems -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">핵심 시스템</h2>
+  <div class="systems-grid">
+    <div class="glass-card">
+      <h4 style="color:#7c5cff;margin-bottom:10px">⚔️ 무공 & 전투</h4>
+      <p style="font-size:.88rem;color:#aaa">검·창·쌍도·승표·부채·우산 등 6종 무기 자유 전환. 태극권·사자후 등 30여종 무공/기연 시스템. 패링·회피·처형 기반의 액션 전투.</p>
+    </div>
+    <div class="glass-card">
+      <h4 style="color:#ff6b9d;margin-bottom:10px">🌍 오픈월드 탐험</h4>
+      <p style="font-size:.88rem;color:#aaa">20km² 규모의 세리스 오픈월드. 청하·개봉·하서(준비 중) 지역. 파쿠르·경공·순간이동 자유로운 이동. 계절/날씨 변화.</p>
+    </div>
+    <div class="glass-card">
+      <h4 style="color:#00c875;margin-bottom:10px">👥 싱글 & 멀티</h4>
+      <p style="font-size:.88rem;color:#aaa">완전한 싱글 모드 지원 + 최대 4인 협력. 길드 시스템, 길드전, 멀티 던전, 결투(PvP). 크로스플레이/크로스프로그레션.</p>
+    </div>
+    <div class="glass-card">
+      <h4 style="color:#4796ff;margin-bottom:10px">🎭 캐릭터 커스터마이징</h4>
+      <p style="font-size:.88rem;color:#aaa">자유도 높은 외형 커스터마이징. 16종 생활 시스템 (제작·건축·의학·천문·민속놀이 등). AI NPC 음성/텍스트 채팅.</p>
+    </div>
+    <div class="glass-card">
+      <h4 style="color:#ffc800;margin-bottom:10px">📖 스토리 & 세계관</h4>
+      <p style="font-size:.88rem;color:#aaa">오대십국시대~송나라 초기 역사 기반. 정치적 음모·권력 다툼 서사. 선택에 따른 평판 변화·수배·감금 시스템.</p>
+    </div>
+    <div class="glass-card">
+      <h4 style="color:#b8a0ff;margin-bottom:10px">🎨 AI 기술</h4>
+      <p style="font-size:.88rem;color:#aaa">AI 구동 NPC 실시간 텍스트/음성 채팅. AI 안면 생성(업로드 이미지/음성 기반). 혁신적이나 일부에서 우려 제기.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Competitor Landscape -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">경쟁 구도</h2>
+  <div class="glass-card">
+    <div class="bar-chart">
+      <div class="bar-row"><span class="bar-label">연운 (Where Winds Meet)</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:90%"><span>Free-to-Play</span></div></div></div>
+      <div class="bar-row"><span class="bar-label">검은신화: 오공</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:70%"><span>$59.99</span></div></div></div>
+      <div class="bar-row"><span class="bar-label">원신 (Genshin Impact)</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:85%"><span>Free-to-Play</span></div></div></div>
+      <div class="bar-row"><span class="bar-label">검호 3 (Sekiro)</span><div class="bar-track"><div class="bar-fill bf-red" style="width:65%"><span>$59.99</span></div></div></div>
+      <div class="bar-row"><span class="bar-label">Wo Long: Fallen Dynasty</span><div class="bar-track"><div class="bar-fill bf-teal" style="width:60%"><span>$59.99</span></div></div></div>
+      <div class="bar-row"><span class="bar-label">P-바람 (Phantom Blade Zero)</span><div class="bar-track"><div class="bar-fill bf-gold" style="width:55%"><span>미출시</span></div></div></div>
+    </div>
+    <div class="insight-box">
+      <p style="font-size:.9rem;color:#ccc"><strong style="color:#fff">경쟁 우위:</strong> 유료 패키지 게임(검은신화:오공, 세키로 등)과 달리 완전 무료 + No P2W 모델로 진입장벽이 가장 낮음. 원신은 가챠로 캐릭터/무기 성장에 과금을 강제하는 반면, 연운은 코스메틱 외 모든 콘텐츠를 무료로 제공. 단, 무협이라는 니치 장르와 PS5 최적화 문제, 번역 품질 저하가 글로벌 확장의 걸림돌.</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<!-- Business Model (emphasized) -->
+<section class="section accent-purple fade-in" style="background:linear-gradient(180deg,rgba(124,92,255,.04),transparent);padding:80px 0;margin-top:0">
+  <div class="container">
+  <h2 class="section-title">💰 과금 모델 & 비즈니스 분석</h2>
+  <p style="color:#888;margin-bottom:30px;font-size:.95rem">연운의 과금 모델은 기존 중국산 F2P 게임들과 완전히 차별화된다. </p>
+
+  <div class="biz-grid">
+    <div class="biz-card glass-card">
+      <h4>🧾 핵심 과금 철학</h4>
+      <ul>
+        <li><strong style="color:#fff">"No Pay-to-Win"</strong> — Steam, 공식 사이트, 게임 내에서 명시적으로 선언</li>
+        <li><strong style="color:#fff">게임플레이 콘텐츠 전면 무료</strong> — 메인 스토리, 서브 퀘스트, 던전, 보스 레이드 등 모든 콘텐츠 무료 제공</li>
+        <li><strong style="color:#fff">코스메틱(Cosmetic) 전용 과금</strong> — 외형 아이템(스킨)·장식·이모티콘·이펙트 등 꾸미기 요소에 한정</li>
+        <li><strong style="color:#fff">성장 요소 과금 없음</strong> — 캐릭터 스펙업·무기 강화·PvP 우위 등에 현금 사용 불가</li>
+        <li><strong style="color:#fff">배틀패스</strong> — 시즌제 배틀패스는 코스메틱 보상 위주로 구성</li>
+      </ul>
+    </div>
+    <div class="biz-card glass-card">
+      <h4>🎯 과금 아이템 구성</h4>
+      <ul>
+        <li><strong>캐릭터 외형 스킨</strong> — 의상·헤어·악세서리 등 캐릭터 꾸미기 아이템</li>
+        <li><strong>무기 스킨</strong> — 검·창·부채 등 무기 외형 변경</li>
+        <li><strong>탑승물(말) 스킨</strong> — 이동 수단 외형</li>
+        <li><strong>이모티콘/감정표현</strong> — 채팅/소셜용 꾸미기 아이템</li>
+        <li><strong>이펙트 스킨</strong> — 무공 이펙트·타격 이펙트 변경</li>
+        <li><strong>주택/장식 아이템</strong> — 개인 공간 꾸미기</li>
+        <li><strong>배틀패스</strong> — 시즌 한정 코스메틱 보상</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="biz-highlight">
+    <h4>🔍 심층 분석 — 연운 과금 모델의 특징과 논란</h4>
+    <p>
+      <strong>1. 업계를 뒤흔든 '진정한 무료' 선언</strong><br>
+      연운은 중국 게임 업계의 전형적인 'Free-to-Play ≠ Pay-to-Win' 공식을 최초로 실현한 AAA급 작품이다. 원신·명조 등 경쟁 F2P 게임들이 캐릭터 가챠와 전용 무기 뽑기로 사실상 성장 과금을 유도하는 반면, 연운은 오직 코스메틱에만 과금을 제한했다. 이는 <strong>"게임 퀄리티로 승부하고, 과금은 선택"</strong>이라는 메시지를 시장에 던졌다.
+    </p>
+    <p style="margin-top:16px">
+      <strong>2. 글로벌 vs 중국 서버 과금 차이 논란</strong><br>
+      글로벌 서버는 중국 서버에 존재하는 '스킨 암시장(유저 간 스킨 거래)' 시스템이 삭제되었다. 이로 인해 글로벌 유저들은 중국 유저보다 스킨 획득 경로가 좁아졌다는 비판이 제기되었다. 다만 이는 각국 규제와 결제 시스템 차이로 인한 불가피한 조정이라는 분석도 있다.
+    </p>
+    <p style="margin-top:16px">
+      <strong>3. 수익성 — 과연 지속 가능한가?</strong><br>
+      코스메틱 전용 과금 모델은 MAU(월간 활성 이용자)가 매우 높을 때만 성립한다. 연운은 출시 2주 만에 900만 이용자를 돌파하는 기염을 토했지만, 장기적으로 코스메틱만으로 개발비(AAA급 규모)를 회수할 수 있을지는 미지수이다. 넷이즈의 막대한 자본력이 뒷받침되었기에 가능한 전략으로 보이며, 향후 새로운 과금 항목(예: QoL 아이템, 확장 패스 등)이 추가될 가능성도 배제할 수 없다.
+    </p>
+    <p style="margin-top:16px">
+      <strong>4. 결론 — 게임사와 유저 모두에게 '윈윈'이 될 수 있는가?</strong><br>
+      단기적으로는 유저들에게 폭발적인 호응을 얻고 있다. 스팀 '매우 긍정적'(87%) 평가와 25만 동시접속자는 이 모델이 시장에서 통했음을 증명한다. 장기적인 관점에서는 지속적인 코스메틱 라인업 출시와 시즌 콘텐츠 업데이트가 관건이다. 만약 이 모델이 성공적으로 안착한다면, 중국 게임 업계의 과금 모델 패러다임을 바꿀 혁신적인 사례로 기록될 것이다.
+    </p>
+  </div>
+
+  <div class="glass-card" style="margin-top:24px">
+    <h4 style="color:#ff6b9d;margin-bottom:12px">📊 과금 모델 비교표 — 주요 F2P 게임 대비</h4>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:.85rem">
+      <thead>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.1)">
+          <th style="text-align:left;padding:12px 8px;color:#999">항목</th>
+          <th style="text-align:center;padding:12px 8px;color:#fff">연운</th>
+          <th style="text-align:center;padding:12px 8px;color:#aaa">원신</th>
+          <th style="text-align:center;padding:12px 8px;color:#aaa">명조</th>
+          <th style="text-align:center;padding:12px 8px;color:#aaa">로스트아크</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:10px 8px;color:#aaa">캐릭터 가챠</td>
+          <td style="text-align:center;padding:10px 8px;color:#00c875">❌ 없음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:10px 8px;color:#aaa">무기 가챠</td>
+          <td style="text-align:center;padding:10px 8px;color:#00c875">❌ 없음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:10px 8px;color:#aaa">P2W 요소</td>
+          <td style="text-align:center;padding:10px 8px;color:#00c875">❌ 전무</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 부분적</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">✅ 있음</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:10px 8px;color:#aaa">코스메틱</td>
+          <td style="text-align:center;padding:10px 8px;color:#00c875">✅ 완전</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 제한적</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 제한적</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 제한적</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="padding:10px 8px;color:#aaa">배틀패스</td>
+          <td style="text-align:center;padding:10px 8px;color:#00c875">✅ 코스메틱</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 혼합형</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 혼합형</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 혼합형</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 8px;color:#aaa">스킨 거래</td>
+          <td style="text-align:center;padding:10px 8px;color:#ffc800">⚠️ 글로벌 無 / 중국 有</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">❌ 불가</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">❌ 불가</td>
+          <td style="text-align:center;padding:10px 8px;color:#ff4747">❌ 불가</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="insight-box" style="margin-top:24px">
+    <p style="font-size:.9rem;color:#ccc">
+      <strong style="color:#fff">종합 평가:</strong> 연운의 과금 모델은 기존 중국 게임의 'F2P + 확률형 가챠' 공식을 완전히 거부하고,<br>
+      <strong style="color:#7c5cff">"게임 자체의 퀄리티로 승부"</strong>하는 전략을 선택했다. 이는 단기적인 수익 극대화보다 <strong style="color:#ff6b9d">유저 신뢰와 장기 서비스</strong>에 방점을 둔 결정으로, 향후 중국 게임 업계의 비즈니스 모델에 중요한 이정표가 될 가능성이 높다. 다만 AAA급 개발비 대비 코스메틱만으로 지속 가능한 수익 구조를 유지할 수 있을지는 지켜봐야 할 과제다.
+    </p>
+  </div>
+  </div>
+</section>
+
+<div class="container">
+<!-- Future Outlook -->
+<section class="section accent-purple fade-in">
+  <h2 class="section-title">향후 전망</h2>
+  <div class="biz-grid">
+    <div class="biz-card glass-card">
+      <h4 style="color:#00c875">📈 긍정적 시나리오</h4>
+      <ul>
+        <li>신규 지역(하서·진촨) 업데이트로 콘텐츠 지속 확장</li>
+        <li>코스메틱 라인업 다양화로 수익성 확보</li>
+        <li>e스포츠/길드전 중심 커뮤니티 활성화</li>
+        <li>글로벌 무협/쿵푸 장르 대중화와 시너지</li>
+      </ul>
+    </div>
+    <div class="biz-card glass-card">
+      <h4 style="color:#ff4747">⚠️ 리스크 요인</h4>
+      <ul>
+        <li>코스메틱 과금만으로 AAA 개발비 회수 불확실</li>
+        <li>번역 품질 개선 지연 시 한국/서구권 이탈</li>
+        <li>PS5 최적화 미해결 시 콘솔 시장 손실</li>
+        <li>경쟁작(검은신화 DLC, Phantom Blade Zero 등) 출시</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight-box">
+    <p style="font-size:.9rem;color:#ccc">연운은 출시 초반 폭발적인 흥행에 성공했지만, 장기적인 성공을 위해서는 지속적인 콘텐츠 업데이트와 번역·최적화 품질 개선이 필수적이다. 특히 과금 모델의 지속 가능성이 최대 관건으로, 넷이즈가 연운을 통해 '코스메틱 전용 F2P' 모델의 성공 가능성을 입증할 수 있을지 주목된다.</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>본 리포트는 2026년 5월 기준 공개된 정보를 바탕으로 작성되었습니다.</p>
+  <p style="margin-top:4px">출처: 나무위키 · Steam · Metacritic · OpenCritic · 공식 홈페이지</p>
+</footer>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var els=document.querySelectorAll('.fade-in');
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
+    });
+  },{threshold:.1});
+  els.forEach(function(el){observer.observe(el)});
+});
+</script>
+</body>
+</html>
