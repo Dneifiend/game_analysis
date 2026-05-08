@@ -127,9 +127,11 @@
     margin-bottom: 6px;
     display: inline-block;
   }
-  .game-card .badge.nt { color: #7c5cff; }
-  .game-card .badge.zeta { color: #ff8c00; }
-  .game-card .badge.wwm { color: #ff6b9d; }
+  .game-card .badge.netease { color: #ff6b9d; }
+  .game-card .badge.rockstar { color: #ff8c00; }
+  .game-card .badge.perfectworld { color: #7c5cff; }
+  .game-card .badge.krafton { color: #26a69a; }
+  .game-card .badge.sony { color: #0070cc; }
 
   .game-card .title {
     font-size: 18px;
@@ -239,6 +241,11 @@
     try {
       const response = await fetch('reports.json');
       allReports = await response.json();
+      // Sort by written date descending (newest first)
+      allReports.sort((a, b) => {
+        const p = s => { const x = s.replace(/\./g,'').trim().split(/\s+/); return new Date(x[0],x[1]-1,x[2]); };
+        return p(b.written) - p(a.written);
+      });
       renderCards(allReports);
     } catch (error) {
       console.error('Error loading reports:', error);
@@ -259,7 +266,7 @@
         <div class="title">${report.title}</div>
         <div class="genre">${report.genre}</div>
         <div class="desc">${report.desc}</div>
-        <div class="game-date">${report.date}</div>
+        <div class="game-date">작성일 ${report.written}</div>
         <div class="tags">
           ${report.tags.map(tag => `<span>${tag}</span>`).join('')}
         </div>
@@ -284,19 +291,11 @@
     const frame = document.getElementById('report-frame');
     const cards = document.querySelectorAll('.game-card');
     cards.forEach(c => c.classList.remove('active'));
-
-    if (name === 'yeonun') {
-      frame.src = 'content/20260508_yeonun-analysis.html';
-      cards[0].classList.add('active');
-    } else if (name === 'gta6') {
-      frame.src = 'content/20260607_gta6-analysis.html';
-      cards[1].classList.add('active');
-    } else if (name === 'yihwan') {
-      frame.src = 'content/20260507_yihwan-analysis.html';
-      cards[2].classList.add('active');
-    } else if (name === 'zeta') {
-      frame.src = 'content/20260507_project-zeta-analysis.html';
-      cards[3].classList.add('active');
+    const report = allReports.find(r => r.id === name);
+    if (report) {
+      frame.src = report.url;
+      const target = document.querySelector(`.game-card[data-id="${name}"]`);
+      if (target) target.classList.add('active');
     }
   }
 

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>헬다이버즈 2 — 게임 분석 리포트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #06060c;
+  color: #e0e0e8;
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+.bg-grid {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    linear-gradient(rgba(255, 140, 0, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 140, 0, 0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+/* Hero */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  position: relative; padding: 120px 0 80px; text-align: center;
+}
+.hero .badge {
+  display: inline-block; font-size: 12px; font-weight: 500; letter-spacing: 3px;
+  color: #ff8c00; border: 1px solid rgba(255,140,0,0.2);
+  padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: clamp(48px, 8vw, 88px); font-weight: 900;
+  background: linear-gradient(135deg, #ffd700, #ff8c00, #ff4500);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  line-height: 1.1; margin-bottom: 16px;
+}
+.hero .sub {
+  font-size: 20px; color: #888; font-weight: 300; margin-bottom: 32px;
+}
+.hero .meta {
+  display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  font-size: 13px; color: #666;
+}
+.hero .meta span { display: flex; align-items: center; gap: 6px; }
+.hero .meta .dot { width: 4px; height: 4px; border-radius: 50%; background: #ff8c00; display: inline-block; }
+.hero .scroll { margin-top: 60px; font-size: 12px; color: #444; letter-spacing: 2px; }
+
+/* Particles */
+.particles {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+}
+.particle {
+  position: absolute; width: 3px; height: 3px; background: rgba(255,140,0,0.15);
+  border-radius: 50%; animation: float 20s infinite linear;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+}
+
+/* Section */
+.section { margin-top: 100px; }
+.section-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+}
+.section-header .bar {
+  width: 4px; height: 24px; border-radius: 2px;
+  background: linear-gradient(180deg, #ffd700, #ff8c00);
+}
+.section-header h2 {
+  font-size: 24px; font-weight: 700;
+}
+
+/* Glass Card */
+.glass-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px; padding: 32px;
+  backdrop-filter: blur(8px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,140,0,0.06); }
+
+/* Stat Grid */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px; padding: 28px 24px; text-align: center;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.stat-card:hover { transform: translateY(-4px); border-color: rgba(255,140,0,0.15); }
+.stat-card .num {
+  font-size: 36px; font-weight: 900;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.stat-card .num.pink { background: linear-gradient(135deg, #ff6b9d, #ff8c00); -webkit-background-clip: text; background-clip: text; }
+.stat-card .label { font-size: 12px; color: #666; margin-top: 6px; }
+.stat-card .sub-label { font-size: 11px; color: #444; margin-top: 2px; }
+
+/* Metric Row */
+.metric-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 20px;
+}
+.metric-item {
+  background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 12px; padding: 16px; text-align: center;
+}
+.metric-item .val { font-size: 16px; font-weight: 700; color: #ffd700; }
+.metric-item .lbl { font-size: 10px; color: #555; margin-top: 2px; }
+
+/* Bar Chart */
+.chart { margin-top: 24px; }
+.chart .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.chart .bar-row .label { width: 80px; font-size: 11px; color: #888; text-align: right; }
+.chart .bar-row .bar-track { flex: 1; height: 22px; background: rgba(255,255,255,0.03); border-radius: 4px; overflow: hidden; }
+.chart .bar-row .bar-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, #ff8c00, #ffd700);
+  transition: width 1s ease;
+}
+.chart .bar-row .bar-fill.bf-purple { background: linear-gradient(90deg, #7c5cff, #b088ff); }
+.chart .bar-row .bar-fill.bf-pink { background: linear-gradient(90deg, #ff6b9d, #ff9ebd); }
+.chart .bar-row .bar-fill.bf-blue { background: linear-gradient(90deg, #4fc3f7, #81d4fa); }
+.chart .bar-row .bar-fill.bf-teal { background: linear-gradient(90deg, #26a69a, #4db6ac); }
+.chart .bar-row .bar-fill.bf-red { background: linear-gradient(90deg, #ef5350, #e57373); }
+.chart .bar-row .pct { width: 40px; font-size: 11px; color: #666; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before {
+  content: ''; position: absolute; left: 12px; top: 0; bottom: 0;
+  width: 2px; background: rgba(255,140,0,0.1);
+}
+.tl-item { position: relative; margin-bottom: 28px; padding-left: 20px; }
+.tl-item::before {
+  content: ''; position: absolute; left: -24px; top: 6px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #ff8c00; border: 2px solid #06060c;
+}
+.tl-item .date { font-size: 12px; color: #ff8c00; font-weight: 500; margin-bottom: 4px; }
+.tl-item .title { font-size: 16px; font-weight: 700; color: #f0f0f0; }
+.tl-item .desc { font-size: 13px; color: #777; margin-top: 4px; }
+
+/* Two Column */
+.col-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 768px) { .col-2 { grid-template-columns: 1fr; } }
+
+/* SWOT */
+.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 600px) { .swot-grid { grid-template-columns: 1fr; } }
+.swot-card { border-radius: 16px; padding: 28px; border: 1px solid rgba(255,255,255,0.04); }
+.swot-card.s { background: rgba(76,175,80,0.04); border-color: rgba(76,175,80,0.1); }
+.swot-card.w { background: rgba(239,83,80,0.04); border-color: rgba(239,83,80,0.1); }
+.swot-card.o { background: rgba(79,195,247,0.04); border-color: rgba(79,195,247,0.1); }
+.swot-card.t { background: rgba(255,193,7,0.04); border-color: rgba(255,193,7,0.1); }
+.swot-card .swot-label { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.swot-card .swot-label .icon { font-size: 18px; }
+.swot-card.s .swot-label { color: #66bb6a; }
+.swot-card.w .swot-label { color: #ef5350; }
+.swot-card.o .swot-label { color: #42a5f5; }
+.swot-card.t .swot-label { color: #ffd54f; }
+.swot-card ul { list-style: none; padding: 0; }
+.swot-card li { font-size: 13px; color: #999; padding: 4px 0; position: relative; padding-left: 14px; }
+.swot-card li::before { content: '·'; position: absolute; left: 0; color: #555; }
+
+/* Tags */
+.tag {
+  display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 10px;
+  font-weight: 500; margin: 2px;
+}
+.tag.green { background: rgba(76,175,80,0.1); color: #66bb6a; }
+.tag.red { background: rgba(239,83,80,0.1); color: #ef5350; }
+.tag.blue { background: rgba(79,195,247,0.1); color: #42a5f5; }
+.tag.gold { background: rgba(255,193,7,0.1); color: #ffd54f; }
+.tag.purple { background: rgba(124,92,255,0.1); color: #b088ff; }
+
+/* Insight Box */
+.insight-box {
+  margin-top: 24px; padding: 24px; border-radius: 16px;
+  border: 1px solid rgba(255,140,0,0.12);
+  background: linear-gradient(135deg, rgba(255,140,0,0.04), rgba(255,215,0,0.02));
+}
+.insight-box .label { font-size: 11px; font-weight: 500; color: #ff8c00; letter-spacing: 2px; margin-bottom: 8px; }
+.insight-box p { font-size: 14px; color: #aaa; line-height: 1.7; }
+
+/* Feature Grid */
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.feature-card { padding: 28px; }
+.feature-card .icon { font-size: 28px; margin-bottom: 12px; }
+.feature-card h4 { font-size: 16px; font-weight: 700; color: #f0f0f0; margin-bottom: 6px; }
+.feature-card p { font-size: 13px; color: #777; line-height: 1.6; }
+
+/* Fade-in */
+.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #06060c; }
+::-webkit-scrollbar-thumb { background: rgba(255,140,0,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,140,0,0.25); }
+
+/* Comparison Table */
+.comp-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.comp-table th, .comp-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; }
+.comp-table th { color: #ff8c00; font-weight: 600; background: rgba(255,140,0,0.03); }
+.comp-table td { color: #999; }
+.comp-table td:first-child { color: #ccc; font-weight: 500; }
+.comp-table tr:hover td { background: rgba(255,255,255,0.01); }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="particles" id="particles"></div>
+
+<div class="content">
+
+<!-- Hero -->
+<section class="hero fade-in">
+  <div class="badge">ARROWHEAD GAME STUDIOS · SONY INTERACTIVE ENTERTAINMENT</div>
+  <h1>HELLDIVERS 2</h1>
+  <p class="sub">관리되는 민주주의를 전파하라 — 4인 협동 TPS의 새로운 기준</p>
+  <div class="meta">
+    <span>🕹️ PS5 · PC · Xbox</span><span class="dot"></span>
+    <span>📝 작성일 2026. 5. 9.</span><span class="dot"></span>
+    <span>🚀 출시일 2024. 2. 8.</span><span class="dot"></span>
+    <span>🏷️ TPS · 협동 · 액션</span><span class="dot"></span>
+    <span>💰 $39.99</span>
+  </div>
+  <div class="scroll">▼ SCROLL ▼</div>
+</section>
+
+<!-- Key Metrics -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>핵심 지표</h2></div>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">2,000만+</div><div class="label">누적 판매량</div><div class="sub-label">2026년 1월 기준</div></div>
+    <div class="stat-card"><div class="num">$7억+</div><div class="label">총 매출</div><div class="sub-label">역대 PS 게임 중 최단 기록</div></div>
+    <div class="stat-card"><div class="num">70만</div><div class="label">최대 동시 접속자</div><div class="sub-label">PS5 + PC 합산</div></div>
+    <div class="stat-card"><div class="num">45만</div><div class="label">Steam 최대 동접</div><div class="sub-label">SteamDB 기준</div></div>
+    <div class="stat-card"><div class="num">12주</div><div class="label">1,200만 장 돌파</div><div class="sub-label">GoW Ragnarok 제치고 역대 1위</div></div>
+    <div class="stat-card"><div class="num">82/100</div><div class="label">메타크리틱</div><div class="sub-label">Opencritic 90% 추천</div></div>
+  </div>
+  <div class="metric-row">
+    <div class="metric-item"><div class="val">13.1M</div><div class="lbl">Steam 판매</div></div>
+    <div class="metric-item"><div class="val">5.6M</div><div class="lbl">PS5 판매</div></div>
+    <div class="metric-item"><div class="val">1.6M</div><div class="lbl">Xbox 판매(2025~)</div></div>
+    <div class="metric-item"><div class="val">360만</div><div class="lbl">월간 활성 유저</div></div>
+  </div>
+  <div class="chart">
+    <div class="bar-row"><span class="label">Steam</span><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div><span class="pct">65%</span></div>
+    <div class="bar-row"><span class="label">PS5</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:28%"></div></div><span class="pct">28%</span></div>
+    <div class="bar-row"><span class="label">Xbox</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:8%"></div></div><span class="pct">8%</span></div>
+  </div>
+</section>
+
+<!-- Timeline -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>타임라인</h2></div>
+  <div class="timeline">
+    <div class="tl-item"><div class="date">2015. 3.</div><div class="title">헬다이버즈 1 출시</div><div class="desc">탑뷰 4인 협동 슈팅, 컬트 클래식으로 자리매김</div></div>
+    <div class="tl-item"><div class="date">2023. 5.</div><div class="title">헬다이버즈 2 최초 발표</div><div class="desc">PlayStation Showcase에서 TPS 전환 공개, 큰 기대 모아</div></div>
+    <div class="tl-item"><div class="date">2024. 2. 8.</div><div class="title">헬다이버즈 2 정식 출시</div><div class="desc">PS5 + PC 동시 출시. 서버 불안정 및 보안 프로그램 충돌로 초반 혼란</div></div>
+    <div class="tl-item"><div class="date">2024. 2. 11.</div><div class="title">100만 장 판매 돌파</div><div class="desc">CEO Pilestedt "예상치를 훌쩍 넘겼다"</div></div>
+    <div class="tl-item"><div class="date">2024. 3.</div><div class="title">첫 밸런스 패치 — 레일건 너프 논란</div><div class="desc">PVE에서 너프 위주 패치 방향에 유저 반발. 동접 정점 70만 기록</div></div>
+    <div class="tl-item"><div class="date">2024. 5.</div><div class="title">PSN 계정 강제 연동 사태</div><div class="desc">SIE가 PC판 PSN 로그인 강제화 발표. 글로벌 역풍으로 철회</div></div>
+    <div class="tl-item"><div class="date">2024. 5. 14.</div><div class="title">1,200만 장 판매 — PS 최단 기록</div><div class="desc">12주 만에 달성, GoW Ragnarok(11M) 제치고 역대 1위</div></div>
+    <div class="tl-item"><div class="date">2024. 8.</div><div class="title">'자유의 에스컬레이션' 업데이트</div><div class="desc">난이도 급상승 및 추가 너프로 유저 이탈 가속화</div></div>
+    <div class="tl-item"><div class="date">2024. 9.</div><div class="title">60일 계획 — 대규모 버프 패치</div><div class="desc">부분 피해 50%→65%, 헤드샷 100%→50%, 각종 무기 버프. 유저 복귀 신호</div></div>
+    <div class="tl-item"><div class="date">2024. 12.</div><div class="title">'폭정의 징조' — 일루미넛 복귀</div><div class="desc">전설의 제3 세력 일루미넛 등장, 콘텐츠 볼륨 확장</div></div>
+    <div class="tl-item"><div class="date">2025. 8.</div><div class="title">Xbox Series X|S 출시</div><div class="desc">Nixxes 이식, 크로스플레이 지원. 첫 주 100만 장 판매</div></div>
+    <div class="tl-item"><div class="date">2026. 1.</div><div class="title">2,000만 장 돌파</div><div class="desc">PS 역사상 가장 성공적인 타이틀로 등극</div></div>
+  </div>
+</section>
+
+<!-- Game Overview -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>게임 개요</h2></div>
+  <div class="col-2">
+    <div class="glass-card">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">🎯 기본 정보</h3>
+      <table class="comp-table">
+        <tr><td>장르</td><td>3인칭 협동 TPS (Extraction Shooter)</td></tr>
+        <tr><td>개발사</td><td>Arrowhead Game Studios (스웨덴)</td></tr>
+        <tr><td>퍼블리셔</td><td>Sony Interactive Entertainment</td></tr>
+        <tr><td>엔진</td><td>Autodesk Stingray (Bitsquid)</td></tr>
+        <tr><td>플랫폼</td><td>PS5, Windows, Xbox Series X|S</td></tr>
+        <tr><td>출시일</td><td>2024. 2. 8. (PS5/PC), 2025. 8. (Xbox)</td></tr>
+        <tr><td>가격</td><td>$39.99 / ₩44,800</td></tr>
+        <tr><td>이용 등급</td><td>청소년 이용불가 (PEGI 18, USK 16)</td></tr>
+      </table>
+    </div>
+    <div class="glass-card">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">📖 세계관 · 스토리</h3>
+      <p style="font-size:13px;color:#999;line-height:1.8;">
+        22세기, '관리되는 민주주의'를 표방하는 슈퍼지구(Super Earth)는 제1차 은하 전쟁에서 승리한 지 100년 후,
+        테르미니드(벌레) 농장에서 추출한 E-710 연료로 번영을 누린다. 그러나 테르미니드 대량 이탈 사태와
+        오토마톤(기계 군단)의 침공으로 혼란에 빠진 은하계를 구하기 위해, 플레이어는 정예 부대
+        '헬다이버즈'에 입대해 행성 궤도에서 강하, 각종 임무를 수행한다.
+        블랙 코미디와 파시스트 풍자로 가득 찬 독특한 세계관이 시리즈의 정체성.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>SWOT 분석</h2></div>
+  <div class="swot-grid">
+    <div class="swot-card s"><div class="swot-label"><span class="icon">💪</span>Strength</div>
+      <ul>
+        <li>독보적인 세계관과 풍자적 유머 — '관리되는 민주주의' 설정이 바이럴에 최적화</li>
+        <li>TPS 전환의 성공 — 전작의 재미를 유지하면서 접근성 대폭 향상</li>
+        <li>스트라타젬 시스템 — 방향키 조합으로 지원 화력을 요청하는 독창적 전투 시스템</li>
+        <li>$40 가격 전략 — 프리미엄 게임 대비 절반 수준의 가격으로 폭발적 진입 장벽 해소</li>
+        <li>라이브 서비스와 갤럭시 워(은하 전쟁) — 커뮤니티 전체가 참여하는 메타 게임</li>
+        <li>크로스플레이 전폭 지원 — PS5/PC/Xbox 플레이어 간 완벽한 호환</li>
+      </ul>
+    </div>
+    <div class="swot-card w"><div class="swot-label"><span class="icon">⚠️</span>Weakness</div>
+      <ul>
+        <li>잦은 너프 위주 밸런스 패치 — PVE 게임임에도 유저 무력화 패턴</li>
+        <li>초기 서버 불안정 — 출시 후 수 주간 접속 장애, 매칭 문제 지속</li>
+        <li>부족한 콘텐츠 볼륨 — 전작 대비 적은 무기, 차량, 게임 모드</li>
+        <li>싱글 플레이 미지원 — 항상 온라인 상태 필요, 혼자서는 체감 난이도 급상승</li>
+        <li>잦은 아군 사격으로 인한 프러스트레이션 — 특히 공방에서의 협력 난이도 상승</li>
+        <li>PSN 계정 연동 강제 사태 — PC 유저 반발로 인한 평판 및 유저 이탈</li>
+      </ul>
+    </div>
+    <div class="swot-card o"><div class="swot-label"><span class="icon">🚀</span>Opportunity</div>
+      <ul>
+        <li>Xbox 출시로 시장 확장 — 신규 플랫폼에서 160만+ 장 추가 판매</li>
+        <li>영화화 프로젝트 — Jason Momoa 주연으로 2027년 개봉 예정</li>
+        <li>일루미넛 복귀 등 콘텐츠 로드맵 확장 — 3개 진영 모두 활성화</li>
+        <li>중국 시장 성장 — Steam 기준 10%+ 점유율, 추가 현지화 가능성</li>
+        <li>협동 PvE 시장의 지속적 성장 — 연 8조 원 규모, YoY 9% 상승</li>
+        <li>커뮤니티 기반 라이브 내러티브 — 갤럭시 워의 스토리를 유저 행동이 결정</li>
+      </ul>
+    </div>
+    <div class="swot-card t"><div class="swot-label"><span class="icon">🔻</span>Threat</div>
+      <ul>
+        <li>경쟁 게임들의 부상 — PvE 협동 장르의 신규 타이틀 증가</li>
+        <li>유저 이탈 심화 — '자유의 에스컬레이션' 시기 동접 75만→5만으로 급감</li>
+        <li>개발사 규모 대비 과도한 기대 — 소규모 스튜디오가 감당하기 어려운 라이브 서비스 부담</li>
+        <li>Sony의 잦은 간섭 — PSN 계정 강제 등 플랫폼 정책 리스크</li>
+        <li>라이브 서비스 피로도 — 반복되는 밸런스 논란로 인한 장기적 충성도 하락</li>
+        <li>기술 부채 — 다양한 플랫폼 대응으로 인한 유지보수 복잡성 증가</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Reception -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>유저 피드백 · 평판</h2></div>
+  <div class="col-2">
+    <div class="glass-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:#66bb6a;">✅ 긍정적 평가</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"스타쉽 트루퍼스의 정신적 후계자 — 유쾌한 풍자와 액션의 완벽한 조화"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"스트라타젬을 외우고 던지는 손맛, 중독성 강한 게임플레이 루프"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"친구와 함께하는 코옵 경험이 최고 — 웃음과 비명이 공존하는 유니크한 경험"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"비-P2W 과금모델 — 워본드(시즌패스)가 플레이로 모두 해금 가능"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;">"Steam 평가 매우 긍정적(86%), 출시 2년 후에도 꾸준한 유저 평가 유지"</li>
+      </ul>
+    </div>
+    <div class="glass-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:#ef5350;">⚠️ 부정적 평가</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"너프 위주 패치 철학 — 재미를 해치는 밸런스 방향, 유저 무시하는 듯한 인상"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"PSN 강제 연동 사태 — 177개국에서 판매 중지, 평가 테러로 이어짐"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"전작 대비 부족한 콘텐츠 — 적은 무기, 차량, 난이도 단계, 게임 모드"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">"공방에서의 협동 문제 — 각자도생 스타일이 강제되는 게임 디자인"</li>
+        <li style="font-size:13px;color:#999;padding:6px 0;">"개발사 커뮤니케이션 문제 — CEO의 부적절한 SNS 발언 등 잡음"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight-box">
+    <div class="label">📊 INSIGHT</div>
+    <p>헬다이버즈 2는 출시 직후 '복합적(48% 긍정)' 평가에서 현재 '매우 긍정적(86%)'으로 역전했다. 이는 <strong class="tag gold">60일 계획</strong>을 통한 대규모 버프 패치와 개발사의 방향 전환이 결정적 역할을 했음을 시사한다. 다만 '너프 우선'이라는 초기 철학은 여전히 많은 유저에게 트라우마로 남아 있으며, PSN 강제 연동 사태는 Sony의 플랫폼 정책이 게임 성과에 미치는 영향을 여실히 보여준 사례다.</p>
+  </div>
+</section>
+
+<!-- Key Systems -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>핵심 시스템</h2></div>
+  <div class="feature-grid">
+    <div class="feature-card glass-card">
+      <div class="icon">⌨️</div>
+      <h4>스트라타젬 시스템</h4>
+      <p>방향키 조합(WASD)으로 궤도 폭격, 이글 공습, 서플라이 드롭, 터렛 등 각종 지원 화력과 장비를 요청. 조합을 외우고 전투 중 재빨리 입력하는 손맛이 게임플레이의 핵심. 실수로 잘못 입력하면 전혀 다른 장비가 호출되어 대혼란을 일으키기도 한다.</p>
+    </div>
+    <div class="feature-card glass-card">
+      <div class="icon">🔥</div>
+      <h4>아군 사격 (Friendly Fire)</h4>
+      <p>모든 공격이 아군에게도 피해를 입힌다. 수류타, 스트라타젬, 심지어 일반 총기 사격도 팀킬 가능. 이는 단순한 패널티가 아니라 게임플레이의 중심 기믹 — 전략적 포지셔닝과 팀워크를 강제하며 예측 불가능한 유쾌한 혼란을 만든다. 헬다이버즈만의 정체성.</p>
+    </div>
+    <div class="feature-card glass-card">
+      <div class="icon">🌍</div>
+      <h4>갤럭시 워 (은하 전쟁)</h4>
+      <p>모든 플레이어의 임무 성공이 전체 은하 전쟁의 판도에 영향을 미치는 메타 게임. 행성 해방률, 전선 이동, 특수 이벤트 등이 실시간으로 업데이트된다. 커뮤니티가 함께 싸우는 연대감을 형성하며, 정기적인 메이저 오더(대규모 작전)로 목표를 제시한다.</p>
+    </div>
+    <div class="feature-card glass-card">
+      <div class="icon">💀</div>
+      <h4>영구적 죽음과 증원</h4>
+      <p>전투 중 사망하면 궤도에서 증원 포드로 재투하된다. 단, 팀 전체의 목숨(Reinforcement)이 제한되어 있어 무분별한 전사는 패배로 직결. 죽은 플레이어의 장비는 그 자리에 떨어지며, 다른 팀원이 회수하거나 함께 잃는다. 긴장감을 배가시키는 시스템.</p>
+    </div>
+    <div class="feature-card glass-card">
+      <div class="icon">🎖️</div>
+      <h4>워본드 (Warbond)</h4>
+      <p>시즌패스 시스템으로, 무료 트랙과 프리미엄 트랙으로 구성. 모든 보상은 P2W 없이 플레이(메달)로 해금 가능. CEO Pilestedt의 철학 "먼저 신뢰를 얻어야 수익화할 자격이 생긴다"에 기반. 업계에서 가장 호평받는 BM 중 하나.</p>
+    </div>
+    <div class="feature-card glass-card">
+      <div class="icon">🎯</div>
+      <h4>관통력 & 파괴 시스템</h4>
+      <p>AP-AV 체계로 장갑 등급과 관통력이 세분화. 경장갑부터 초중전차 장갑까지 10단계로 구성. 부위별 피해, 도탄, 각도에 따른 관통 변화 등 현실적인 탄도 시스템. 무거운 장비는 속도가 느리고 회전이 제한되는 등 무게감 있는 물리 연출.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HD1 vs HD2 -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>헬다이버즈 1 vs 2 — 변화와 차이</h2></div>
+  <div class="glass-card">
+    <p style="font-size:13px;color:#999;margin-bottom:20px;">2015년 출시된 전작은 탑뷰(Top-down) 4인 협동 슈팅으로, 한 화면에 모든 플레이어가 고정되어 움직이는 독특한 구조였다. 헬다이버즈 2는 3인칭 백뷰(TPS)로 시점을 전환하며 시리즈의 정체성을 유지한 채 완전히 새로운 게임 경험을 창조했다. 다음은 핵심 차이점이다.</p>
+    <table class="comp-table">
+      <tr><th style="width:25%">구분</th><th style="width:37%">헬다이버즈 1 (2015)</th><th style="width:38%">헬다이버즈 2 (2024)</th></tr>
+      <tr><td>시점</td><td>탑뷰 (Top-down, Twin-stick)</td><td>3인칭 백뷰 (TPS)</td></tr>
+      <tr><td>화면 구성</td><td>4인 1화면 (강제 고정)</td><td>각자 독립 화면</td></tr>
+      <tr><td>협동 방식</td><td>자연스러운 협동 유도 (한 화면)</td><td>의사소통 필수 (분산)</td></tr>
+      <tr><td>무기 다양성</td><td>매우 풍부 (더 많은 주/보조 무기)</td><td>상대적으로 적음 (점차 확장 중)</td></tr>
+      <tr><td>난이도 단계</td><td>15단계</td><td>10단계 (초기 9단계)</td></tr>
+      <tr><td>차량</td><td>APC, 메크 등 다양</td><td>Exosuit, FRV 등 제한적</td></tr>
+      <tr><td>게임 모드</td><td>생존, 호위 등 다양한 모드</td><td>임무 기반 단일 모드</td></tr>
+      <tr><td>적 세력</td><td>사이보그, 벌레, 일루미네이트</td><td>테르미니드, 오토마톤, 일루미넛</td></tr>
+      <tr><td>AI</td><td>단순 패턴</td><td>고급 AI — 예측 불가, 동적 전술</td></tr>
+      <tr><td>커스터마이징</td><td>무기 업그레이드 중심</td><td>방어구 패시브 + 외형 + 무기 개조</td></tr>
+      <tr><td>그래픽</td><td>2D 스프라이트 기반</td><td>Autodesk Stingray, 풀 3D</td></tr>
+      <tr><td>멀티플레이</td><td>로컬/온라인 코옵</td><td>온라인 전용, 크로스플레이</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- Balance Section -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>무기 & 스트라타잼 밸런스 — 게임사 대응</h2></div>
+
+  <div class="glass-card" style="margin-bottom:20px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">⚖️ 논란의 시작: 레일건 너프 (2024. 3.)</h3>
+    <p style="font-size:13px;color:#999;line-height:1.8;margin-bottom:12px;">
+      출시 후 가장 인기 있던 'RS-422 레일건'을 크게 너프한 패치가 첫 번째 밸런스 논란의 발단이었다.
+      레일건은 대전차 저격총 콘셉트로 설계되었으나 모든 상황에 만능으로 쓰이자,
+      개발사는 성능을 하향했다. 문제는 다른 대안 무기는 버프하지 않고 오직 너프만 단행한 점.
+      커뮤니티는 "PVE 게임에서 너프 대신 버프를 해야 한다"고 강력히 반발했다.
+    </p>
+    <div class="insight-box">
+      <div class="label">🎙️ DEVELOPER COMMENT</div>
+      <p>게임 테스터 책임자 Patrik Lasota: <em>"디자이너로서 '버프만 하세요'는 좋은 아이디어가 아니라고 생각합니다. 너프는 무기의 판타지와 재미를 망치지 않도록 조심스럽게 해야 합니다."</em></p>
+    </div>
+  </div>
+
+  <div class="glass-card" style="margin-bottom:20px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">📉 하향 평준화 비판과 유저 이탈</h3>
+    <p style="font-size:13px;color:#999;line-height:1.8;">
+      2024년 8월 '자유의 에스컬레이션' 업데이트는 적의 난이도를 대폭 올리고 유저 화력은 줄이는 방향으로
+      진행되어 동시 접속자가 75만에서 5만으로 폭락하는 위기를 맞았다.
+      개발사는 밸런스 패치에서 '쓸만한 무기를 너프해 대안을 없애는 하향 평준화'를 반복했고,
+      이에 유저들은 "철학인지 고집인지 모를 개발 방향 때문에 점점 어렵기만 하고 재미가 없어진다"고 비판했다.
+      공식 커뮤니티에서의 부적절한 개발자 발언도 불을 키웠다.
+    </p>
+  </div>
+
+  <div class="glass-card" style="margin-bottom:20px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">🔄 반전: 60일 계획 (2024. 9.)</h3>
+    <p style="font-size:13px;color:#999;line-height:1.8;margin-bottom:12px;">
+      유저 이탈이 심각해지자 Arrowhead는 '60일 계획'을 발표하고 밸런스 방향을 180도 전환했다.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="background:rgba(76,175,80,0.04);border:1px solid rgba(76,175,80,0.1);border-radius:12px;padding:16px;">
+        <p style="font-size:12px;color:#66bb6a;font-weight:700;margin-bottom:8px;">✅ 주요 버프 (패치 1.001.100)</p>
+        <ul style="font-size:12px;color:#999;list-style:none;padding:0;">
+          <li style="padding:2px 0;">• 부분 피해 50% → <strong>65%</strong></li>
+          <li style="padding:2px 0;">• 헤드샷 추가 피해 100% → <strong>50%</strong></li>
+          <li style="padding:2px 0;">• 오토캐논, HMG, 화염방사기 대장갑 효율 증가</li>
+          <li style="padding:2px 0;">• 헐크 장갑 감소, 데버스테이터 로켓/연사 감소</li>
+          <li style="padding:2px 0;">• 텅스텐(파편) 효과 재도입</li>
+          <li style="padding:2px 0;">• 각종 무기 데미지 10~40% 상승</li>
+        </ul>
+      </div>
+      <div style="background:rgba(255,193,7,0.04);border:1px solid rgba(255,193,7,0.1);border-radius:12px;padding:16px;">
+        <p style="font-size:12px;color:#ffd54f;font-weight:700;margin-bottom:8px;">📌 이후 지속적 개선</p>
+        <ul style="font-size:12px;color:#999;list-style:none;padding:0;">
+          <li style="padding:2px 0;">• 2025. 6. — 스텔스 감지 개선, 무기 추가 버프</li>
+          <li style="padding:2px 0;">• 2025. 10. (4.1.0) — 200+ 버그 수정, 전반적 버프</li>
+          <li style="padding:2px 0;">• 2025. 12. (5.0.0) — 주무기/보조무기 추가 버프</li>
+          <li style="padding:2px 0;">• 경/중 관통 무기 역할 차별화</li>
+          <li style="padding:2px 0;">• SMG, 권총 근접전 특화 조정</li>
+          <li style="padding:2px 0;">• 적 너프 병행 — 전반적 유저 파워↑</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <div class="label">📊 INSIGHT</div>
+    <p>헬다이버즈 2의 밸런스 역사는 <strong class="tag red">'PVE 너프 논란'</strong>의 대표 사례로 업계에 기록될 만하다. 소규모 개발사가 라이브 서비스의 밸런스를 운영하는 것의 어려움을 여실히 보여주며, '버프 우선' 커뮤니티의 요구와 '디자인 철학' 사이의 충돌을 상징한다. 60일 계획 이후의 방향 전환은 많은 이탈 유저를 다시 불러들이는 효과가 있었으나, 초기의 신뢰 손실은 완전히 회복되지 않았다는 평가다.</p>
+  </div>
+</section>
+
+<!-- Friendly Fire -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>아군 오인사격 (Friendly Fire)</h2></div>
+
+  <div class="glass-card" style="margin-bottom:20px;">
+    <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">💥 헬다이버즈의 정체성, 팀킬</h3>
+    <p style="font-size:13px;color:#999;line-height:1.8;">
+      헬다이버즈 시리즈에서 아군 사격은 단순한 실수나 버그가 아니라 <strong>핵심 게임 디자인</strong>이다.
+      '아군 사격은 항상 켜져 있다(Friendly Fire is always on)'는 공식적인 시스템 스펙이며,
+      튜토리얼에서부터 플레이어가 가장 먼저 배우는 교훈이기도 하다.
+      전작은 탑뷰로 모든 팀원의 위치를 한눈에 볼 수 있어 상대적으로 관리가 쉬웠지만,
+      2편은 TPS로 변경되면서 각자 시야가 제한되어 오히려 아군 사격이 더 잦아졌다.
+    </p>
+  </div>
+
+  <div class="col-2" style="margin-bottom:20px;">
+    <div class="glass-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">📊 2년차 통계 (2025. 3. — 2026. 3.)</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">총 헬다이버 사망: <strong>86억</strong></li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">아군 사격 사망: <strong>1억 7,700만</strong></li>
+        <li style="font-size:13px;color:#999;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.02);">아군 사망 비율: <strong>2.06%</strong></li>
+        <li style="font-size:13px;color:#999;padding:6px 0;">적 처치 수: <strong>2,800억</strong></li>
+      </ul>
+    </div>
+    <div class="glass-card">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">🏆 아군 사격 유발 TOP 5</h3>
+      <div class="chart">
+        <div class="bar-row"><span class="label">Eagle Strafing Run</span><div class="bar-track"><div class="bar-fill bf-red" style="width:100%"></div></div><span class="pct">3,400만</span></div>
+        <div class="bar-row"><span class="label">Portable Hellbomb</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:68%"></div></div><span class="pct">2,300만</span></div>
+        <div class="bar-row"><span class="label">K-9 Guard Dog</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:62%"></div></div><span class="pct">2,100만</span></div>
+        <div class="bar-row"><span class="label">Guard Dog</span><div class="bar-track"><div class="bar-fill bf-blue" style="width:27%"></div></div><span class="pct">930만</span></div>
+        <div class="bar-row"><span class="label">Anti-personnel Minefield</span><div class="bar-track"><div class="bar-fill bf-teal" style="width:20%"></div></div><span class="pct">680만</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">🎭 아군 사격의 다양한 양상</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div style="background:rgba(255,255,255,0.015);border-radius:12px;padding:16px;">
+        <p style="font-size:13px;color:#ff8c00;font-weight:600;margin-bottom:6px;">🎯 스트라타젬 사고</p>
+        <p style="font-size:12px;color:#999;">Eagle 폭격, 궤도 포격의 광역 피해. 넉백 중 실수로 스트라타젬 볼을 떨어뜨려 팀 전멸. 가장 흔한 FF 원인.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.015);border-radius:12px;padding:16px;">
+        <p style="font-size:13px;color:#ff8c00;font-weight:600;margin-bottom:6px;">🤖 터렛 & 드론 오발</p>
+        <p style="font-size:12px;color:#999;">자동 터렛과 Guard Dog이 아군을 적으로 인식하고 사격. 특히 전장이 혼란스러울수록 터렛이 아군을 녹이는 상황 빈발.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.015);border-radius:12px;padding:16px;">
+        <p style="font-size:13px;color:#ff8c00;font-weight:600;margin-bottom:6px;">🏃 진형 붕괴</p>
+        <p style="font-size:12px;color:#999;">TPS 시점으로 팀원 위치 파악이 어려워 십자포화에 휘말림. 공방에서는 각자도생 플레이로 아군 사격이 더욱 빈번해짐.</p>
+      </div>
+    </div>
+    <div class="insight-box" style="margin-top:16px;">
+      <div class="label">🎮 COMMUNITY CULTURE</div>
+      <p>헬다이버즈 2에서 아군 사격은 단순한 불편이 아니라 <strong>커뮤니티 문화의 일부</strong>다. 스트리머와 크리에이터들이 가장 많이 활용하는 '웃긴 순간'素材이며, "아군을 죽이는 게 오히려 재미있다"는 반응도 적지 않다. PC Gamer는 "아군 사격은 성가신 패널티가 아니라 오히려 좋은 것이다"라고 평가했으며, GameSpot은 "민주주의를 전파하는 대가로 치르는 작은 대가"라고 표현했다. Eagle Strafing Run이 1위인 이유로 DSS Eagle Storm(자동 스트라타젬)도 포함된 점이 흥미롭다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Competitor Landscape -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>경쟁 구도</h2></div>
+  <div class="glass-card">
+    <p style="font-size:13px;color:#999;margin-bottom:20px;">협동 PvE 시장은 2024-2026년 급성장 중. 헬다이버즈 2는 $40 프리미엄 모델로 F2P 모델에 맞서 경쟁한다.</p>
+    <div class="chart">
+      <div class="bar-row"><span class="label">Helldivers 2</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="pct">2,000만</span></div>
+      <div class="bar-row"><span class="label">Deep Rock Galactic</span><div class="bar-track"><div class="bar-fill bf-purple" style="width:30%"></div></div><span class="pct">~600만</span></div>
+      <div class="bar-row"><span class="label">Warhammer 40K: Space Marine 2</span><div class="bar-track"><div class="bar-fill bf-red" style="width:25%"></div></div><span class="pct">~500만</span></div>
+      <div class="bar-row"><span class="label">Left 4 Dead Series</span><div class="bar-track"><div class="bar-fill bf-teal" style="width:20%"></div></div><span class="pct">레거시</span></div>
+      <div class="bar-row"><span class="label">Payday 3</span><div class="bar-track"><div class="bar-fill bf-pink" style="width:15%"></div></div><span class="pct">~300만</span></div>
+    </div>
+    <div class="insight-box">
+      <div class="label">📊 INSIGHT</div>
+      <p>헬다이버즈 2는 협동 PvE 장르의 독보적인 위치를 차지하고 있다. $40의 합리적 가격, 독창적인 스트라타젬 시스템, 그리고 '민주주의'라는 강력한 IP 정체성이 경쟁 우위. 특히 라이브 서비스 게임임에도 P2W 요소 없이 워본드 시스템으로 수익화하는 전략은 업계 모범 사례로 평가받는다. 2025년 Xbox 출시로 추가 성장 동력을 확보했으며, 영화화를 통해 IP 확장을 본격화하고 있다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Business Model -->
+<section class="section fade-in">
+  <div class="section-header"><div class="bar"></div><h2>비즈니스 모델 & 미래 전망</h2></div>
+  <div class="col-2">
+    <div class="glass-card">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">💰 수익 구조</h3>
+      <table class="comp-table">
+        <tr><td>기본 게임</td><td>$39.99 (Premium) / $59.99 (Super Citizen)</td></tr>
+        <tr><td>워본드 (시즌패스)</td><td>유료 트랙 + 무료 트랙, 플레이로 해금 가능</td></tr>
+        <tr><td>슈퍼 크레딧</td><td>프리미엄 화폐, 게임 내에서도 획득 가능</td></tr>
+        <tr><td>P2W 여부</td><td>없음 — 모든 전리품은 플레이로 획득</td></tr>
+        <tr><td>예상 총매출</td><td>$7억+ (2026. 1. 기준)</td></tr>
+        <tr><td>Steam 점유</td><td>65% (13.1M 장)</td></tr>
+      </table>
+    </div>
+    <div class="glass-card">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">🔮 향후 로드맵</h3>
+      <ul style="list-style:none;padding:0;">
+        <li style="font-size:13px;color:#999;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span class="tag gold">예정</span> 신규 워본드 'Python Commandos' (2026)</li>
+        <li style="font-size:13px;color:#999;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span class="tag gold">예정</span> 추가 갤럭시 워 스토리 확장 — 사이버스탄 공방전</li>
+        <li style="font-size:13px;color:#999;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span class="tag gold">예정</span> 신규 적 세력 및 보스전 콘텐츠</li>
+        <li style="font-size:13px;color:#999;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.02);"><span class="tag blue">확정</span> Helldivers 영화 (Jason Momoa 주연, 2027)</li>
+        <li style="font-size:13px;color:#999;padding:8px 0;"><span class="tag purple">기대</span> 차기작 또는 대규모 확장팩 가능성</li>
+      </ul>
+    </div>
+  </div>
+  <div class="insight-box">
+    <div class="label">📊 FINAL ASSESSMENT</div>
+    <p>헬다이버즈 2는 출시 초기의 혼란과 밸런스 논란을 딛고 <strong class="tag gold">2,000만 장 판매 · $7억+ 매출</strong>이라는 압도적 성과를 달성했다. 소규모 개발사가 운영하는 라이브 서비스 게임의 가능성과 한계를 동시에 보여준 사례다. '버프vs너프' 논쟁은 PvE 게임 디자인의 영원한 숙제로 남았으며, 아군 사격 시스템은 게임의 정체성이자 마케팅 포인트로 자리잡았다. 협동 게임의 새로운 기준을 제시한 헬다이버즈 2는 앞으로도 수년간 업계에 영향을 미칠 것이다.</p>
+  </div>
+</section>
+
+</div>
+
+<script>
+// Particles
+(function(){
+  const c = document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p = document.createElement('div'); p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDelay=Math.random()*20+'s';
+    p.style.animationDuration=(15+Math.random()*15)+'s';
+    p.style.width=(2+Math.random()*3)+'px';
+    p.style.height=p.style.width;
+    c.appendChild(p);
+  }
+})();
+
+// Fade-in scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

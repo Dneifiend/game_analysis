@@ -2,13 +2,13 @@
   {
     "id": "yeonun",
     "badge": {
-      "class": "wwm",
+      "class": "netease",
       "text": "EVERSTONE STUDIO · NETEASE"
     },
     "title": "연운",
     "genre": "Where Winds Meet",
     "desc": "무협 오픈월드 액션 어드벤처 RPG<br>과금모델 중심 게임 분석",
-    "date": "2026. 5. 8.",
+    "written": "2026. 5. 8.",
     "tags": [
       "무협",
       "오픈월드",
@@ -20,13 +20,13 @@
   {
     "id": "gta6",
     "badge": {
-      "class": "",
+      "class": "rockstar",
       "text": "ROCKSTAR GAMES"
     },
     "title": "GTA VI",
     "genre": "액션 어드벤처",
     "desc": "바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시",
-    "date": "2026. 05. 08.",
+    "written": "2026. 5. 6.",
     "tags": [
       "오픈월드",
       "멀티플레이",
@@ -38,13 +38,13 @@
   {
     "id": "yihwan",
     "badge": {
-      "class": "nt",
+      "class": "perfectworld",
       "text": "PERFECT WORLD · HOTTA STUDIO"
     },
     "title": "이환",
     "genre": "Neverness to Everness",
     "desc": "초자연 어반 오픈월드 RPG<br>출시 후 첫 2주 동향 분석",
-    "date": "2026. 5. 7.",
+    "written": "2026. 5. 7.",
     "tags": [
       "오픈월드",
       "서브컬처",
@@ -56,13 +56,13 @@
   {
     "id": "zeta",
     "badge": {
-      "class": "zeta",
+      "class": "krafton",
       "text": "KRAFTON · NIRVANANA"
     },
     "title": "프로젝트 제타",
     "genre": "Project ZETA",
     "desc": "3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석",
-    "date": "2026. 5. 7.",
+    "written": "2026. 5. 7.",
     "tags": [
       "MOBA",
       "5팀 경쟁",
@@ -70,5 +70,23 @@
       "크래프톤"
     ],
     "url": "content/20260507_project-zeta-analysis.html"
+  },
+  {
+    "id": "helldivers2",
+    "badge": {
+      "class": "sony",
+      "text": "ARROWHEAD GAME STUDIOS · SONY"
+    },
+    "title": "헬다이버즈 2",
+    "genre": "HELLDIVERS 2",
+    "desc": "4인 협동 TPS — 관리되는 민주주의를 전파하라<br>밸런스 논란, 아군 사격, 그리고 2,000만 장의 신화",
+    "written": "2026. 5. 9.",
+    "tags": [
+      "TPS",
+      "협동",
+      "라이브 서비스",
+      "PvE"
+    ],
+    "url": "content/20260509_helldivers2-analysis.html"
   }
 ]
