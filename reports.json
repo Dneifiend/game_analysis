@@ -89,22 +89,40 @@
     ],
     "url": "content/20260509_helldivers2-analysis.html"
   },
-  {
-    "id": "warframe",
-    "badge": {
-      "class": "purple",
-      "text": "DIGITAL EXTREMES"
-    },
-    "title": "Warframe",
-    "genre": "WARFRAME",
-    "desc": "3인칭 액션 슈터 RPG<br>모딩, 마스터리 랭크, 파쿠르 심층 분석",
+    {
+      "id": "warframe",
+      "badge": {
+        "class": "purple",
+        "text": "DIGITAL EXTREMES"
+      },
+      "title": "Warframe",
+      "genre": "WARFRAME",
+      "desc": "3인칭 액션 슈터 RPG<br>모딩, 마스터리 랭크, 파쿠르 심층 분석",
       "written": "2026-05-09T00:00:00",
-    "tags": [
-      "액션 RPG",
-      "F2P",
-      "모딩",
-      "파쿠르"
-    ],
-    "url": "content/20260509_warframe-analysis.html"
-  }
-]
+      "tags": [
+        "액션 RPG",
+        "F2P",
+        "모딩",
+        "파쿠르"
+      ],
+      "url": "content/20260509_warframe-analysis.html"
+    },
+    {
+      "id": "crimson-desert",
+      "badge": {
+        "class": "gold",
+        "text": "PEARL ABYSS"
+      },
+      "title": "붉은사막",
+      "genre": "Crimson Desert",
+      "desc": "7년의 기다림, 평가 반전의 드라마<br>초기 혹평 딛고 1000만장 기대작으로",
+      "written": "2026-05-09T14:30:00",
+      "tags": [
+        "오픈월드",
+        "액션 어드벤처",
+        "평가반전",
+        "AAA"
+      ],
+      "url": "content/20260509_crimson-desert-analysis.html"
+    }
+  ]
