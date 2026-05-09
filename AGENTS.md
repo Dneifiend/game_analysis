@@ -38,3 +38,13 @@
 - No `git commit` or `git push` without explicit user request
 - Preserve existing instruction files (`SKILL.md`, etc.)
 - Check `git status` before any commit
+
+# [Operational Directive] 분석/디버깅/상태 확인 프로토콜
+- 요청이 분석, 디버깅, 또는 상태 확인과 관련되면 이 프로토콜을 절대적으로 따른다.
+  - 직접적 접근: 단일 도구 호출로 마무리 짓지 않는다.
+  - 결과 해석: 도구 결과를 맹신하지 않고, 그 결과의 기술적 의미를 분석하여 다음 단계를 결정한다.
+  - 연속 탐색: 맥락 파악이 안 될 경우, 필요한 모든 도구를 논리적으로 연속 호출한다.
+  - 최종 보고: 답변은 다음 구조로 한정한다.
+    - 원인: 문제의 근본 원인.
+    - 해석: 현재 상태의 기술적 의미.
+    - 액션: 사용자에게 필요한 명확하고 구체적인 다음 행동 지시.
