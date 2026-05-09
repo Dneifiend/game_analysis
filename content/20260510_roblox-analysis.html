@@ -269,40 +269,25 @@
             font-size: 0.95rem;
         }
 
-        .swot-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-        }
-
-        .swot-card {
-            padding: 2rem;
-        }
-
-        .swot-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .swot-card.strength h3 { color: var(--accent-green); }
-        .swot-card.weakness h3 { color: var(--accent-red); }
-        .swot-card.opportunity h3 { color: var(--accent-blue); }
-        .swot-card.threat h3 { color: var(--accent-gold); }
-
-        .swot-card ul {
-            list-style: none;
-        }
-
-        .swot-card li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-muted);
-        }
-
-        .swot-card li:last-child { border-bottom: none; }
+        .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 768px) { .swot-grid { grid-template-columns: 1fr; } }
+        .swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }
+        .swot-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .swot-card ul { list-style: none; padding: 0; }
+        .swot-card ul li { font-size: 14px; color: #b0b0c8; margin-bottom: 8px; padding-left: 20px; position: relative; }
+        .swot-card ul li::before { position: absolute; left: 0; }
+        .swot-s { background: rgba(0, 200, 120, 0.06); border-color: rgba(0, 200, 120, 0.15); }
+        .swot-s h3 { color: #00c878; }
+        .swot-s ul li::before { content: '+'; color: #00c878; }
+        .swot-w { background: rgba(255, 80, 80, 0.06); border-color: rgba(255, 80, 80, 0.15); }
+        .swot-w h3 { color: #ff6060; }
+        .swot-w ul li::before { content: '-'; color: #ff6060; }
+        .swot-o { background: rgba(80, 120, 255, 0.06); border-color: rgba(80, 120, 255, 0.15); }
+        .swot-o h3 { color: #6080ff; }
+        .swot-o ul li::before { content: '!'; color: #6080ff; }
+        .swot-t { background: rgba(255, 200, 0, 0.06); border-color: rgba(255, 200, 0, 0.15); }
+        .swot-t h3 { color: #ffc800; }
+        .swot-t ul li::before { content: '!'; color: #ffc800; }
 
         .tag {
             display: inline-block;
@@ -470,7 +455,6 @@
 
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
-            .swot-grid { grid-template-columns: 1fr; }
             .stat-grid { grid-template-columns: 1fr; }
             .overview-grid { grid-template-columns: 1fr; }
             .systems-grid { grid-template-columns: 1fr; }
@@ -674,8 +658,8 @@
             <h2>SWOT 분석</h2>
         </div>
         <div class="swot-grid">
-            <div class="glass-card swot-card strength">
-                <h3>강점 (Strengths)</h3>
+            <div class="swot-card swot-s">
+                <h3>Strengths (강점)</h3>
                 <ul>
                     <li>압도적인 UGC 생태계 규모 — 3,500만+ 경험, 3.5M 크리에이터</li>
                     <li>강력한 네트워크 효과 — 플레이어가 많을수록 더 많은 크리에이터 유입</li>
@@ -685,8 +669,8 @@
                     <li>충성도 높은 Z세대/알파 세대 사용자 기반</li>
                 </ul>
             </div>
-            <div class="glass-card swot-card weakness">
-                <h3>약점 (Weaknesses)</h3>
+            <div class="swot-card swot-w">
+                <h3>Weaknesses (약점)</h3>
                 <ul>
                     <li>지속적인 순손실 — 2025년 연간 순손실 10.7억 달러</li>
                     <li>수익화 편중 — 소수의 고지불 유저에게 의존 (일일 유료 유저 180만 명)</li>
@@ -696,8 +680,8 @@
                     <li>바이럴 히트작 의존도 — 일부 체험에 집중된 트래픽 쏠림 현상</li>
                 </ul>
             </div>
-            <div class="glass-card swot-card opportunity">
-                <h3>기회 (Opportunities)</h3>
+            <div class="swot-card swot-o">
+                <h3>Opportunities (기회)</h3>
                 <ul>
                     <li>18세 이상 성인 사용자 급성장 — 전년 대비 50%+ 증가, 수익화율 50%↑</li>
                     <li>Roblox Reality — 포토리얼리즘 + 하이퍼스케일 멀티플레이어 혁신</li>
@@ -707,8 +691,8 @@
                     <li>구독 경제 확장 — Roblox Premium 1,600만+ 가입자</li>
                 </ul>
             </div>
-            <div class="glass-card swot-card threat">
-                <h3>위협 (Threats)</h3>
+            <div class="swot-card swot-t">
+                <h3>Threats (위협)</h3>
                 <ul>
                     <li>Fortnite UGC — 언리얼 에디터 포트나이트와의 경쟁 심화</li>
                     <li>규제 리스크 — 아동 보호 법안 강화 (연령 확인, 데이터 프라이버시)</li>

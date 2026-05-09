@@ -87,7 +87,7 @@ Generate a single self-contained HTML file with the following structure:
 - `fade-in` class on all major elements with IntersectionObserver for scroll animation
 - Section headers with colored accent bar (`.section-title > .accent` + `.section-desc`)
 - `insight-box` for key takeaways (gradient border with accent color)
-- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 13px, color `#b0b0c8`.
+- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 14px, color `#b0b0c8`.
 - Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern.
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
