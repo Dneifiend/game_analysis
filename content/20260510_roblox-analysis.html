@@ -6,85 +6,200 @@
     <title>로블록스 - 게임 분석 리포트</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00bcd4;
-            --secondary: #4dd0e1;
+            --primary-light: #4dd0e1;
+            --primary-dark: #0097a7;
+            --primary-glow: rgba(0, 188, 212, 0.25);
             --bg-dark: #06060c;
-            --text-main: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --glass-bg: rgba(20, 20, 30, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-card: rgba(12, 12, 22, 0.75);
+            --text-main: #e8e8ee;
+            --text-muted: #9090a8;
+            --text-dim: #555568;
+            --glass-bg: rgba(14, 14, 26, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border-hover: rgba(0, 188, 212, 0.2);
             --accent-green: #4caf50;
             --accent-red: #f44336;
             --accent-blue: #2196f3;
             --accent-gold: #ffc107;
-            --gradient-main: linear-gradient(135deg, #00bcd4 0%, #4dd0e1 100%);
+            --gradient-main: linear-gradient(135deg, #00bcd4 0%, #26c6da 50%, #4dd0e1 100%);
+            --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(0, 188, 212, 0.12) 0%, transparent 60%);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
+        html { scroll-behavior: smooth; }
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            line-height: 1.6;
+            line-height: 1.7;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* ── Scroll Progress ── */
+        #scroll-progress {
+            position: fixed; top: 0; left: 0; width: 0; height: 2px;
+            background: var(--gradient-main);
+            z-index: 99999;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        /* ── Grid Overlay ── */
         .grid-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 60px 60px;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 9998;
         }
 
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.2), transparent);
-            margin: 0;
+        /* ── Floating Nav ── */
+        .floating-nav {
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9997;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .floating-nav a {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.35s ease;
+            position: relative;
+        }
+        .floating-nav a:hover,
+        .floating-nav a.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+            transform: scale(1.3);
+        }
+        .floating-nav a .label {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--text-dim);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .floating-nav a:hover .label { opacity: 1; }
+        .floating-nav a.active .label { opacity: 1; color: var(--primary); }
+
+        /* ── Back to Top ── */
+        #back-to-top {
+            position: fixed;
+            bottom: 32px; right: 24px;
+            z-index: 9996;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+        }
+        #back-to-top.visible { opacity: 1; transform: translateY(0); }
+        #back-to-top:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: translateY(-3px);
         }
 
+        /* ── Keyframes ── */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(36px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        @keyframes float {
-            0% { transform: translateY(0) scale(1); opacity: 0.4; }
-            50% { transform: translateY(-30px) scale(1.3); opacity: 0.8; }
-            100% { transform: translateY(0) scale(1); opacity: 0.4; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 188, 212, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(0, 188, 212, 0.3); }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(10px) rotate(-1deg); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes barGrow {
+            from { width: 0 !important; }
         }
 
         .fade-in { opacity: 0; animation: fadeInUp 0.8s ease forwards; }
-        
-        .particles { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(0, 188, 212, 0.4);
-            border-radius: 50%;
-            animation: float 8s infinite;
+        .fade-in-d1 { opacity: 0; animation: fadeInUp 0.8s ease 0.15s forwards; }
+        .fade-in-d2 { opacity: 0; animation: fadeInUp 0.8s ease 0.3s forwards; }
+        .fade-in-d3 { opacity: 0; animation: fadeInUp 0.8s ease 0.45s forwards; }
+        .fade-in-d4 { opacity: 0; animation: fadeInUp 0.8s ease 0.6s forwards; }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-d1 { transition-delay: 0.1s; }
+        .reveal-d2 { transition-delay: 0.2s; }
+        .reveal-d3 { transition-delay: 0.3s; }
+        .reveal-d4 { transition-delay: 0.4s; }
+
+        /* ── Divider ── */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.12), transparent);
+            margin: 0 auto;
+            max-width: 1000px;
         }
-        .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; width: 6px; height: 6px; }
-        .particle:nth-child(2) { left: 25%; top: 60%; animation-delay: 1.5s; }
-        .particle:nth-child(3) { left: 45%; top: 30%; animation-delay: 3s; width: 5px; height: 5px; }
-        .particle:nth-child(4) { left: 65%; top: 70%; animation-delay: 0.5s; }
-        .particle:nth-child(5) { left: 80%; top: 40%; animation-delay: 2s; width: 7px; height: 7px; }
-        .particle:nth-child(6) { left: 35%; top: 80%; animation-delay: 4s; }
-        .particle:nth-child(7) { left: 55%; top: 15%; animation-delay: 2.5s; width: 5px; height: 5px; }
-        .particle:nth-child(8) { left: 90%; top: 55%; animation-delay: 1s; }
-        .particle:nth-child(9) { left: 15%; top: 45%; animation-delay: 3.5s; width: 6px; height: 6px; }
-        .particle:nth-child(10) { left: 70%; top: 85%; animation-delay: 4.5s; width: 3px; height: 3px; }
-        
+        .section-divider-thick {
+            height: 80px;
+            background: var(--gradient-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── Hero ── */
         .hero {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -92,67 +207,163 @@
             position: relative;
             background: var(--bg-dark);
             overflow: hidden;
+            padding: 4rem 2rem;
         }
-
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 188, 212, 0.15) 0%, transparent 70%);
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 188, 212, 0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(77, 208, 225, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(0, 188, 212, 0.08) 0%, transparent 40%);
             z-index: 0;
+        }
+
+        /* Hero Floating Orbs */
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.4;
+            z-index: 0;
+            animation: floatSlow 12s ease-in-out infinite;
+        }
+        .hero-orb:nth-child(1) {
+            width: 300px; height: 300px;
+            background: rgba(0, 188, 212, 0.15);
+            top: 10%; left: -5%;
+            animation-delay: 0s;
+        }
+        .hero-orb:nth-child(2) {
+            width: 200px; height: 200px;
+            background: rgba(77, 208, 225, 0.1);
+            bottom: 20%; right: 10%;
+            animation-delay: -4s;
+        }
+        .hero-orb:nth-child(3) {
+            width: 150px; height: 150px;
+            background: rgba(0, 188, 212, 0.08);
+            top: 60%; left: 60%;
+            animation-delay: -8s;
+        }
+
+        .hero-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 188, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 188, 212, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            z-index: 0;
+            opacity: 0.5;
         }
 
         .hero-content {
             text-align: center;
             z-index: 2;
             padding: 2rem;
+            max-width: 900px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.4rem 1.2rem;
+            background: rgba(0, 188, 212, 0.06);
+            border: 1px solid rgba(0, 188, 212, 0.15);
+            border-radius: 100px;
+            margin-bottom: 2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--primary-light);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            animation: fadeInUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+        .hero-eyebrow .dot-live {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulseGlow 2s infinite;
         }
 
         .hero h1 {
-            font-size: 5rem;
+            font-size: clamp(3.5rem, 10vw, 7rem);
             font-weight: 900;
             background: var(--gradient-main);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
-            letter-spacing: -2px;
+            margin-bottom: 1.2rem;
+            letter-spacing: -3px;
+            line-height: 1.05;
+            animation: fadeInUp 1s ease 0.4s forwards;
+            opacity: 0;
         }
 
         .hero .subtitle {
-            font-size: 1.5rem;
+            font-size: clamp(1rem, 2vw, 1.35rem);
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             font-weight: 300;
+            line-height: 1.7;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease 0.6s forwards;
+            opacity: 0;
         }
 
-        .hero .badge-container {
-            display: inline-block;
-            padding: 0.5rem 1.5rem;
-            background: rgba(0, 188, 212, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 50px;
-            margin-bottom: 2rem;
-        }
-
-        .hero .badge-text {
-            color: var(--primary);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .hero .meta-row {
+        .hero-meta {
             display: flex;
-            gap: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
             justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 1rem;
+            animation: fadeInUp 1s ease 0.8s forwards;
+            opacity: 0;
+        }
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+        .hero-meta-item .dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
         }
 
+        .hero-scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            animation: fadeIn 1.5s ease 1.5s forwards;
+            opacity: 0;
+        }
+        .hero-scroll-indicator .scroll-line {
+            width: 1px; height: 40px;
+            background: linear-gradient(to bottom, var(--text-dim), transparent);
+        }
+
+        /* ── Section Common ── */
         .section {
             padding: 6rem 2rem;
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             position: relative;
         }
@@ -160,448 +371,761 @@
         .section-header {
             display: flex;
             align-items: center;
-            margin-bottom: 3rem;
             gap: 1rem;
+            margin-bottom: 3.5rem;
         }
-
-        .section-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .accent-bar {
+        .section-header .accent-bar {
             width: 4px;
-            height: 30px;
+            height: 32px;
             background: var(--gradient-main);
             border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .section-header .section-number {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin-right: 0.5rem;
+        }
+        .section-header h2 {
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .section-header .section-sub {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 300;
+            margin-left: auto;
         }
 
+        /* ── Glass Card ── */
         .glass-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            border-radius: var(--radius-md);
             padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.4s ease,
+                        border-color 0.4s ease;
+            position: relative;
+            overflow: hidden;
         }
-
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
         .glass-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border-color: rgba(0, 188, 212, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+            border-color: var(--glass-border-hover);
         }
+        .glass-card:hover::after { opacity: 1; }
 
+        /* ── Stat Grid ── */
         .stat-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
             margin-bottom: 2rem;
         }
-
         .stat-card {
             text-align: center;
-            padding: 1.5rem;
+            padding: 1.8rem 1.5rem;
+            position: relative;
         }
-
+        .stat-card .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            display: block;
+            opacity: 0.5;
+        }
         .stat-value {
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
             font-weight: 700;
             color: var(--primary);
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
+            letter-spacing: -1px;
+            line-height: 1.2;
         }
-
         .stat-label {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+        .stat-trend {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 100px;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        .stat-trend.up { background: rgba(76, 175, 80, 0.1); color: var(--accent-green); }
+        .stat-trend.down { background: rgba(244, 67, 54, 0.1); color: var(--accent-red); }
+
+        /* ── Bar Chart ── */
+        .chart-card {
+            padding: 2rem;
+        }
+        .chart-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-card h3 .chart-icon {
+            width: 28px; height: 28px;
+            background: var(--gradient-main);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .bar-chart { margin-top: 0.5rem; }
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 12px;
+        }
+        .bar-label {
+            width: 120px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            background: var(--gradient-main);
+            border-radius: 3px;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            width: 0;
+        }
+        .bar-fill.animated { animation: barGrow 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 0;
+            width: 20px; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+            border-radius: 3px;
+        }
+        .bar-value {
+            width: 60px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
         }
 
+        /* ── Timeline ── */
         .timeline {
             position: relative;
-            padding-left: 30px;
+            padding-left: 32px;
         }
-
         .timeline::before {
             content: '';
             position: absolute;
             left: 0;
             top: 0;
             bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--primary), transparent);
+            width: 1.5px;
+            background: linear-gradient(to bottom, var(--primary), rgba(0, 188, 212, 0.05));
         }
-
         .timeline-item {
             position: relative;
-            margin-bottom: 2rem;
-            padding-left: 20px;
+            margin-bottom: 2.5rem;
+            padding-left: 24px;
         }
-
+        .timeline-item:last-child { margin-bottom: 0; }
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -35px;
-            top: 5px;
-            width: 12px;
-            height: 12px;
-            background: var(--primary);
+            left: -40px;
+            top: 6px;
+            width: 14px; height: 14px;
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
+            box-shadow: 0 0 0 4px var(--bg-dark), 0 0 12px var(--primary-glow);
+            transition: box-shadow 0.3s ease;
+            z-index: 1;
         }
-
+        .timeline-item:hover::before {
+            box-shadow: 0 0 0 4px var(--bg-dark), 0 0 24px var(--primary-glow);
+        }
         .timeline-date {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: var(--primary);
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .timeline-title {
-            font-size: 1.2rem;
+            margin-bottom: 0.4rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+        .timeline-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
             color: var(--text-main);
         }
-
         .timeline-desc {
             color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .swot-grid { grid-template-columns: 1fr; } }
-        .swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }
-        .swot-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .swot-card ul { list-style: none; padding: 0; }
-        .swot-card ul li { font-size: 14px; color: #b0b0c8; margin-bottom: 8px; padding-left: 20px; position: relative; }
-        .swot-card ul li::before { position: absolute; left: 0; }
-        .swot-s { background: rgba(0, 200, 120, 0.06); border-color: rgba(0, 200, 120, 0.15); }
-        .swot-s h3 { color: #00c878; }
-        .swot-s ul li::before { content: '+'; color: #00c878; }
-        .swot-w { background: rgba(255, 80, 80, 0.06); border-color: rgba(255, 80, 80, 0.15); }
-        .swot-w h3 { color: #ff6060; }
-        .swot-w ul li::before { content: '-'; color: #ff6060; }
-        .swot-o { background: rgba(80, 120, 255, 0.06); border-color: rgba(80, 120, 255, 0.15); }
-        .swot-o h3 { color: #6080ff; }
-        .swot-o ul li::before { content: '!'; color: #6080ff; }
-        .swot-t { background: rgba(255, 200, 0, 0.06); border-color: rgba(255, 200, 0, 0.15); }
-        .swot-t h3 { color: #ffc800; }
-        .swot-t ul li::before { content: '!'; color: #ffc800; }
-
-        .tag {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary); }
-
-        .insight-box {
-            border: 1px solid;
-            border-image: var(--gradient-main);
-            border-image-slice: 1;
-            background: rgba(0, 188, 212, 0.05);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-top: 2rem;
-        }
-
-        .insight-box h4 {
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .insight-box p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .bar-chart {
-            margin-top: 1rem;
-        }
-
-        .bar-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .bar-label {
-            width: 140px;
-            color: var(--text-muted);
             font-size: 0.9rem;
+            line-height: 1.7;
         }
 
-        .bar-track {
-            flex: 1;
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
+        /* ── SWOT ── */
+        .swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { .swot-grid { grid-template-columns: 1fr; } }
+        .swot-card {
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
             overflow: hidden;
         }
-
-        .bar-fill {
-            height: 100%;
-            background: var(--gradient-main);
-            border-radius: 4px;
-            transition: width 1s ease;
+        .swot-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.4);
         }
-
-        .bar-value {
-            width: 50px;
-            text-align: right;
-            color: var(--primary);
-            font-weight: 600;
+        .swot-card .swot-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .swot-card h3 {
             font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .swot-card ul { list-style: none; padding: 0; }
+        .swot-card ul li {
+            font-size: 0.82rem;
+            color: #b0b0c8;
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .swot-card ul li::before {
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+        .swot-s { background: rgba(0, 200, 120, 0.04); border-color: rgba(0, 200, 120, 0.1); }
+        .swot-s:hover { border-color: rgba(0, 200, 120, 0.25); }
+        .swot-s h3 { color: #00c878; }
+        .swot-s ul li::before { content: '◆'; color: #00c878; font-size: 0.5rem; top: 5px; }
+        .swot-w { background: rgba(255, 80, 80, 0.04); border-color: rgba(255, 80, 80, 0.1); }
+        .swot-w:hover { border-color: rgba(255, 80, 80, 0.25); }
+        .swot-w h3 { color: #ff6060; }
+        .swot-w ul li::before { content: '◆'; color: #ff6060; font-size: 0.5rem; top: 5px; }
+        .swot-o { background: rgba(80, 120, 255, 0.04); border-color: rgba(80, 120, 255, 0.1); }
+        .swot-o:hover { border-color: rgba(80, 120, 255, 0.25); }
+        .swot-o h3 { color: #6080ff; }
+        .swot-o ul li::before { content: '◆'; color: #6080ff; font-size: 0.5rem; top: 5px; }
+        .swot-t { background: rgba(255, 200, 0, 0.04); border-color: rgba(255, 200, 0, 0.1); }
+        .swot-t:hover { border-color: rgba(255, 200, 0, 0.25); }
+        .swot-t h3 { color: #ffc800; }
+        .swot-t ul li::before { content: '◆'; color: #ffc800; font-size: 0.5rem; top: 5px; }
+
+        /* ── Tag / Dot ── */
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+            background: rgba(0, 188, 212, 0.06);
+            color: var(--primary-light);
+            border: 1px solid rgba(0, 188, 212, 0.08);
+        }
+        .dot {
+            width: 5px; height: 5px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+            background: var(--primary);
+            box-shadow: 0 0 6px var(--primary-glow);
         }
 
+        /* ── Insight Box ── */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.04), rgba(0, 188, 212, 0.01));
+            border: 1px solid rgba(0, 188, 212, 0.1);
+            padding: 1.8rem 2rem;
+            border-radius: var(--radius-md);
+            margin-top: 2rem;
+            position: relative;
+        }
+        .insight-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--gradient-main);
+            border-radius: 2px 0 0 2px;
+        }
+        .insight-box h4 {
+            color: var(--primary);
+            margin-bottom: 0.6rem;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .insight-box p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        /* ── Overview ── */
         .overview-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 1.5rem;
         }
-
+        @media (max-width: 768px) { .overview-grid { grid-template-columns: 1fr; } }
         .overview-grid h3 {
             color: var(--primary);
             margin-bottom: 1rem;
-            font-size: 1.2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
         .overview-grid ul {
             list-style: none;
             color: var(--text-muted);
         }
-
         .overview-grid li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.88rem;
+            display: flex;
+            gap: 8px;
+        }
+        .overview-grid li:last-child { border-bottom: none; }
+        .overview-grid li .li-label {
+            color: var(--text-dim);
+            font-weight: 500;
+            min-width: 80px;
+            flex-shrink: 0;
         }
 
-        .overview-grid li:last-child {
-            border-bottom: none;
-        }
-
+        /* ── Systems Grid ── */
         .systems-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            gap: 1.2rem;
             margin-top: 2rem;
         }
-
-        .system-card {
-            padding: 1.5rem;
-        }
-
-        .system-card h4 {
-            color: var(--primary);
+        @media (max-width: 768px) { .systems-grid { grid-template-columns: 1fr; } }
+        .system-card { padding: 1.6rem; }
+        .system-card .system-icon {
+            width: 36px; height: 36px;
+            background: rgba(0, 188, 212, 0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.1rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
-
+        .system-card h4 {
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+        }
         .system-card p {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.7;
         }
 
+        /* ── Feature Grid ── */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            gap: 1.2rem;
             margin-top: 2rem;
         }
-
-        .feature-card {
-            padding: 1.5rem;
-        }
-
-        .feature-card h4 {
-            color: var(--primary);
+        @media (max-width: 968px) { .feature-grid { grid-template-columns: 1fr; } }
+        .feature-card { padding: 1.6rem; }
+        .feature-card .feature-icon {
+            width: 36px; height: 36px;
+            background: rgba(0, 188, 212, 0.08);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.1rem;
             margin-bottom: 0.8rem;
         }
-
+        .feature-card .feature-tags {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .feature-card .feature-tags span {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 100px;
+            background: rgba(0, 188, 212, 0.06);
+            color: var(--primary-light);
+            border: 1px solid rgba(0, 188, 212, 0.08);
+        }
+        .feature-card h4 {
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            line-height: 1.4;
+        }
         .feature-card p {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.7;
             margin-bottom: 1rem;
         }
-
-        .feature-card ul {
-            list-style: none;
-        }
-
+        .feature-card ul { list-style: none; }
         .feature-card ul li {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 0.3rem 0;
-            padding-left: 1rem;
-            border-left: 2px solid var(--primary);
-            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+            padding: 0.35rem 0;
+            padding-left: 14px;
+            border-left: 2px solid rgba(0, 188, 212, 0.2);
+            margin-bottom: 0.25rem;
+            line-height: 1.5;
         }
 
+        /* ── Two Col Grid ── */
         .two-col-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
         }
+        @media (max-width: 768px) { .two-col-grid { grid-template-columns: 1fr; } }
 
+        /* ── Reception ── */
+        .reception-positive h3 { color: var(--accent-green) !important; }
+        .reception-negative h3 { color: var(--accent-red) !important; }
+
+        .reception-list {
+            list-style: none;
+            color: var(--text-muted);
+        }
+        .reception-list li {
+            padding: 0.65rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.88rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .reception-list li:last-child { border-bottom: none; }
+        .reception-list li .check { color: var(--accent-green); flex-shrink: 0; }
+        .reception-list li .cross { color: var(--accent-red); flex-shrink: 0; }
+
+        /* ── Footer ── */
+        .site-footer {
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+            position: relative;
+        }
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 50%;
+            transform: translateX(-50%);
+            width: 200px; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+        .footer-brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        .footer-meta {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+        .footer-meta span { margin: 0 10px; }
+
+        /* ── Responsive ── */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 3rem; }
+            .hero h1 { font-size: 3rem; letter-spacing: -1px; }
+            .hero .subtitle { font-size: 1rem; }
+            .section { padding: 4rem 1.2rem; }
+            .floating-nav { display: none; }
+            .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .stat-card { padding: 1.2rem; }
+            .stat-value { font-size: 1.6rem; }
+            .bar-label { width: 80px; font-size: 0.7rem; }
+            .overview-grid li { flex-direction: column; gap: 2px; }
+        }
+        @media (max-width: 480px) {
             .stat-grid { grid-template-columns: 1fr; }
-            .overview-grid { grid-template-columns: 1fr; }
-            .systems-grid { grid-template-columns: 1fr; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .two-col-grid { grid-template-columns: 1fr; }
+            .hero-meta { flex-direction: column; align-items: center; }
+        }
+
+        /* ── Platform Overview ── */
+        .overview-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.9;
+        }
+        .overview-text strong {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* ── Competition ── */
+        .competitor-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .competitor-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Generic strong within lists */
+        .info-label {
+            color: var(--text-main);
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
     <div class="grid-overlay"></div>
+    <div id="scroll-progress"></div>
 
-    <section class="hero">
-        <div class="particles">
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-            <div class="particle"></div>
-        </div>
-        <div class="hero-content fade-in">
-            <div class="badge-container">
-                <span class="badge-text">ROBLOX CORPORATION · NYSE: RBLX</span>
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <!-- Floating Nav -->
+    <nav class="floating-nav" id="floating-nav">
+        <a href="#hero" data-section="hero"><span class="label">개요</span></a>
+        <a href="#metrics" data-section="metrics"><span class="label">지표</span></a>
+        <a href="#timeline" data-section="timeline"><span class="label">타임라인</span></a>
+        <a href="#overview" data-section="overview"><span class="label">개요</span></a>
+        <a href="#swot" data-section="swot"><span class="label">SWOT</span></a>
+        <a href="#features" data-section="features"><span class="label">특징</span></a>
+        <a href="#reception" data-section="reception"><span class="label">평가</span></a>
+        <a href="#systems" data-section="systems"><span class="label">시스템</span></a>
+        <a href="#competition" data-section="competition"><span class="label">경쟁</span></a>
+        <a href="#business" data-section="business"><span class="label">비즈니스</span></a>
+    </nav>
+
+    <!-- ── Hero ── -->
+    <section class="hero" id="hero">
+        <div class="hero-orb"></div>
+        <div class="hero-orb"></div>
+        <div class="hero-orb"></div>
+        <div class="hero-grid"></div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <span class="dot-live"></span>
+                ROBLOX CORPORATION · NYSE: RBLX
             </div>
             <h1>ROBLOX</h1>
             <p class="subtitle">몰입형 게이밍 &amp; 크리에이션 플랫폼 — 1억 3천만의 가상 세계</p>
-            <div class="meta-row">
-                <span><span class="dot"></span> 장르: 샌드박스, UGC, 메타버스</span>
-                <span><span class="dot"></span> 플랫폼: PC, 모바일, 콘솔</span>
-                <span><span class="dot"></span> 상태: 라이브 서비스 (2006년 출시)</span>
+            <div class="hero-meta">
+                <span class="hero-meta-item"><span class="dot"></span> 장르: 샌드박스, UGC, 메타버스</span>
+                <span class="hero-meta-item"><span class="dot"></span> 플랫폼: PC, 모바일, 콘솔</span>
+                <span class="hero-meta-item"><span class="dot"></span> 상태: 라이브 서비스 (2006년 출시)</span>
             </div>
+        </div>
+
+        <div class="hero-scroll-indicator">
+            <span>SCROLL</span>
+            <div class="scroll-line"></div>
         </div>
     </section>
 
-    <div class="divider"></div>
+    <div class="section-divider"></div>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <!-- ── Metrics ── -->
+    <section class="section" id="metrics">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>핵심 지표</h2>
+            <div>
+                <span class="section-number">01</span>
+                <h2>핵심 지표</h2>
+            </div>
+            <span class="section-sub">Key Metrics</span>
         </div>
         <div class="stat-grid">
-            <div class="glass-card stat-card">
-                <span class="stat-value">$4.9B</span>
-                <span class="stat-label">2025년 연간 매출 (전년比 +36%)</span>
+            <div class="glass-card stat-card reveal reveal-d1">
+                <span class="stat-icon">📊</span>
+                <span class="stat-value" data-target="4.9">$4.9B</span>
+                <span class="stat-label">2025년 연간 매출</span>
+                <span class="stat-trend up">+36% YoY</span>
             </div>
-            <div class="glass-card stat-card">
-                <span class="stat-value">$6.8B</span>
-                <span class="stat-label">2025년 연간 예약금 (전년比 +55%)</span>
+            <div class="glass-card stat-card reveal reveal-d2">
+                <span class="stat-icon">💰</span>
+                <span class="stat-value" data-target="6.8">$6.8B</span>
+                <span class="stat-label">2025년 연간 예약금</span>
+                <span class="stat-trend up">+55% YoY</span>
             </div>
-            <div class="glass-card stat-card">
-                <span class="stat-value">127M</span>
+            <div class="glass-card stat-card reveal reveal-d3">
+                <span class="stat-icon">👥</span>
+                <span class="stat-value" data-target="127">127M</span>
                 <span class="stat-label">평균 일일 활성 사용자 (DAU)</span>
+                <span class="stat-trend up">+16% YoY</span>
             </div>
-            <div class="glass-card stat-card">
-                <span class="stat-value">124B</span>
+            <div class="glass-card stat-card reveal reveal-d4">
+                <span class="stat-icon">⏱️</span>
+                <span class="stat-value" data-target="124">124B</span>
                 <span class="stat-label">2025년 총 참여 시간 (시간)</span>
+                <span class="stat-trend up">+28% YoY</span>
             </div>
-            <div class="glass-card stat-card">
+            <div class="glass-card stat-card reveal reveal-d4">
+                <span class="stat-icon">🌐</span>
                 <span class="stat-value">3.4%</span>
                 <span class="stat-label">글로벌 게이밍 콘텐츠 시장 점유율</span>
+                <span class="stat-trend up">+0.6pp YoY</span>
             </div>
         </div>
-        
-        <div class="glass-card">
-            <h3 style="margin-bottom: 1rem; color: var(--primary);">분기별 주요 지표 추이 (2025)</h3>
+
+        <div class="glass-card chart-card reveal">
+            <h3>
+                <span class="chart-icon">📈</span>
+                분기별 DAU 추이 (2025–2026)
+            </h3>
             <div class="bar-chart">
                 <div class="bar-item">
-                    <span class="bar-label">Q1 2025 DAU</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 65%;"></div></div>
+                    <span class="bar-label">Q1 2025</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="65"></div></div>
                     <span class="bar-value">97.8M</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Q2 2025 DAU</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 74%;"></div></div>
+                    <span class="bar-label">Q2 2025</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="74"></div></div>
                     <span class="bar-value">111.8M</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Q3 2025 DAU</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+                    <span class="bar-label">Q3 2025</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="100"></div></div>
                     <span class="bar-value">151.5M</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Q4 2025 DAU</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 95%;"></div></div>
+                    <span class="bar-label">Q4 2025</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="95"></div></div>
                     <span class="bar-value">144M</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Q1 2026 DAU</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 87%;"></div></div>
+                    <span class="bar-label">Q1 2026</span>
+                    <div class="bar-track"><div class="bar-fill" data-width="87"></div></div>
                     <span class="bar-value">132M</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Timeline ── -->
+    <section class="section" id="timeline">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>타임라인</h2>
+            <div>
+                <span class="section-number">02</span>
+                <h2>타임라인</h2>
+            </div>
+            <span class="section-sub">Timeline</span>
         </div>
         <div class="timeline">
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2006</div>
                 <div class="timeline-title">로블록스 플랫폼 출시</div>
                 <div class="timeline-desc">David Baszucki와 Erik Cassel이 공동 창업. Roblox Studio를 통한 UGC 게임 제작 플랫폼으로 시작.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2021. 3.</div>
                 <div class="timeline-title">뉴욕증권거래소 직상장 (NYSE: RBLX)</div>
                 <div class="timeline-desc">기업가치 약 382억 달러로 데뷔. 게임 플랫폼 기업 중 가장 주목받는 IPO 중 하나.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2024</div>
                 <div class="timeline-title">연간 매출 36억 달러 돌파</div>
                 <div class="timeline-desc">DAU 7,950만 명, 참여 시간 735억 시간 기록. 크리에이터 수익 9.23억 달러 지급.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2025. 7.</div>
                 <div class="timeline-title">'Grow a Garden' 기네스 세계 기록</div>
                 <div class="timeline-desc">2,160만 명 동시 접속 기록. 로블록스 플랫폼 역사상 최다 동시 플레이어 기록 경신.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2025. 8.</div>
                 <div class="timeline-title">플랫폼 전역 4,500만 동시 접속자 기록</div>
                 <div class="timeline-desc">8월 토요일 아침, 로블록스 전체 플랫폼에서 4,500만 명 동시 접속. 인프라 역량 입증.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2025. 9.</div>
                 <div class="timeline-title">'Steal a Brainrot' 신기록 — 2,500만 CCU</div>
                 <div class="timeline-desc">DoBig Studios의 바이럴 히트작, 2,500만 명 동시 접속으로 이전 기록 경신.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2025. 12.</div>
                 <div class="timeline-title">러시아 플랫폼 금지 조치</div>
                 <div class="timeline-desc">러시아 정부의 로블록스 플랫폼 차단. DAU 및 예약금 성장에 일시적 둔화 요인.</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2026. 1.</div>
                 <div class="timeline-title">글로벌 연령 확인 시스템 전면 도입</div>
                 <div class="timeline-desc">채팅 기능 사용을 위한 연령 확인 의무화. 45% DAU 연령 확인 완료 (1월 기준).</div>
             </div>
-            <div class="timeline-item">
+            <div class="timeline-item reveal">
                 <div class="timeline-date">2026. 4.</div>
                 <div class="timeline-title">'Roblox Reality' 비전 공개</div>
                 <div class="timeline-desc">하이퍼스케일 멀티플레이어와 포토리얼리즘을 결합한 차세대 창작 기반 공개. DevEx 비율 42% 인상 발표.</div>
@@ -609,56 +1133,71 @@
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Overview ── -->
+    <section class="section" id="overview">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>게임 개요</h2>
+            <div>
+                <span class="section-number">03</span>
+                <h2>게임 개요</h2>
+            </div>
+            <span class="section-sub">Game Overview</span>
         </div>
         <div class="overview-grid">
-            <div class="glass-card">
-                <h3>기본 정보</h3>
+            <div class="glass-card reveal">
+                <h3>📋 기본 정보</h3>
                 <ul>
-                    <li><strong>개발사:</strong> Roblox Corporation</li>
-                    <li><strong>배급사:</strong> Roblox Corporation</li>
-                    <li><strong>출시일:</strong> 2006년 (정식 서비스)</li>
-                    <li><strong>장르:</strong> 샌드박스, UGC 플랫폼, 메타버스</li>
-                    <li><strong>엔진:</strong> Roblox Studio (자체 엔진)</li>
-                    <li><strong>상태:</strong> 라이브 서비스</li>
+                    <li><span class="li-label">개발사</span> <span>Roblox Corporation</span></li>
+                    <li><span class="li-label">배급사</span> <span>Roblox Corporation</span></li>
+                    <li><span class="li-label">출시일</span> <span>2006년 (정식 서비스)</span></li>
+                    <li><span class="li-label">장르</span> <span>샌드박스, UGC 플랫폼, 메타버스</span></li>
+                    <li><span class="li-label">엔진</span> <span>Roblox Studio (자체 엔진)</span></li>
+                    <li><span class="li-label">상태</span> <span>라이브 서비스</span></li>
                 </ul>
             </div>
-            <div class="glass-card">
-                <h3>플랫폼 및 기술</h3>
+            <div class="glass-card reveal reveal-d2">
+                <h3>🛠️ 플랫폼 및 기술</h3>
                 <ul>
-                    <li><strong>지원 플랫폼:</strong> PC, iOS, Android, Xbox, PlayStation</li>
-                    <li><strong>언어:</strong> 180개국 이상 서비스, 20개 이상 언어 지원</li>
-                    <li><strong>가상 화폐:</strong> Robux (로벅스)</li>
-                    <li><strong>크리에이터 도구:</strong> Roblox Studio, Luau 스크립팅 언어</li>
-                    <li><strong>결제:</strong> 인앱 결제, Roblox Premium 구독</li>
-                    <li><strong>연령 확인:</strong> 글로벌 연령 확인 시스템 (2026년 도입)</li>
+                    <li><span class="li-label">플랫폼</span> <span>PC, iOS, Android, Xbox, PlayStation</span></li>
+                    <li><span class="li-label">언어</span> <span>180개국 이상 서비스, 20개 이상 언어 지원</span></li>
+                    <li><span class="li-label">화폐</span> <span>Robux (로벅스)</span></li>
+                    <li><span class="li-label">도구</span> <span>Roblox Studio, Luau 스크립팅 언어</span></li>
+                    <li><span class="li-label">결제</span> <span>인앱 결제, Roblox Premium 구독</span></li>
+                    <li><span class="li-label">안전</span> <span>글로벌 연령 확인 시스템 (2026년 도입)</span></li>
                 </ul>
             </div>
         </div>
-        <div class="glass-card" style="margin-top: 2rem;">
-            <h3 style="color: var(--primary); margin-bottom: 1rem;">플랫폼 개요</h3>
-            <p style="color: var(--text-muted); line-height: 1.8;">
-                로블록스는 단순한 게임이 아닌, 수백만 명의 크리에이터가 직접 게임과 경험을 제작하고 공유하는 글로벌 UGC 플랫폼이다. 
-                Roblox Studio라는 자체 제작 도구를 통해 코딩 경험이 없는 사용자도 몰입형 3D 경험을 만들 수 있으며, 
-                Luau 스크립트 언어를 통해 고급 개발자는 정교한 게임 메커니즘을 구현할 수 있다. 
-                플랫폼内 경제는 가상 화폐 Robux를 중심으로 순환하며, 크리에이터는 DevEx(Developer Exchange) 프로그램을 통해 
-                Robux를 현금으로 환전할 수 있다. 2025년 기준 3.5백만 명 이상의 개발자가 플랫폼에서 창작 활동을 하고 있으며, 
-                연간 1.5조 시간 이상의 참여 시간을 기록했다. 로블록스의 비전은 '10억 사용자를 낙관과 예의로 연결하는 것'이며, 
+        <div class="glass-card reveal" style="margin-top: 1.5rem;">
+            <h3 style="color: var(--primary); font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">🔍 플랫폼 개요</h3>
+            <p class="overview-text">
+                로블록스는 단순한 게임이 아닌, 수백만 명의 크리에이터가 직접 게임과 경험을 제작하고 공유하는 글로벌 UGC 플랫폼이다.
+                <strong>Roblox Studio</strong>라는 자체 제작 도구를 통해 코딩 경험이 없는 사용자도 몰입형 3D 경험을 만들 수 있으며,
+                <strong>Luau</strong> 스크립트 언어를 통해 고급 개발자는 정교한 게임 메커니즘을 구현할 수 있다.
+                플랫폼 내 경제는 가상 화폐 <strong>Robux</strong>를 중심으로 순환하며, 크리에이터는 <strong>DevEx</strong>(Developer Exchange) 프로그램을 통해
+                Robux를 현금으로 환전할 수 있다. 2025년 기준 3.5백만 명 이상의 개발자가 플랫폼에서 창작 활동을 하고 있으며,
+                연간 1.5조 시간 이상의 참여 시간을 기록했다. 로블록스의 비전은 <strong>'10억 사용자를 낙관과 예의로 연결하는 것'</strong>이며,
                 글로벌 게이밍 콘텐츠 시장의 10% 점유를 장기 목표로 삼고 있다.
             </p>
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── SWOT ── -->
+    <section class="section" id="swot">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>SWOT 분석</h2>
+            <div>
+                <span class="section-number">04</span>
+                <h2>SWOT 분석</h2>
+            </div>
+            <span class="section-sub">Strategic Analysis</span>
         </div>
         <div class="swot-grid">
-            <div class="swot-card swot-s">
+            <div class="swot-card swot-s reveal">
+                <span class="swot-icon">🟢</span>
                 <h3>Strengths (강점)</h3>
                 <ul>
                     <li>압도적인 UGC 생태계 규모 — 3,500만+ 경험, 3.5M 크리에이터</li>
@@ -669,7 +1208,8 @@
                     <li>충성도 높은 Z세대/알파 세대 사용자 기반</li>
                 </ul>
             </div>
-            <div class="swot-card swot-w">
+            <div class="swot-card swot-w reveal reveal-d2">
+                <span class="swot-icon">🔴</span>
                 <h3>Weaknesses (약점)</h3>
                 <ul>
                     <li>지속적인 순손실 — 2025년 연간 순손실 10.7억 달러</li>
@@ -680,7 +1220,8 @@
                     <li>바이럴 히트작 의존도 — 일부 체험에 집중된 트래픽 쏠림 현상</li>
                 </ul>
             </div>
-            <div class="swot-card swot-o">
+            <div class="swot-card swot-o reveal reveal-d3">
+                <span class="swot-icon">🔵</span>
                 <h3>Opportunities (기회)</h3>
                 <ul>
                     <li>18세 이상 성인 사용자 급성장 — 전년 대비 50%+ 증가, 수익화율 50%↑</li>
@@ -691,7 +1232,8 @@
                     <li>구독 경제 확장 — Roblox Premium 1,600만+ 가입자</li>
                 </ul>
             </div>
-            <div class="swot-card swot-t">
+            <div class="swot-card swot-t reveal reveal-d4">
+                <span class="swot-icon">🟡</span>
                 <h3>Threats (위협)</h3>
                 <ul>
                     <li>Fortnite UGC — 언리얼 에디터 포트나이트와의 경쟁 심화</li>
@@ -705,23 +1247,30 @@
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Features ── -->
+    <section class="section" id="features">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>고유 특징 심층 분석</h2>
+            <div>
+                <span class="section-number">05</span>
+                <h2>고유 특징 심층 분석</h2>
+            </div>
+            <span class="section-sub">Key Features</span>
         </div>
         <div class="feature-grid">
-            <div class="glass-card feature-card">
-                <div style="margin-bottom: 0.8rem;">
-                    <span><span class="dot"></span> 플랫폼</span>
-                    <span><span class="dot"></span> 경제</span>
+            <div class="glass-card feature-card reveal">
+                <div class="feature-icon">💎</div>
+                <div class="feature-tags">
+                    <span>플랫폼</span>
+                    <span>경제</span>
                 </div>
                 <h4>크리에이터 경제 &amp; DevEx 생태계</h4>
-                <p>로블록스는 단순한 게임 플랫폼을 넘어 하나의 자립 경제 시스템이다. 
-                2025년 크리에이터 수익은 15억 달러를 돌파했으며, 35,500명 이상의 개발자가 DevEx 프로그램에 등록되어 있다. 
-                특히 2026년 4월, 18세 이상 미국 플레이어 대상 DevEx 비율을 42%로 인상하며 고품질 콘텐츠 제작자에 대한 
-                인센티브를 대폭 강화했다. 상위 1,000명 크리에이터의 평균 수익은 전년 대비 50% 이상 증가했으며, 
-                연간 100만 달러 이상 수익을 올리는 개발자도 100명을 넘어섰다.</p>
+                <p>로블록스는 단순한 게임 플랫폼을 넘어 하나의 자립 경제 시스템이다.
+                2025년 크리에이터 수익은 15억 달러를 돌파했으며, 35,500명 이상의 개발자가 DevEx 프로그램에 등록되어 있다.
+                특히 2026년 4월, 18세 이상 미국 플레이어 대상 DevEx 비율을 42%로 인상하며 고품질 콘텐츠 제작자에 대한
+                인센티브를 대폭 강화했다.</p>
                 <ul>
                     <li>2025년 DevEx 지급액 15억 달러 — 전년比 63% 증가</li>
                     <li>35,500+ 공식 DevEx 등록 크리에이터</li>
@@ -730,18 +1279,18 @@
                     <li>계층형 수익 분배: 최대 70%까지 크리에이터 수익률 제공</li>
                 </ul>
             </div>
-            <div class="glass-card feature-card">
-                <div style="margin-bottom: 0.8rem;">
-                    <span><span class="dot"></span> 기술</span>
-                    <span><span class="dot"></span> AI</span>
+            <div class="glass-card feature-card reveal reveal-d2">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-tags">
+                    <span>기술</span>
+                    <span>AI</span>
                 </div>
                 <h4>AI 기반 창작 민주화 &amp; Roblox Reality</h4>
-                <p>로블록스는 AI 기술을 창작 도구 전반에 통합하여 크리에이션 장벽을 획기적으로 낮추고 있다. 
-                생성형 AI를 활용한 에셋 제작, 텍스트-투-스피치, 음성-투-텍스트 API 등을 통해 
-                코딩 지식이 없는 사용자도 고품질 경험을 만들 수 있게 되었다. 
-                2026년 4월 발표된 'Roblox Reality'는 포토리얼리즘 그래픽과 하이퍼스케일 멀티플레이어를 
-                결합한 차세대 창작 기반으로, 로블록스의 기술적 진화를 상징한다. 
-                AI 기반 추천 시스템은 124B 시간의 참여 데이터를 분석하여 개인화된 콘텐츠 발견을 최적화한다.</p>
+                <p>로블록스는 AI 기술을 창작 도구 전반에 통합하여 크리에이션 장벽을 획기적으로 낮추고 있다.
+                생성형 AI를 활용한 에셋 제작, 텍스트-투-스피치, 음성-투-텍스트 API 등을 통해
+                코딩 지식이 없는 사용자도 고품질 경험을 만들 수 있게 되었다.
+                2026년 4월 발표된 'Roblox Reality'는 포토리얼리즘 그래픽과 하이퍼스케일 멀티플레이어를
+                결합한 차세대 창작 기반이다.</p>
                 <ul>
                     <li>Speech-to-Text &amp; Text-to-Speech API — 음성 기반 게임 상호작용</li>
                     <li>Emissive Maps — 고급 시각 효과를 위한 글로우/발광 텍스처 지원</li>
@@ -750,19 +1299,17 @@
                     <li>AI 추천 — 1일 5,000만+ 검색 처리, 개인화된 콘텐츠 발견</li>
                 </ul>
             </div>
-            <div class="glass-card feature-card">
-                <div style="margin-bottom: 0.8rem;">
-                    <span><span class="dot"></span> 문화</span>
-                    <span><span class="dot"></span> 커뮤니티</span>
+            <div class="glass-card feature-card reveal reveal-d3">
+                <div class="feature-icon">🌍</div>
+                <div class="feature-tags">
+                    <span>문화</span>
+                    <span>커뮤니티</span>
                 </div>
                 <h4>차세대 문화 플랫폼 &amp; 바이럴 현상</h4>
-                <p>로블록스는 단순한 게임을 넘어 Z세대와 알파 세대의 문화적 중심지로 자리잡았다. 
-                2025년 YouTube에서 로블록스 콘텐츠 누적 조회수는 1조 회를 돌파했으며, 
-                TikTok 게임 관련 동영상 5개 중 1개가 로블록스를 언급했다. 
-                'Steal a Brainrot'는 2,500만 동시 접속자 기록을 세우며 글로벌 바이럴 현상을 주도했고, 
-                'Grow a Garden'은 기네스 세계 기록을 갱신했다. 
-                사용자들은 하루 2억 7,400만 번 아바타를 업데이트하며 디지털 정체성 표현에 적극적이다. 
-                Z세대의 47%는 창의성 표현을 위해, 38%는 새로운 정체성 실험을 위해 아바타를 변경한다.</p>
+                <p>로블록스는 단순한 게임을 넘어 Z세대와 알파 세대의 문화적 중심지로 자리잡았다.
+                2025년 YouTube에서 로블록스 콘텐츠 누적 조회수는 1조 회를 돌파했으며,
+                TikTok 게임 관련 동영상 5개 중 1개가 로블록스를 언급했다.
+                'Steal a Brainrot'는 2,500만 동시 접속자 기록을 세우며 글로벌 바이럴 현상을 주도했다.</p>
                 <ul>
                     <li>YouTube 로블록스 콘텐츠 누적 조회수 1조 회</li>
                     <li>TikTok 게임 영상 20%가 로블록스 관련</li>
@@ -774,192 +1321,318 @@
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Reception ── -->
+    <section class="section" id="reception">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>사용자 반응 및 평가</h2>
+            <div>
+                <span class="section-number">06</span>
+                <h2>사용자 반응 및 평가</h2>
+            </div>
+            <span class="section-sub">Community Reception</span>
         </div>
         <div class="two-col-grid">
-            <div class="glass-card">
-                <h3 style="color: var(--accent-green); margin-bottom: 1rem;">긍정적 평가</h3>
-                <ul style="list-style: none; color: var(--text-muted);">
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✓ 무한한 창의성 — 누구나 게임을 만들고 공유할 수 있는 개방형 플랫폼</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✓ 강력한 사회적 경험 — 친구와 함께하는 협력/경쟁 플레이</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✓ 지속적인 콘텐츠 업데이트 — 매일 수천 개의 새로운 경험 추가</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✓ 크로스 플랫폼 — 모든 디바이스에서 동일한 경험</li>
-                    <li style="padding: 0.7rem 0;">✓ 크리에이터 경제 — 실질적 수익 창출 기회 제공 (15억 달러 지급)</li>
+            <div class="glass-card reception-positive reveal">
+                <h3 style="color: var(--accent-green); margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">긍정적 평가</h3>
+                <ul class="reception-list">
+                    <li><span class="check">✓</span> 무한한 창의성 — 누구나 게임을 만들고 공유할 수 있는 개방형 플랫폼</li>
+                    <li><span class="check">✓</span> 강력한 사회적 경험 — 친구와 함께하는 협력/경쟁 플레이</li>
+                    <li><span class="check">✓</span> 지속적인 콘텐츠 업데이트 — 매일 수천 개의 새로운 경험 추가</li>
+                    <li><span class="check">✓</span> 크로스 플랫폼 — 모든 디바이스에서 동일한 경험</li>
+                    <li><span class="check">✓</span> 크리에이터 경제 — 실질적 수익 창출 기회 제공 (15억 달러 지급)</li>
                 </ul>
             </div>
-            <div class="glass-card">
-                <h3 style="color: var(--accent-red); margin-bottom: 1rem;">부정적 평가</h3>
-                <ul style="list-style: none; color: var(--text-muted);">
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✗ 안전 문제 — 미성년자 대상 유해 콘텐츠 및 접촉 우려</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✗ 과도한 과금 유도 — 어린이 대상 Robux 소비 압박</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✗ 그래픽 품질 — 타 플랫폼 대비 낮은 시각적 완성도</li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✗ 잘못된 밴/계정 제재 — 자동화된 시스템의 오류</li>
-                    <li style="padding: 0.7rem 0;">✗ 바이럴 콘텐츠 피로 — 단기 히트작의 급부상과 급락 반복</li>
+            <div class="glass-card reception-negative reveal reveal-d2">
+                <h3 style="color: var(--accent-red); margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">부정적 평가</h3>
+                <ul class="reception-list">
+                    <li><span class="cross">✗</span> 안전 문제 — 미성년자 대상 유해 콘텐츠 및 접촉 우려</li>
+                    <li><span class="cross">✗</span> 과도한 과금 유도 — 어린이 대상 Robux 소비 압박</li>
+                    <li><span class="cross">✗</span> 그래픽 품질 — 타 플랫폼 대비 낮은 시각적 완성도</li>
+                    <li><span class="cross">✗</span> 잘못된 밴/계정 제재 — 자동화된 시스템의 오류</li>
+                    <li><span class="cross">✗</span> 바이럴 콘텐츠 피로 — 단기 히트작의 급부상과 급락 반복</li>
                 </ul>
             </div>
         </div>
-        <div class="insight-box">
-            <h4>종합 평가</h4>
-            <p>로블록스는 Z세대와 알파 세대에게 '게임 그 이상의 디지털 홈그라운드'로 자리잡았다. 
-            플랫폼의 근본적 가치는 UGC 생태계가 만들어내는 무한한 다양성과 사회적 연결에 있다. 
-            다만 안전 문제, 연령 확인에 따른 성장 둔화, 바이럴 의존도 등은 해결해야 할 과제다. 
+        <div class="insight-box reveal">
+            <h4>💡 종합 평가</h4>
+            <p>로블록스는 Z세대와 알파 세대에게 '게임 그 이상의 디지털 홈그라운드'로 자리잡았다.
+            플랫폼의 근본적 가치는 UGC 생태계가 만들어내는 무한한 다양성과 사회적 연결에 있다.
+            다만 안전 문제, 연령 확인에 따른 성장 둔화, 바이럴 의존도 등은 해결해야 할 과제다.
             장기적으로 AI 기반 창작 도구와 Roblox Reality 같은 기술 혁신이 플랫폼의 차세대 성장을 견인할 것으로 전망된다.</p>
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Systems ── -->
+    <section class="section" id="systems">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>핵심 시스템</h2>
+            <div>
+                <span class="section-number">07</span>
+                <h2>핵심 시스템</h2>
+            </div>
+            <span class="section-sub">Core Systems</span>
         </div>
         <div class="systems-grid">
-            <div class="glass-card system-card">
+            <div class="glass-card system-card reveal">
+                <div class="system-icon">🎨</div>
                 <h4>Roblox Studio &amp; 크리에이션</h4>
-                <p>Luau 스크립트 언어 기반의 자체 개발 도구. 물리 엔진, 파티클 시스템, 
-                애니메이션, 오디오 등 종합적인 게임 개발 환경 제공. AI 기반 에셋 생성, 
+                <p>Luau 스크립트 언어 기반의 자체 개발 도구. 물리 엔진, 파티클 시스템,
+                애니메이션, 오디오 등 종합적인 게임 개발 환경 제공. AI 기반 에셋 생성,
                 음성-텍스트 API 등 최신 기술 통합. 초보자부터 전문가까지 모두 사용 가능한 계층형 인터페이스.</p>
             </div>
-            <div class="glass-card system-card">
+            <div class="glass-card system-card reveal reveal-d2">
+                <div class="system-icon">🪙</div>
                 <h4>Robux 경제 &amp; 수익화</h4>
-                <p>가상 화폐 Robux를 기반으로 한 폐쇄형 경제 시스템. 
-                게임 패스, 아이템 판매, 프라이빗 서버, 구독 등 다양한 수익화 수단 제공. 
-                Premium 구독(1,600만+ 가입자)은 월정액 Robux + 독점 혜택 제공. 
+                <p>가상 화폐 Robux를 기반으로 한 폐쇄형 경제 시스템.
+                게임 패스, 아이템 판매, 프라이빗 서버, 구독 등 다양한 수익화 수단 제공.
+                Premium 구독(1,600만+ 가입자)은 월정액 Robux + 독점 혜택 제공.
                 DevEx를 통해 크리에이터는 Robux를 현금으로 환전 가능.</p>
             </div>
-            <div class="glass-card system-card">
+            <div class="glass-card system-card reveal reveal-d3">
+                <div class="system-icon">🎯</div>
                 <h4>발견 &amp; 추천 시스템</h4>
-                <p>AI 기반 개인화 추천으로 5,000만+ 일일 검색 처리. 
-                사용자 행동, 참여 시간, 선호 장르 등을 분석한 맞춤형 경험 추천. 
-                18세 이상 성인 사용자 대상 콘텐츠 우선 노출 시스템 도입. 
+                <p>AI 기반 개인화 추천으로 5,000만+ 일일 검색 처리.
+                사용자 행동, 참여 시간, 선호 장르 등을 분석한 맞춤형 경험 추천.
+                18세 이상 성인 사용자 대상 콘텐츠 우선 노출 시스템 도입.
                 트렌드 및 바이럴 콘텐츠 실시간 감지.</p>
             </div>
-            <div class="glass-card system-card">
+            <div class="glass-card system-card reveal reveal-d4">
+                <div class="system-icon">🛡️</div>
                 <h4>안전 &amp; 연령 확인</h4>
-                <p>2026년 글로벌 연령 확인 시스템 전면 도입. 13세 미만 사용자 특별 보호 정책. 
-                AI 기반 콘텐츠 모더레이션 및 유해 콘텐츠 탐지. 
-                음성 채팅 필터링, 행동 분석 기반 이상 징후 감지. 
+                <p>2026년 글로벌 연령 확인 시스템 전면 도입. 13세 미만 사용자 특별 보호 정책.
+                AI 기반 콘텐츠 모더레이션 및 유해 콘텐츠 탐지.
+                음성 채팅 필터링, 행동 분석 기반 이상 징후 감지.
                 Server Authority로 치트/핵 방지. 부모 제어 대시보드 제공.</p>
             </div>
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Competition ── -->
+    <section class="section" id="competition">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>경쟁 환경</h2>
+            <div>
+                <span class="section-number">08</span>
+                <h2>경쟁 환경</h2>
+            </div>
+            <span class="section-sub">Competitive Landscape</span>
         </div>
-        <div class="glass-card" style="margin-bottom: 2rem;">
-            <h3 style="color: var(--primary); margin-bottom: 1rem;">글로벌 UGC/메타버스 플랫폼 경쟁 구도</h3>
+        <div class="glass-card chart-card reveal">
+            <h3>
+                <span class="chart-icon">⚔️</span>
+                글로벌 UGC/메타버스 플랫폼 경쟁 구도
+            </h3>
             <div class="bar-chart">
                 <div class="bar-item">
-                    <span class="bar-label">로블록스</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 100%;"></div></div>
+                    <span class="bar-label">
+                        <span class="competitor-label">
+                            <span class="competitor-dot" style="background: #00bcd4;"></span>
+                            로블록스
+                        </span>
+                    </span>
+                    <div class="bar-track"><div class="bar-fill" data-width="100"></div></div>
                     <span class="bar-value">127M DAU</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Fortnite (UEFN)</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 50%;"></div></div>
+                    <span class="bar-label">
+                        <span class="competitor-label">
+                            <span class="competitor-dot" style="background: #ff8c00;"></span>
+                            Fortnite (UEFN)
+                        </span>
+                    </span>
+                    <div class="bar-track"><div class="bar-fill" data-width="50"></div></div>
                     <span class="bar-value">~45M DAU</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Minecraft</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 55%;"></div></div>
+                    <span class="bar-label">
+                        <span class="competitor-label">
+                            <span class="competitor-dot" style="background: #4caf50;"></span>
+                            Minecraft
+                        </span>
+                    </span>
+                    <div class="bar-track"><div class="bar-fill" data-width="55"></div></div>
                     <span class="bar-value">~70M MAU</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Rec Room</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 15%;"></div></div>
+                    <span class="bar-label">
+                        <span class="competitor-label">
+                            <span class="competitor-dot" style="background: #9c27b0;"></span>
+                            Rec Room
+                        </span>
+                    </span>
+                    <div class="bar-track"><div class="bar-fill" data-width="15"></div></div>
                     <span class="bar-value">~4M MAU</span>
                 </div>
                 <div class="bar-item">
-                    <span class="bar-label">Core (Manticore)</span>
-                    <div class="bar-track"><div class="bar-fill" style="width: 3%;"></div></div>
+                    <span class="bar-label">
+                        <span class="competitor-label">
+                            <span class="competitor-dot" style="background: #607d8b;"></span>
+                            Core (Manticore)
+                        </span>
+                    </span>
+                    <div class="bar-track"><div class="bar-fill" data-width="3"></div></div>
                     <span class="bar-value">&lt;1M MAU</span>
                 </div>
             </div>
         </div>
-        <div class="insight-box">
-            <h4>경쟁 분석 인사이트</h4>
-            <p>로블록스는 UGC 플랫폼 시장에서 압도적인 점유율을 유지하고 있다. 가장 강력한 경쟁자는 
-            에픽게임즈의 '언리얼 에디터 포트나이트(UEFN)'로, 고품질 그래픽과 언리얼 엔진의 기술력을 
-            무기로 추격 중이다. 다만 UEFN은 크리에이션 진입 장벽이 높아 로블록스의 낮은 창작门槛에는 
-            미치지 못한다. Minecraft는 MAU 기준으로 경쟁하나, 크리에이터 경제 측면에서 로블록스의 
-            DevEx 생태계에 비해 수익화 기회가 제한적이다. 로블록스의 핵심 경쟁력은 '누구나 크리에이터가 
-            될 수 있는' 접근성과 검증된 수익화 모델에 있으며, AI 기반 창작 도구의 발전으로 이 격차는 
+        <div class="insight-box reveal">
+            <h4>💡 경쟁 분석 인사이트</h4>
+            <p>로블록스는 UGC 플랫폼 시장에서 압도적인 점유율을 유지하고 있다. 가장 강력한 경쟁자는
+            에픽게임즈의 '언리얼 에디터 포트나이트(UEFN)'로, 고품질 그래픽과 언리얼 엔진의 기술력을
+            무기로 추격 중이다. 다만 UEFN은 크리에이션 진입 장벽이 높아 로블록스의 낮은 창작门槛에는
+            미치지 못한다. Minecraft는 MAU 기준으로 경쟁하나, 크리에이터 경제 측면에서 로블록스의
+            DevEx 생태계에 비해 수익화 기회가 제한적이다. 로블록스의 핵심 경쟁력은 '누구나 크리에이터가
+            될 수 있는' 접근성과 검증된 수익화 모델에 있으며, AI 기반 창작 도구의 발전으로 이 격차는
             더욱 벌어질 전망이다.</p>
         </div>
     </section>
 
-    <section class="section fade-in">
-        <div class="section-header">
+    <div class="section-divider"></div>
+
+    <!-- ── Business ── -->
+    <section class="section" id="business">
+        <div class="section-header reveal">
             <div class="accent-bar"></div>
-            <h2>비즈니스 모델 &amp; 미래 전망</h2>
+            <div>
+                <span class="section-number">09</span>
+                <h2>비즈니스 모델 &amp; 미래 전망</h2>
+            </div>
+            <span class="section-sub">Business &amp; Outlook</span>
         </div>
         <div class="two-col-grid">
-            <div class="glass-card">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">비즈니스 모델</h3>
+            <div class="glass-card reveal">
+                <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">💰 비즈니스 모델</h3>
                 <ul style="list-style: none; color: var(--text-muted);">
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">Robux 판매</strong><br>
-                        가상 화폐 구매를 통한 인앱 결제 (매출의 70%+ 차지)
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">Robux 판매</strong><br>
+                        <span style="font-size: 0.85rem;">가상 화폐 구매를 통한 인앱 결제 (매출의 70%+ 차지)</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">Roblox Premium</strong><br>
-                        월정액 구독 — 월간 Robux 지급 + 독점 아이템 (1,600만+ 가입자)
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">Roblox Premium</strong><br>
+                        <span style="font-size: 0.85rem;">월정액 구독 — 월간 Robux 지급 + 독점 아이템 (1,600만+ 가입자)</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">게임 패스 및 아이템 판매</strong><br>
-                        크리에이터가 설정한 게임 내 아이템 수익 (크리에이터 수수료 수익)
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">게임 패스 및 아이템 판매</strong><br>
+                        <span style="font-size: 0.85rem;">크리에이터가 설정한 게임 내 아이템 수익 (크리에이터 수수료 수익)</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">인게임 광고</strong><br>
-                        브랜드 파트너십 및 디스플레이 광고 (2025년 급성장 중)
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">인게임 광고</strong><br>
+                        <span style="font-size: 0.85rem;">브랜드 파트너십 및 디스플레이 광고 (2025년 급성장 중)</span>
                     </li>
                     <li style="padding: 0.7rem 0;">
-                        <strong style="color: var(--text-main);">DevEx 수수료</strong><br>
-                        Robux 현금 환전 시 플랫폼 수수료 (2025년 15억 달러 지급)
+                        <strong class="info-label">DevEx 수수료</strong><br>
+                        <span style="font-size: 0.85rem;">Robux 현금 환전 시 플랫폼 수수료 (2025년 15억 달러 지급)</span>
                     </li>
                 </ul>
             </div>
-            <div class="glass-card">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">성장 전략 및 전망</h3>
+            <div class="glass-card reveal reveal-d2">
+                <h3 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem; font-weight: 600;">🚀 성장 전략 및 전망</h3>
                 <ul style="list-style: none; color: var(--text-muted);">
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">2026년 매출 가이던스</strong><br>
-                        60~62억 달러 (전년比 22~26% 성장)
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">2026년 매출 가이던스</strong><br>
+                        <span style="font-size: 0.85rem;">60~62억 달러 (전년比 22~26% 성장)</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">10% 시장 점유율 목표</strong><br>
-                        글로벌 게이밍 콘텐츠 시장 10% 캡처 — 1B 사용자 연결 비전
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">10% 시장 점유율 목표</strong><br>
+                        <span style="font-size: 0.85rem;">글로벌 게이밍 콘텐츠 시장 10% 캡처 — 1B 사용자 연결 비전</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">성인 사용자 확장</strong><br>
-                        O18(18세 이상) 콘텐츠 포트폴리오 강화 — 수익화율 50%↑
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">성인 사용자 확장</strong><br>
+                        <span style="font-size: 0.85rem;">O18(18세 이상) 콘텐츠 포트폴리오 강화 — 수익화율 50%↑</span>
                     </li>
-                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: var(--text-main);">Roblox Reality</strong><br>
-                        차세대 포토리얼리즘 창작 기반 — 기술 리더십 강화
+                    <li style="padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                        <strong class="info-label">Roblox Reality</strong><br>
+                        <span style="font-size: 0.85rem;">차세대 포토리얼리즘 창작 기반 — 기술 리더십 강화</span>
                     </li>
                     <li style="padding: 0.7rem 0;">
-                        <strong style="color: var(--text-main);">AI &amp; 안전 투자</strong><br>
-                        생성형 AI + 글로벌 안전 기준 — 플랫폼 지속가능성 제고
+                        <strong class="info-label">AI &amp; 안전 투자</strong><br>
+                        <span style="font-size: 0.85rem;">생성형 AI + 글로벌 안전 기준 — 플랫폼 지속가능성 제고</span>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="insight-box">
-            <h4>최종 평가</h4>
-            <p>로블록스는 2025년 '배너 이어'를 기록하며 매출 49억 달러, 예약금 68억 달러라는 
-            놀라운 성과를 달성했다. 단기적으로 연령 확인 시스템에 따른 성장 둔화가 예상되나, 
-            이는 장기적 플랫폼 건강성을 위한 필수 투자다. AI 기반 창작 도구, 성인 사용자 확장, 
-            Roblox Reality 등 차세대 성장 동력이 2026년 이후 본격화될 전망이다. 
-            20%+ 연간 성장률과 마진 확대를 목표로 하는 로블록스는 단순한 게임 플랫폼을 넘어 
-            '차세대 디지털 인프라'로 진화 중이며, 글로벌 게이밍 시장의 10% 점유 목표는 
+        <div class="insight-box reveal">
+            <h4>🏆 최종 평가</h4>
+            <p>로블록스는 2025년 '배너 이어'를 기록하며 매출 49억 달러, 예약금 68억 달러라는
+            놀라운 성과를 달성했다. 단기적으로 연령 확인 시스템에 따른 성장 둔화가 예상되나,
+            이는 장기적 플랫폼 건강성을 위한 필수 투자다. AI 기반 창작 도구, 성인 사용자 확장,
+            Roblox Reality 등 차세대 성장 동력이 2026년 이후 본격화될 전망이다.
+            20%+ 연간 성장률과 마진 확대를 목표로 하는 로블록스는 단순한 게임 플랫폼을 넘어
+            '차세대 디지털 인프라'로 진화 중이며, 글로벌 게이밍 시장의 10% 점유 목표는
             충분히 달성 가능한 것으로 평가된다.</p>
         </div>
+
+        <div class="site-footer">
+            <div class="footer-brand">ROBLOX · Game Analysis Report</div>
+            <div class="footer-meta">
+                <span>작성일 2026. 5. 10.</span>
+                <span>·</span>
+                <span>데이터 기준 2025–2026</span>
+                <span>·</span>
+                <span>Game Analysis Dashboard</span>
+            </div>
+        </div>
     </section>
+
+    <script>
+        // ── Scroll Progress ──
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('scroll-progress').style.width = progress + '%';
+        });
+
+        // ── Intersection Observer: Reveal animations ──
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // Animate bar fills inside visible containers
+                    const bars = entry.target.querySelectorAll('.bar-fill[data-width]');
+                    bars.forEach(bar => {
+                        const w = bar.getAttribute('data-width');
+                        setTimeout(() => { bar.style.width = w + '%'; }, 200);
+                    });
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ── Floating Nav Active State ──
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.floating-nav a');
+
+        const navObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                    });
+                }
+            });
+        }, { threshold: 0.3, rootMargin: '-80px 0px 0px 0px' });
+
+        sections.forEach(section => navObserver.observe(section));
+
+        // ── Back to Top ──
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('back-to-top');
+            if (window.scrollY > window.innerHeight * 0.5) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        });
+    </script>
 </body>
 </html>
