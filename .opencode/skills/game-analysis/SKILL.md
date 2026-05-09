@@ -62,7 +62,7 @@ Generate a single self-contained HTML file with the following structure:
 
 4. **Game Overview** — Two-column glass card with basic info and platform details, plus lore description
 
-5. **SWOT Analysis** — 2×2 grid (`.swot-grid`) with Strength(green), Weakness(red), Opportunity(blue), Threat(gold)
+5. **SWOT Analysis** — 2×2 grid (`.swot-grid`). Strength(`.swot-s`, green, `+` prefix), Weakness(`.swot-w`, red, `-` prefix), Opportunity(`.swot-o`, blue, `!` prefix), Threat(`.swot-t`, gold, `!` prefix). 각 카드는 해당 색상의 낮은 투명도 배경/테두리 사용.
 
 6. **고유 특징 심층 분석 (Unique Features)** — 게임의 핵심적인 특장점을 추출하여 3개 항목 선정. 각 항목은 상세 설명과 함께 차트/리스트로 구분. 게임만의 혁신적 메커니즘, 특별한 세계관/스토리텔링, 독특한 커뮤니티 문화 등 포함. `.feature-grid` (2열 그리드), `.feature-card` (각 특징별 카드) 사용
 
@@ -85,8 +85,9 @@ Generate a single self-contained HTML file with the following structure:
 **Design patterns to follow:**
 - All cards use `glass-card` class with dark translucent backgrounds
 - `fade-in` class on all major elements with IntersectionObserver for scroll animation
-- Section headers with colored accent bar
+- Section headers with colored accent bar (`.section-title > .accent` + `.section-desc`)
 - `insight-box` for key takeaways (gradient border with accent color)
+- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 13px, color `#b0b0c8`.
 - Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern.
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
@@ -100,6 +101,7 @@ Generate a single self-contained HTML file with the following structure:
 - Dark theme with low-opacity colored accents
 - Grid overlay on fixed position
 - `.dot` for label indicators: `width: 6px; height: 6px; display: inline-block; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
+- **SWOT grid**: `.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }`. `.swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }`. Each `.swot-s/w/o/t` has colored `background`, `border-color`, `h3 color`, and `li::before` content/color.
 
 ### Step 3: Create Index Page (if multiple games)
 
