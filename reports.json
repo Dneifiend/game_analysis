@@ -1,5 +1,23 @@
 [
   {
+    "id": "roblox",
+    "badge": {
+      "class": "blue",
+      "text": "ROBLOX CORPORATION · NYSE: RBLX"
+    },
+    "title": "Roblox",
+    "genre": "ROBLOX",
+    "desc": "1억 3천만 DAU의 글로벌 UGC 플랫폼<br>크리에이터 경제와 차세대 메타버스 분석",
+    "written": "2026-05-10T00:00:00",
+    "tags": [
+      "UGC",
+      "샌드박스",
+      "메타버스",
+      "크리에이터 경제"
+    ],
+    "url": "content/20260510_roblox-analysis.html"
+  },
+  {
     "id": "yeonun",
     "badge": {
       "class": "purple",
