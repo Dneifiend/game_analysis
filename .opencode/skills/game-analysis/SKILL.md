@@ -54,7 +54,7 @@ Generate a single self-contained HTML file with the following structure:
 
 **Required sections (in order):**
 
-1. **Hero** — Full viewport header with game title, subtitle, badge, metadata row, floating particles animation
+1. **Hero** — Full viewport header with game title, subtitle, badge, metadata row (dot label pattern 적용), floating particles animation
 
 2. **Key Metrics** — Grid of stat cards with large numbers (`.stat-grid`), metric row, bar chart for regional performance
 
@@ -80,14 +80,14 @@ Generate a single self-contained HTML file with the following structure:
 - 각 특징마다 **상세 설명 (300~500자)** + **핵심 포인트 리스트 (3~5개)** 구성
 - 게임의 **유일성**과 **경쟁 우위**를 부각
 - `.feature-grid` (grid-template-columns: repeat(3, 1fr)), `.feature-card` (glass-card 스타일) 사용
-- 태그를 사용하여 각 특징의 유형 표시 — `<span><span class="dot"></span> 태그명</span>` 패턴 사용
+- 각 특징의 유형을 **dot 라벨 버튼**으로 표시: `<span><span class="dot"></span> 라벨명</span>` — 회색 글씨 + 테마 색상 6px 동그라미
 
 **Design patterns to follow:**
 - All cards use `glass-card` class with dark translucent backgrounds
 - `fade-in` class on all major elements with IntersectionObserver for scroll animation
 - Section headers with colored accent bar
 - `insight-box` for key takeaways (gradient border with accent color)
-- Tags use span + dot pattern: `<span><span class="dot"></span> TAG</span>` (`.dot`: 6×6px circle, `border-radius: 50%`, theme primary color)
+- Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern.
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
 - **Floating particles** in Hero section (`.particles`, `.particle`, `@keyframes float`) with theme-appropriate colors
@@ -99,7 +99,7 @@ Generate a single self-contained HTML file with the following structure:
 - All measurements in rem/em/vw — responsive
 - Dark theme with low-opacity colored accents
 - Grid overlay on fixed position
-- `.dot` for tag indicators: `width: 6px; height: 6px; display: inline-block; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
+- `.dot` for label indicators: `width: 6px; height: 6px; display: inline-block; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
 
 ### Step 3: Create Index Page (if multiple games)
 
