@@ -64,13 +64,23 @@ Generate a single self-contained HTML file with the following structure:
 
 5. **SWOT Analysis** — 2×2 grid (`.swot-grid`) with Strength(green), Weakness(red), Opportunity(blue), Threat(gold)
 
-6. **Reception / User Feedback** — Two-column glass cards for positive and negative reviews, plus insight box
+6. **고유 특징 심층 분석 (Unique Features)** — 게임의 핵심적인 특장점을抽取하여 3개 항목 선정. 각 항목은 상세 설명과 함께圖表/리스트로 구분. 게임만의创新적 메커니즘, 특별한 세계관/스토리텔링, 독특한 커뮤니티 문화 등 포함. `.feature-grid` (2열 그리드), `.feature-card` (각 특징별 카드) 사용
+
+7. **Reception / User Feedback** — Two-column glass cards for positive and negative reviews, plus insight box
 
 7. **Key Systems / Gameplay** — Three-column grid of feature cards
 
 8. **Competitor Landscape** — Bar chart comparing market position, insight box with outlook
 
 9. **Business Model & Future** — Two-column grid + final assessment insight box
+
+**고유 특징 심층 분석 세션 가이드:**
+- 각 게임의 **핵심적인 차별화 요소** 3가지를 선정
+- 예시: 독특한 전투 시스템, 특별한 커뮤니티 문화,创新적 비즈니스 모델, 세계관/스토리텔링, 기술적 우위 등
+- 각 특징마다 **상세 설명 (300~500자)** + **핵심 포인트 리스트 (3~5개)** 구성
+- 게임의 **유일성**과 **경쟁 우위**를 부각
+- `.feature-grid` (grid-template-columns: repeat(3, 1fr)), `.feature-card` (glass-card 스타일) 사용
+- 태그를 사용하여 각 특징의 유형 표시 (`.tag.blue` 등)
 
 **Design patterns to follow:**
 - All cards use `glass-card` class with dark translucent backgrounds

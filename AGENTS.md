@@ -26,6 +26,14 @@
 - Search uses `websearch` with `type: deep`
 - 과금모델 요청 시 Business Model 섹션 확장 (비교표·심층분석 포함)
 
+## Testing & URLs
+- `index.html`에서 URL 파라미터로 특정 보고서 직접 열기: `index.html?page=20260509_helldivers2-analysis`
+- 로컬 테스트 시: 브라우저에서 직접 열면 CORS 오류 발생 → VS Code Live Server 등 로컬 서버 사용 필요
+
+## Skill Usage
+- 게임 분석 페이지 생성 시 `game-analysis` skill 사용 권장: `/game-analysis`
+- skill이 웹 검색, HTML 생성, reports.json 등록까지 자동화
+
 ## Workflow Rules
 - No `git commit` or `git push` without explicit user request
 - Preserve existing instruction files (`SKILL.md`, etc.)
