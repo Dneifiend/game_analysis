@@ -26,7 +26,7 @@
     "title": "연운",
     "genre": "Where Winds Meet",
     "desc": "무협 오픈월드 액션 어드벤처 RPG<br>과금모델 중심 게임 분석",
-      "written": "2026-05-08T00:00:00",
+    "written": "2026-05-08T00:00:00",
     "tags": [
       "무협",
       "오픈월드",
@@ -34,24 +34,6 @@
       "No P2W"
     ],
     "url": "content/20260508_yeonun-analysis.html"
-  },
-  {
-    "id": "gta6",
-    "badge": {
-      "class": "gold",
-      "text": "ROCKSTAR GAMES"
-    },
-    "title": "GTA VI",
-    "genre": "액션 어드벤처",
-    "desc": "바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시",
-      "written": "2026-05-06T00:00:00",
-    "tags": [
-      "오픈월드",
-      "멀티플레이",
-      "PS5",
-      "Xbox"
-    ],
-    "url": "content/20260607_gta6-analysis.html"
   },
   {
     "id": "yihwan",
@@ -62,7 +44,7 @@
     "title": "이환",
     "genre": "Neverness to Everness",
     "desc": "초자연 어반 오픈월드 RPG<br>출시 후 첫 2주 동향 분석",
-      "written": "2026-05-07T00:00:00",
+    "written": "2026-05-07T00:00:00",
     "tags": [
       "오픈월드",
       "서브컬처",
@@ -80,7 +62,7 @@
     "title": "프로젝트 제타",
     "genre": "Project ZETA",
     "desc": "3인칭 백뷰 액션 MOBA<br>오픈 디벨롭먼트 개발 동향 분석",
-      "written": "2026-05-07T00:00:00",
+    "written": "2026-05-07T00:00:00",
     "tags": [
       "MOBA",
       "5팀 경쟁",
@@ -98,7 +80,7 @@
     "title": "헬다이버즈 2",
     "genre": "HELLDIVERS 2",
     "desc": "4인 협동 TPS — 관리되는 민주주의를 전파하라<br>밸런스 논란, 아군 사격, 그리고 2,000만 신화",
-      "written": "2026-05-09T00:00:00",
+    "written": "2026-05-09T00:00:00",
     "tags": [
       "TPS",
       "협동",
@@ -107,58 +89,76 @@
     ],
     "url": "content/20260509_helldivers2-analysis.html"
   },
-    {
-      "id": "warframe",
-      "badge": {
-        "class": "purple",
-        "text": "DIGITAL EXTREMES"
-      },
-      "title": "Warframe",
-      "genre": "WARFRAME",
-      "desc": "3인칭 액션 슈터 RPG<br>모딩, 마스터리 랭크, 파쿠르 심층 분석",
-      "written": "2026-05-09T00:00:00",
-      "tags": [
-        "액션 RPG",
-        "F2P",
-        "모딩",
-        "파쿠르"
-      ],
-      "url": "content/20260509_warframe-analysis.html"
+  {
+    "id": "warframe",
+    "badge": {
+      "class": "purple",
+      "text": "DIGITAL EXTREMES"
     },
-    {
-      "id": "crimson-desert",
-      "badge": {
-        "class": "gold",
-        "text": "PEARL ABYSS"
-      },
-      "title": "붉은사막",
-      "genre": "Crimson Desert",
-      "desc": "7년의 기다림, 평가 반전의 드라마<br>초기 혹평 딛고 1000만장 기대작으로",
-      "written": "2026-05-09T14:30:00",
-      "tags": [
-        "오픈월드",
-        "액션 어드벤처",
-        "평가반전",
-        "AAA"
-      ],
-      "url": "content/20260509_crimson-desert-analysis.html"
+    "title": "Warframe",
+    "genre": "WARFRAME",
+    "desc": "3인칭 액션 슈터 RPG<br>모딩, 마스터리 랭크, 파쿠르 심층 분석",
+    "written": "2026-05-09T00:00:00",
+    "tags": [
+      "액션 RPG",
+      "F2P",
+      "모딩",
+      "파쿠르"
+    ],
+    "url": "content/20260509_warframe-analysis.html"
+  },
+  {
+    "id": "crimson-desert",
+    "badge": {
+      "class": "gold",
+      "text": "PEARL ABYSS"
     },
-    {
-      "id": "deadlock",
-      "badge": {
-        "class": "gold",
-        "text": "VALVE"
-      },
-      "title": "데드락",
-      "genre": "Deadlock",
-      "desc": "6v6 서드퍼슨 MOBA 슈팅<br>밸브의 차세대 플래그십 분석",
-      "written": "2026-05-09T15:00:00",
-      "tags": [
-        "MOBA",
-        "TPS",
-        "Source 2",
-        "클로즈드 알파"
-      ],
-      "url": "content/20260509_deadlock-analysis.html"
-    }
-  ]
+    "title": "붉은사막",
+    "genre": "Crimson Desert",
+    "desc": "7년의 기다림, 평가 반전의 드라마<br>초기 혹평 딛고 1000만장 기대작으로",
+    "written": "2026-05-09T14:30:00",
+    "tags": [
+      "오픈월드",
+      "액션 어드벤처",
+      "평가반전",
+      "AAA"
+    ],
+    "url": "content/20260509_crimson-desert-analysis.html"
+  },
+  {
+    "id": "deadlock",
+    "badge": {
+      "class": "gold",
+      "text": "VALVE"
+    },
+    "title": "데드락",
+    "genre": "Deadlock",
+    "desc": "6v6 서드퍼슨 MOBA 슈팅<br>밸브의 차세대 플래그십 분석",
+    "written": "2026-05-09T15:00:00",
+    "tags": [
+      "MOBA",
+      "TPS",
+      "Source 2",
+      "클로즈드 알파"
+    ],
+    "url": "content/20260509_deadlock-analysis.html"
+  },
+  {
+    "id": "gta6",
+    "badge": {
+      "class": "gold",
+      "text": "ROCKSTAR GAMES"
+    },
+    "title": "GTA VI",
+    "genre": "액션 어드벤처",
+    "desc": "바이스 시티 배경 오픈월드<br>2026년 11월 19일 출시",
+    "written": "2026-05-14T12:00:00",
+    "tags": [
+      "오픈월드",
+      "범죄 시뮬레이션",
+      "2인 주인공",
+      "레오니다"
+    ],
+    "url": "content/20260514_gta6-analysis.html"
+  }
+]

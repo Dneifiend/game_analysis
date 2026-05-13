@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Theft Auto VI 분석 보고서</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #06060c;
+            --card-bg: rgba(30, 30, 40, 0.5);
+            --primary-color: #ff8c00; /* Gold/Orange for Action/MOBA */
+            --secondary-color: #ffd700;
+            --text-color: #b0b0c8;
+            --accent-color: #ff8c00;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(to right, rgba(255, 140, 0, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 140, 0, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* For fade-in */
+            animation: fadeIn 1s ease-out forwards;
+        }
+        .glass-card:nth-child(odd) { animation-delay: 0.1s; }
+        .glass-card:nth-child(even) { animation-delay: 0.2s; }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(255, 140, 0, 0.2);
+        }
+        .fade-in {
+            opacity: 1;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .section-title .accent {
+            display: inline-block;
+            height: 5px;
+            width: 80px;
+            background: var(--accent-color);
+            margin-bottom: 10px;
+            border-radius: 2px;
+        }
+        .section-desc {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-bottom: 40px;
+        }
+        /* Hero Section Styling */
+        #hero {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 140, 0, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0.7; }
+            50% { transform: translate(10vw, -5vh) rotate(180deg); opacity: 0.9; }
+            100% { transform: translate(0, 0) rotate(360deg); opacity: 0.7; }
+        }
+        #hero h1 {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
+        }
+        #hero p {
+            font-size: 1.8rem;
+            color: var(--text-color);
+        }
+        .badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Key Metrics Styling */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        .stat-card {
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stat-card h3 {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .stat-card p {
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-top: 5px;
+        }
+        /* Timeline Styling */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: rgba(255, 140, 0, 0.2);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 20px;
+            margin: 0 20px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+        }
+        .timeline-item:nth-child(odd) { left: 0; text-align: right; }
+        .timeline-item:nth-child(even) { left: 50%; text-align: left; }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid var(--dark-bg);
+        }
+        .timeline-header {
+            font-weight: bold;
+            color: #fff;
+        }
+        /* SWOT Styling */
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .swot-card {
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: border-color 0.3s;
+        }
+        .swot-s { border-left: 5px solid #28a745; background: rgba(40, 167, 69, 0.06); } /* Green */
+        .swot-w { border-left: 5px solid #dc3545; background: rgba(220, 53, 69, 0.06); } /* Red */
+        .swot-o { border-left: 5px solid #00bcd4; background: rgba(0, 188, 212, 0.06); } /* Blue */
+        .swot-t { border-left: 5px solid #ff8c00; background: rgba(255, 140, 0, 0.06); } /* Gold */
+        .swot-card h3 { color: #fff; margin-top: 0; }
+        .swot-card ul { list-style: none; padding: 0; }
+        .swot-card li {
+            position: relative;
+            padding-left: 1.2em;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .swot-card li::before {
+            content: attr(data-prefix);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .swot-s li::before { content: "+"; color: #28a745; }
+        .swot-w li::before { content: "-"; color: #dc3545; }
+        .swot-o li::before { content: "!"; color: #00bcd4; }
+        .swot-t li::before { content: "!"; color: #ff8c00; }
+        /* Unique Features Styling */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .feature-card {
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 30, 40, 0.6);
+            transition: all 0.3s;
+        }
+        .feature-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.4);
+        }
+        .feature-card h3 {
+            color: #fff;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            position: relative;
+            padding-left: 1.5em;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .feature-list li::before {
+            content: "\2022"; /* Bullet point */
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+        }
+        .dot-label {
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+            gap: 8px; /* Explicitly define space between dot and text */
+        }
+        .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            vertical-align: middle;
+        }
+        .dot-purple { background: #7c5cff; }
+        .dot-gold { background: #ff8c00; }
+        .dot-blue { background: #00bcd4; }
+        .dot-pink { background: #ff6b9d; }
+        .dot-teal { background: #26a69a; }
+        /* General Utility */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .insight-box {
+            padding: 30px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            color: #fff;
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+        }
+        .insight-box.gradient {
+            border-image: linear-gradient(to right, #ff8c00, #ff8c00) 1;
+        }
+        /* Footer/Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--accent-color), transparent);
+            margin: 80px 0;
+        }
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="hero">
+        <div class="particles">
+            <div class="particle" style="top: 10%; left: 10%; animation-delay: 0s; --size: 5px;"></div>
+            <div class="particle" style="top: 80%; left: 50%; animation-delay: 5s; --size: 7px;"></div>
+            <div class="particle" style="top: 30%; left: 90%; animation-delay: 10s; --size: 4px;"></div>
+            <div class="particle" style="top: 50%; left: 10%; animation-delay: 3s; --size: 6px;"></div>
+            <div class="particle" style="top: 60%; left: 70%; animation-delay: 8s; --size: 5px;"></div>
+        </div>
+        <h1 class="fade-in">Grand Theft Auto VI</h1>
+        <p class="fade-in">도시를 지배하는 범죄 커플의 서사적 혁신</p>
+        <span class="badge fade-in">RAGE 엔진 | 2026년 11월 19일 출시</span>
+    </div>
+
+    <div class="container">
+        <div class="divider"></div>
+
+        <!-- 1. Key Metrics -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            핵심 지표 (Key Metrics)
+        </h2>
+        <p class="section-desc">GTA 6가 제시하는 시장 규모와 기술적 기대치를 숫자로 확인하세요.</p>
+        <div class="stat-grid">
+            <div class="glass-card fade-in">
+                <h3>$2B+</h3>
+                <p>예상 개발비 (Development Budget)</p>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>2026.11.19</h3>
+                <p>최종 출시 예정일 (Target Release Date)</p>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>2인 주인공</h3>
+                <p>제이슨 & 루시아 (Narrative Focus)</p>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>레오니다</h3>
+                <p>거대 오픈월드 배경 (Leonida Open World)</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 2. Timeline -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            개발 타임라인 (Timeline)
+        </h2>
+        <p class="section-desc">GTA 6를 향한 락스타의 여정과 주요 이정표.</p>
+        <div class="timeline" style="animation-delay: 0.3s;">
+            <div class="timeline-item glass-card fade-in" style="animation-delay: 0.4s;">
+                <div class="timeline-header">2023년: 최초 공개</div>
+                <p>GTA 6 초기 정보 및 컨셉트 공개. 시리즈에 대한 전 세계적 기대감 폭발.</p>
+            </div>
+            <div class="timeline-item glass-card fade-in" style="animation-delay: 0.5s;">
+                <div class="timeline-header">2025년: 출시 연기 확정</div>
+                <p>완성도 제고를 이유로 초기 예상 일정에서 1년가량 연기 결정. 개발 난이도 인지.</p>
+            </div>
+            <div class="timeline-item glass-card fade-in" style="animation-delay: 0.6s;">
+                <div class="timeline-header">2026년 11월: 최종 출시 예정</div>
+                <p>PS5 및 Xbox Series X|S를 통한 콘솔 우선 출시 확정. 최고 품질 구현 목표.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 3. Game Overview -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            게임 개요 (Game Overview)
+        </h2>
+        <p class="section-desc">GTA 6가 추구하는 핵심적인 세계관과 게임의 기본 틀.</p>
+        <div class="two-column" style="animation-delay: 0.7s;">
+            <div class="glass-card fade-in">
+                <h3>📜 세계관: 레오니다 (Leonida)</h3>
+                <p>바이스 시티를 모티브로 한 레오니다 주가 주 무대입니다. 단순히 범죄를 저지르는 배경을 넘어, 현대 미국 사회의 부패와 풍자적인 요소를 극대화한 디스토피아적 풍자 사회를 구현합니다.</p>
+                <ul class="feature-list">
+                    <li>향상된 NPC AI를 통한 사회 상호작용</li>
+                    <li>플로리다 지역의 독특한 환경적 디테일</li>
+                    <li>현실적인 도시 생활 시뮬레이션</li>
+                </ul>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>👥 주요 콘셉트: 커플 범죄자</h3>
+                <p>제이슨과 루시아라는 연인 관계의 두 주인공을 중심으로 이야기가 전개됩니다. 이 이중 주인공 설정은 전통적인 단일 시점 서사를 탈피하며, 각자의 목표와 관계 속에서 발생하는 갈등을 깊이 있게 다룰 것으로 기대됩니다.</p>
+                <ul class="feature-list">
+                    <li>2인 시점 스토리텔링의 도입</li>
+                    <li>범죄와 로맨스의 결합</li>
+                    <li>다차원적인 캐릭터 관계성 탐구</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 4. SWOT Analysis -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            SWOT 분석
+        </h2>
+        <p class="section-desc">GTA 6의 현재 시장 내 강점과 약점을 객관적으로 평가합니다.</p>
+        <div class="swot-grid" style="animation-delay: 0.8s;">
+            <div class="swot-card swot-s">
+                <h3>강점 (Strengths)</h3>
+                <ul>
+                    <li data-prefix="+">압도적인 규모와 그래픽 퀄리티</li>
+                    <li data-prefix="+">레오니다 세계관의 깊이 있는 풍자성</li>
+                    <li data-prefix="+">2인 주인공 시스템의 서사적 잠재력</li>
+                </ul>
+            </div>
+            <div class="swot-card swot-w">
+                <h3>약점 (Weaknesses)</h3>
+                <ul>
+                    <li data-prefix="-">초대형 프로젝트로 인한 개발 리스크</li>
+                    <li data-prefix="-">과도한 기대치로 인한 평가 압박</li>
+                    <li data-prefix="-">방대한 콘텐츠 관리의 복잡성</li>
+                </ul>
+            </div>
+            <div class="swot-card swot-o">
+                <h3>기회 (Opportunities)</h3>
+                <ul>
+                    <li data-prefix="!">라이브 서비스 및 DLC 수익 극대화</li>
+                    <li data-prefix="!">PC 버전 출시를 통한 시장 확대</li>
+                    <li data-prefix="!">커플 서사 기반의 다양한 서브 콘텐츠 개발</li>
+                </ul>
+            </div>
+            <div class="swot-card swot-t">
+                <h3>위협 (Threats)</h3>
+                <ul>
+                    <li data-prefix="!">경쟁작의 빠른 시장 점유율 확대</li>
+                    <li data-prefix="!">높은 개발비로 인한 가격 민감도</li>
+                    <li data-prefix="!">예상보다 늦어질 수 있는 출시 일정</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 5. Unique Features (고유 특징 심층 분석) -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            고유 특징 심층 분석
+        </h2>
+        <p class="section-desc">GTA 6가 이전 시리즈 대비 혁신적으로 도입하는 차별화 요소를 분석합니다.</p>
+        <div class="feature-grid" style="animation-delay: 0.9s;">
+            
+            <div class="feature-card glass-card fade-in">
+                <div class="dot-label"><span class="dot dot-gold"></span> 서사적 혁신 (Dual Protagonist)</div>
+                <h3>양면적 서사 구조</h3>
+                <p>GTA 6는 단일 시점의 남성 캐릭터에 집중하던 기존 시리즈의 틀을 벗어납니다. 제이슨과 루시아라는 연인 커플을 통해 범죄를 수행하는 과정뿐만 아니라, 그들의 감정적 유대, 갈등, 사랑 등의 인간적인 면모가 중심 서사로 확장됩니다. 이는 단순한 액션 게임을 넘어선 로맨스 및 드라마 요소의 도입을 의미하며, 캐릭터의 입체성과 몰입도를 극대화할 핵심 동력입니다.</p>
+                <ul class="feature-list">
+                    <li>각 캐릭터의 고유 미션 라인 제공</li>
+                    <li>관계성에 따른 동기 변화</li>
+                    <li>이중 시점을 통한 상황 해석의 다양성</li>
+                </ul>
+            </div>
+
+            <div class="feature-card glass-card fade-in">
+                <div class="dot-label"><span class="dot dot-blue"></span> 고도화된 현실 시뮬레이션</div>
+                <h3>생활 밀착형 시스템</h3>
+                <p>GTA 6는 단순히 총격전을 벌이는 것을 넘어, 현실 도시 생활의 디테일을 극대화합니다. 정비, 세차, 실내 활동 등 '생활 시뮬레이션' 요소가 도입되면서, 플레이어는 범죄 행위 이전에 도시 시민으로서의 일상적 경험을 하게 됩니다. 이는 오픈월드에 깊이와 '삶'의 느낌을 부여하며, 게임 플레이의 맥락을 훨씬 풍부하게 만듭니다.</p>
+                <ul class="feature-list">
+                    <li>상호작용 가능한 인게임 오브젝트 증가</li>
+                    <li>사실적인 물리 엔진 및 차량 디테일</li>
+                    <li>도시 생활의 루틴 및 디테일 구현</li>
+                </ul>
+            </div>
+
+            <div class="feature-card glass-card fade-in">
+                <div class="dot-label"><span class="dot dot-teal"></span> 압도적인 오픈월드 스케일</div>
+                <h3>바이스 시티의 재탄생</h3>
+                <p>기존 GTA 시리즈를 능가하는 방대한 스케일과 디테일은 레오니다 주에서 완성됩니다. 이는 단순한 맵 확장 이상의 의미를 갖습니다. 수많은 NPC들이 고유한 일상 루틴을 가지고 있으며, 그들의 반응과 도시 환경 자체가 게임 플레이에 직접적인 영향을 미칩니다. 이는 진정한 의미의 '살아있는 도시' 경험을 제공하며, 플레이어의 탐험 동기를 지속적으로 자극합니다.</p>
+                <ul class="feature-list">
+                    <li>향상된 지역별 환경 변화 및 생태계</li>
+                    <li>다양한 배경 환경에서의 미션 가능</li>
+                    <li>수천 명의 고도화된 NPC 동시 상호작용</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+
+        <!-- 6. Reception / User Feedback -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            평가 및 반응 (Reception / User Feedback)
+        </h2>
+        <p class="section-desc">출시 전후의 기대감과 시장의 반응을 분석합니다.</p>
+        <div class="two-column" style="animation-delay: 1.0s;">
+            <div class="glass-card fade-in">
+                <h3>✅ 긍정적 기대 요인 (Positive Hype)</h3>
+                <p>GTA 6는 '게임의 역사적 전환점'이라는 평가를 받으며 전 세계적인 관심을 집중시키고 있습니다. 특히, 2인 주인공 서사와 압도적인 그래픽, 그리고 플로리다를 모티브로 한 세련되고 거대한 배경은 기존 오픈월드 게임의 기준을 높일 것이라는 기대감을 줍니다.</p>
+                <ul class="feature-list">
+                    <li>시대를 초월하는 콘텐츠의 깊이</li>
+                    <li>레오니다 세계관의 매력과 풍자성</li>
+                    <li>역대급 비주얼 충족 기대</li>
+                </ul>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>❌ 우려되는 지점 (Potential Concerns)</h3>
+                <p>방대한 규모와 높은 디테일은 성능 최적화에 큰 부담을 줍니다. 콘솔 환경에서 그래픽 품질과 프레임 유지가 관건이며, 과도한 기대감은 출시 후 시장의 높은 평가를 받기 어려운 구조적 리스크로 작용할 수 있습니다.</p>
+                <ul class="feature-list">
+                    <li>성능 최적화의 어려움 (Performance Bottleneck)</li>
+                    <li>높은 제작비로 인한 가격 부담</li>
+                    <li>기대치를 충족시키지 못할 경우의 리스크</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 7. Key Systems / Gameplay -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            핵심 시스템 (Key Systems)
+        </h2>
+        <p class="section-desc">게임 플레이를 관통하는 주요 메커니즘을 정리합니다.</p>
+        <div class="feature-grid" style="animation-delay: 1.1s;">
+            <div class="feature-card glass-card fade-in">
+                <h3>🔫 다층적 범죄 시스템</h3>
+                <p>단순한 목표 달성이 아닌, 계획 수립, 실행, 탈출의 과정을 포함하는 복잡한 범죄 시퀀스. 이 과정에서 두 주인공의 협력과 긴장감이 주요 게임 플레이를 이룹니다.</p>
+            </div>
+            <div class="feature-card glass-card fade-in">
+                <h3>🚗 고도화된 운전/이동 시스템</h3>
+                <p>현실적인 물리 엔진을 기반으로 차량 운전 및 이동 시스템이 구현됩니다. 단순한 이동 수단이 아닌, 환경과 상호작용하며 게임의 흐름을 바꾸는 중요한 도구로 기능합니다.</p>
+            </div>
+            <div class="feature-card glass-card fade-in">
+                <h3>🎭 사회적 상호작용 (NPC Interaction)</h3>
+                <p>NPC들이 단순히 배경이 아니라, 도시의 시스템을 구성하는 살아있는 주체로 기능합니다. 플레이어의 행동에 따라 NPC들의 반응과 도시 분위기가 동적으로 변화합니다.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 8. Competitor Landscape -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            경쟁 환경 분석 (Competitor Landscape)</h2>
+        <p class="section-desc">오픈월드 시장 내 GTA 6가 가지는 독보적인 위치와 경쟁 구도.</p>
+        <div class="insight-box gradient" style="animation-delay: 1.2s;">
+            <h3>경쟁 우위 및 시장 위치</h3>
+            <p>GTA 6는 단순히 경쟁작과 비교하는 것을 넘어, '오픈월드 시뮬레이션'이라는 새로운 장르적 기준을 제시합니다. 기존의 경쟁작들이 특정 요소(예: 전투, 탐험)에 집중하는 반면, GTA 6는 '현실적인 삶'이라는 총체적인 경험을 제공함으로써, 현존하는 모든 오픈월드 타이틀을 아우르는 독보적인 위상을 확보할 것으로 예상됩니다.</p>
+        </div>
+        
+        <div class="divider"></div>
+
+        <!-- 9. Business Model & Future -->
+        <h2 class="section-title">
+            <span class="accent"></span>
+            비즈니스 모델 및 미래 전망
+        </h2>
+        <p class="section-desc">GTA 6가 가져올 수익 모델과 장기적인 시장 영향력 분석.</p>
+        <div class="two-column" style="animation-delay: 1.3s;">
+            <div class="glass-card fade-in">
+                <h3>💰 수익 모델 (Business Model)</h3>
+                <p>핵심 판매 모델은 고가(Premium Pricing)의 콘솔/PC 판매입니다. 장기적으로는 시즌 패스, DLC, 그리고 인게임 커스터마이징 및 미니 게임 형태의 마이크로트랜잭션이 수익의 주요 축이 될 것입니다. GTA의 방대한 세계관은 지속적인 확장 콘텐츠에 매우 유리합니다.</p>
+                <ul class="feature-list">
+                    <li>기본 게임 판매 (High Initial Revenue)</li>
+                    <li>시즌별 대규모 확장팩 (DLC)</li>
+                    <li>인게임 커스터마이징 및 판매 아이템</li>
+                </ul>
+            </div>
+            <div class="glass-card fade-in">
+                <h3>🔮 미래 전망 (Future Outlook)</h3>
+                <p>GTA 6는 단순한 게임 출시를 넘어선 문화적 현상으로 자리매김할 것입니다. 락스타 게임즈의 지속적인 IP 확장과 연동하여, 레오니다 세계관을 활용한 다양한 형태의 미디어(웹툰, 영화, 기타 게임)로의 확장이 가능합니다. 이는 수십 년에 걸친 지속 가능한 IP 파워를 의미합니다.</p>
+                <ul class="feature-list">
+                    <li>IP의 다중 매체 확산 (Media Franchise)</li>
+                    <li>지속적인 콘텐츠 업데이트 및 생명력</li>
+                    <li>오픈월드 시뮬레이션 장르의 표준 확립</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Simple intersection observer for fade-in effect
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.glass-card, .timeline-item, .insight-box').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

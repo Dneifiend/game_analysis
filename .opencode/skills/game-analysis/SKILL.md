@@ -87,8 +87,8 @@ Generate a single self-contained HTML file with the following structure:
 - `fade-in` class on all major elements with IntersectionObserver for scroll animation
 - Section headers with colored accent bar (`.section-title > .accent` + `.section-desc`)
 - `insight-box` for key takeaways (gradient border with accent color)
-- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 14px, color `#b0b0c8`.
-- Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern.
+- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 14px, color `#b0b0c8`. **Crucial**: `li` must have `position: relative;` for the absolutely positioned `::before` to anchor correctly.
+- Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern. **Crucial**: `.dot` must have `display: inline-block;` for width/height to take effect.
 - Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
 - Custom scrollbar styling matching game theme color
 - **Floating particles** in Hero section (`.particles`, `.particle`, `@keyframes float`) with theme-appropriate colors
@@ -100,8 +100,9 @@ Generate a single self-contained HTML file with the following structure:
 - All measurements in rem/em/vw — responsive
 - Dark theme with low-opacity colored accents
 - Grid overlay on fixed position
-- `.dot` for label indicators: `width: 6px; height: 6px; display: inline-block; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
-- **SWOT grid**: `.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }`. `.swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }`. Each `.swot-s/w/o/t` has colored `background`, `border-color`, `h3 color`, and `li::before` content/color.
+- `.dot` for label indicators: `display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
+- **SWOT grid**: `.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }`. `.swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }`. Each `.swot-s/w/o/t` has colored `background`, `border-color`, `h3 color`, and `li::before` content/color. **Require `position: relative` on `li` for `::before` absolute positioning.**
+- **Feature list bullets**: `.feature-list li { position: relative; padding-left: 1.5em; } .feature-list li::before { content: "\2022"; position: absolute; left: 0; }` — same `position: relative` rule applies.
 
 ### Step 3: Create Index Page (if multiple games)
 
@@ -124,7 +125,7 @@ Place all files in the current workspace directory.
 
 File naming convention:
 - `index.html` — dashboard/index page (located in workspace root)
-- `content/{yyyymmdd}_{game-slug}-analysis.html` — individual game pages
+- `content/{ID}-analysis.html` — individual game pages (ID = ID_yyyymmddhhmmss, e.g. `ID_20260514123045`)
 - `content/` directory — all analysis HTML files
 
 ### Step 5: Register in reports.json & Update index.html
@@ -137,7 +138,7 @@ Append a new entry at the end of the array with this structure:
 
 ```json
 {
-  "id": "{game-slug}",
+  "id": "{ID}",
   "badge": {
     "class": "{color-name}",
     "text": "{PUBLISHER · DEVELOPER}"
@@ -145,16 +146,17 @@ Append a new entry at the end of the array with this structure:
   "title": "{게임명}",
   "genre": "{English Title}",
   "desc": "{한줄 설명}<br>{추가 설명}",
-  "date": "{YYYY. M. D.}",
+  "written": "{yyyy-mm-ddTHH:MM:SS}",
   "tags": [
     "{태그1}",
     "{태그2}",
     "{태그3}",
     "{태그4}"
   ],
-  "url": "content/{yyyymmdd}_{game-slug}-analysis.html"
+  "url": "content/{ID}-analysis.html"
 }
 ```
+⚠️ **`{ID}` format**: Must be `ID_yyyymmddhhmmss` (e.g. `ID_20260514123045`). The `written` field uses ISO 8601 with full time.
 
 ⚠️ **`{color-name}` must be one of: `purple`, `gold`, `blue`, `pink`, `teal`** (see AGENTS.md convention).
 Choose by genre: RPG/fantasy → `purple`, Action/MOBA → `gold`, Sim/strategy → `blue`, Horror/indie → `pink`, Sports/casual → `teal`.
