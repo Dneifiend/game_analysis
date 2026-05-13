@@ -36,6 +36,9 @@
 
 ## Workflow Rules
 - No `git commit` or `git push` without explicit user request
+
+## Web Search
+- 웹 검색이 필요하면 반드시 `websearch`/`webfetch` 대신 MCP `search_google` 툴을 사용 (Selenium Chrome headless로 Google 검색 후 텍스트 반환)
 - Preserve existing instruction files (`SKILL.md`, etc.)
 - Check `git status` before any commit
 
