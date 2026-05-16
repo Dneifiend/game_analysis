@@ -1,13 +1,13 @@
 ---
 name: game-analysis
-description: Creates post-launch game analysis HTML pages with a dark-themed dashboard layout. Searches web for game data, then generates a comprehensive analysis page with hero sections, stat cards, timelines, SWOT analysis, competitor landscape, and future outlook. Optionally creates an index page with left-right panel layout linking multiple game reports.
+description: Creates premium, highly analytical post-launch game analysis HTML pages with a sophisticated dark-themed glassmorphism layout. Conducts deep web searches for qualitative and quantitative game data, generating professional reports featuring hero sections, dynamic metric cards, strategic SWOT, technical/art breakdowns, and monetization/retention analysis.
 ---
 
-# Game Analysis Page Creator
+# Premium Game Analysis Page Creator
 
 ⚠️ **Badge Color Rule**: Use ONLY 5 predefined colors (purple, gold, blue, pink, teal). Do NOT create new badge classes. See AGENTS.md for full convention.
 
-Creates visually polished, dark-themed HTML analysis pages for games post-launch or in-development. Each page is a self-contained report with consistent design language.
+Creates visually stunning, highly professional dark-themed HTML analysis pages for games. Each page must serve as a comprehensive, executive-level report with state-of-the-art web design aesthetics.
 
 ## When to Use
 
@@ -20,89 +20,64 @@ Use this skill when the user asks you to:
 
 ## Workflow
 
-### Step 1: Gather Game Data
+### Step 1: Deep Qualitative & Quantitative Data Gathering
 
-Search the web thoroughly for the game using `websearch` with type `deep`:
+Search the web thoroughly for the game using MCP `search_google` tool:
 
 ```text
-websearch(query: "{game_name} 게임 2026", type: deep)
-websearch(query: "{game_name} 출시 매출", type: deep)
-websearch(query: "{game_name} 리뷰 평가", type: deep)
+1. "{game_name} 게임 분석 리뷰 2026"
+2. "{game_name} 매출 순위 트래픽 지표"
+3. "{game_name} 과금 모델 BM 평가"
+4. "{game_name} 엔진 기술적 특징 최적화"
+5. "{game_name} 개발자 인터뷰 로드맵"
 ```
 
-Collect these data points:
-- Developer & Publisher
-- Genre & Platform
-- Release date & status
-- Key metrics (pre-registrations, day-1 revenue, rankings)
-- Gameplay features & systems
-- SWOT-relevant information
-- Competitor landscape
-- Community reception (positive/negative)
-- Timeline of events
-- Business model / monetization
-- Future outlook / roadmap
+Collect these critical data points:
+- **Core Info**: Developer, Publisher, Engine, Platforms, Release Date.
+- **Quantitative Metrics**: Sales, DAU/MAU estimates, Metacritic/Steam scores, App Store rankings.
+- **Core Loop & Mechanics**: Detailed breakdown of the gameplay loop and unique systems.
+- **Art & Technology**: Art style, graphical achievements, optimization status.
+- **Monetization (BM) & Retention**: How the game makes money (P2W evaluation, Battle Pass, Gacha rates) and how it retains players.
+- **Strategic SWOT**: Deep analysis of Strengths, Weaknesses, Opportunities, and Threats in the current market context.
+- **Community Sentiment**: Nuanced breakdown of player feedback (both praise and pain points).
+- **Future Outlook**: Planned updates, roadmap, and expected lifecycle.
 
-### Step 2: Create the Analysis HTML
+### Step 2: Create the Premium Analysis HTML
 
-Generate a single self-contained HTML file with the following structure:
+Generate a single self-contained HTML file. The design MUST WOW the user, feeling extremely premium, responsive, and dynamic.
 
-**Color scheme by genre/theme:**
-- Purple/magenta gradient → subculture, fantasy, RPG games (`#7c5cff`, `#ff6b9d`)
-- Gold/orange gradient → action, competitive, MOBA games (`#ff8c00`, `#ffd700`)
-- Background: `#06060c` (deep dark), grid overlay with `0.025` opacity
+**Design System & Aesthetics (CRITICAL):**
+- **Typography**: Use `Pretendard` for a modern, sleek look. (`<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">`)
+- **Theme Colors**:
+  - RPG/Subculture: Purple/Pink (`#8b5cf6`, `#ec4899`) → `purple` badge
+  - Action/MOBA: Gold/Orange (`#f59e0b`, `#f97316`) → `gold` badge
+  - Strategy/Sim: Blue/Cyan (`#0ea5e9`, `#06b6d4`) → `blue` badge
+  - Horror/Survival: Red/Crimson (`#ef4444`, `#be123c`) → `pink` badge
+  - Casual/Sports: Teal/Green (`#14b8a6`, `#10b981`) → `teal` badge
+- **Premium Glassmorphism**: Cards must use `background: rgba(20, 20, 25, 0.4);`, `backdrop-filter: blur(16px) saturate(180%);`, and `border: 1px solid rgba(255, 255, 255, 0.08);`.
+- **Dynamic Interactions**: Implement hover effects on cards (`.glass-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.15); }`) with smooth transitions (`transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);`).
+- **Gradients & Glows**: Use multi-stop linear/radial gradients for backgrounds and text (`background-clip: text; color: transparent;`). Add subtle neon text-shadows for key metrics.
+- **Background**: Deep dark `#05050a` with a subtle, animated radial gradient orb in the background representing the theme color, plus a very faint grid overlay (`background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)...`).
 
-**Required sections (in order):**
+**Required Sections (Executive Structure, In Order):**
 
-1. **Hero** — Full viewport header with game title, subtitle, badge, metadata row (dot label pattern 적용), floating particles animation
+1. **Hero Banner** — Cinematic full-width header. Game title (gradient text), elegant subtitle, metadata row with dot labels. Background should feature animated glowing particles (`.particles`) and a rich gradient overlay.
+2. **Executive Summary & Key Metrics (Bento Grid)** — A modern "Bento Box" style grid layout (`display: grid; gap: 16px;`). Show critical stats (Score, Sales, Rank, Peak CCU) with glowing numbers and mini CSS-based progress bars or sparklines.
+3. **Core Loop & Unique Mechanics** — Deep dive into what makes the game fun. Use a 3-column layout of premium cards. Each card must have a distinct title and analytical text focusing on *why* it works (e.g., combat rhythm, progression psychology).
+4. **Art Direction & Technical Execution** — Analyze the visuals, sound design, and engine optimization. Use a 2-column split (Art vs. Tech).
+5. **Strategic SWOT Analysis** — 2×2 grid (`.swot-grid`). Each quadrant must have a tinted background of its respective color (Strength: Green, Weakness: Red, Opportunity: Blue, Threat: Gold). Do not just list facts; provide *strategic implications*. **Crucial**: Lists must use `position: relative` for custom `::before` bullets.
+6. **Monetization (BM) & Retention Strategy** — How the game monetizes and keeps players coming back. Include a CSS-based "P2W Severity" meter or value assessment bar.
+7. **Community Sentiment & Reception** — 2-column layout (Positive/Negative) with summarized user feedback trends and actual player quotes. Use a sleek "insight box" for the overall consensus.
+8. **Timeline & Future Roadmap** — A sleek vertical timeline (`.timeline`) showing pre-launch, launch, and future milestones.
+9. **Final Analyst Verdict** — A prominent, beautifully styled insight box (`.insight-box` with gradient border) at the bottom summarizing the game's market impact and future potential.
 
-2. **Key Metrics** — Grid of stat cards with large numbers (`.stat-grid`), metric row, bar chart for regional performance
-
-3. **Timeline** — Vertical timeline (`.timeline`) with date, title, description for each milestone
-
-4. **Game Overview** — Two-column glass card with basic info and platform details, plus lore description
-
-5. **SWOT Analysis** — 2×2 grid (`.swot-grid`). Strength(`.swot-s`, green, `+` prefix), Weakness(`.swot-w`, red, `-` prefix), Opportunity(`.swot-o`, blue, `!` prefix), Threat(`.swot-t`, gold, `!` prefix). 각 카드는 해당 색상의 낮은 투명도 배경/테두리 사용.
-
-6. **고유 특징 심층 분석 (Unique Features)** — 게임의 핵심적인 특장점을 추출하여 3개 항목 선정. 각 항목은 상세 설명과 함께 차트/리스트로 구분. 게임만의 혁신적 메커니즘, 특별한 세계관/스토리텔링, 독특한 커뮤니티 문화 등 포함. `.feature-grid` (2열 그리드), `.feature-card` (각 특징별 카드) 사용
-
-7. **Reception / User Feedback** — Two-column glass cards for positive and negative reviews, plus insight box
-
-7. **Key Systems / Gameplay** — Three-column grid of feature cards
-
-8. **Competitor Landscape** — Bar chart comparing market position, insight box with outlook
-
-9. **Business Model & Future** — Two-column grid + final assessment insight box
-
-**고유 특징 심층 분석 세션 가이드:**
-- 각 게임의 **핵심적인 차별화 요소** 3가지를 선정
-- 예시: 독특한 전투 시스템, 특별한 커뮤니티 문화, 혁신적 비즈니스 모델, 세계관/스토리텔링, 기술적 우위 등
-- 각 특징마다 **상세 설명 (300~500자)** + **핵심 포인트 리스트 (3~5개)** 구성
-- 게임의 **유일성**과 **경쟁 우위**를 부각
-- `.feature-grid` (grid-template-columns: repeat(3, 1fr)), `.feature-card` (glass-card 스타일) 사용
-- 각 특징의 유형을 **dot 라벨 버튼**으로 표시: `<span><span class="dot"></span> 라벨명</span>` — 회색 글씨 + 테마 색상 6px 동그라미
-
-**Design patterns to follow:**
-- All cards use `glass-card` class with dark translucent backgrounds
-- `fade-in` class on all major elements with IntersectionObserver for scroll animation
-- Section headers with colored accent bar (`.section-title > .accent` + `.section-desc`)
-- `insight-box` for key takeaways (gradient border with accent color)
-- **SWOT cards** use `.swot-s`, `.swot-w`, `.swot-o`, `.swot-t` classes. Each has tinted background (`rgba(0,200,120,0.06)`), colored border, `::before` symbol prefix on `li` (`+`, `-`, `!`). Font: 14px, color `#b0b0c8`. **Crucial**: `li` must have `position: relative;` for the absolutely positioned `::before` to anchor correctly.
-- Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text. Replace colored background tags with this pattern. **Crucial**: `.dot` must have `display: inline-block;` for width/height to take effect.
-- Bar charts with gradient fills (`.bf-purple`, `.bf-gold`, `.bf-pink`, `.bf-blue`, `.bf-teal`, `.bf-red`)
-- Custom scrollbar styling matching game theme color
-- **Floating particles** in Hero section (`.particles`, `.particle`, `@keyframes float`) with theme-appropriate colors
-- **Section divider** after Hero (`.divider` with linear-gradient from transparent to theme color to transparent)
-
-**CSS architecture:**
-- Single embedded `<style>` block
-- Google Fonts: `Noto Sans KR`
-- All measurements in rem/em/vw — responsive
-- Dark theme with low-opacity colored accents
-- Grid overlay on fixed position
-- `.dot` for label indicators: `display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; vertical-align: middle; background: var(--primary);`
-- **SWOT grid**: `.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }`. `.swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }`. Each `.swot-s/w/o/t` has colored `background`, `border-color`, `h3 color`, and `li::before` content/color. **Require `position: relative` on `li` for `::before` absolute positioning.**
-- **Feature list bullets**: `.feature-list li { position: relative; padding-left: 1.5em; } .feature-list li::before { content: "\2022"; position: absolute; left: 0; }` — same `position: relative` rule applies.
+**Implementation Rules:**
+- Everything must be in a single HTML file (CSS inside `<style>`).
+- Use IntersectionObserver to add `.visible` to elements with a base `.fade-in` class for elegant scroll-reveal animations.
+- Scrollbar must be custom styled (`::-webkit-scrollbar`) to match the theme color.
+- **Section Headers**: Must have a sleek, uppercase English subtitle (`font-size: 0.8rem; letter-spacing: 2px; color: var(--theme-color);`) above the Korean title, accompanied by a colored accent line.
+- Dot labels (`category indicator`): `<span><span class="dot"></span> LABEL</span>` — a small colored dot before text.
+- Maintain `position: relative` on `li` elements when using `::before` pseudo-elements for absolute positioning of custom bullet points.
 
 ### Step 3: Create Index Page (if multiple games)
 
@@ -110,13 +85,11 @@ When the user says "상위 페이지" or wants a dashboard linking multiple repo
 
 ```
 Layout: header + left-right split
-Left panel (320px): game list cards
+Left panel (320px): game list cards (Premium glassmorphism style)
   - Each card: publisher badge, title, genre, description, date, tags
-  - `.game-date` style: font-size 11px, color #444, margin-top 6px
-  - Active state with colored border/glow
+  - Active state with colored border/glow and translate effect
 Right panel: iframe loading selected game's HTML
   - frame-wrap div with seamless background matching parent
-  - No border on iframe, border-left on wrap
 ```
 
 ### Step 4: Save Files
@@ -126,7 +99,6 @@ Place all files in the current workspace directory.
 File naming convention:
 - `index.html` — dashboard/index page (located in workspace root)
 - `content/{ID}-analysis.html` — individual game pages (ID = ID_yyyymmddhhmmss, e.g. `ID_20260514123045`)
-- `content/` directory — all analysis HTML files
 
 ### Step 5: Register in reports.json & Update index.html
 
@@ -157,39 +129,23 @@ Append a new entry at the end of the array with this structure:
 }
 ```
 ⚠️ **`{ID}` format**: Must be `ID_yyyymmddhhmmss` (e.g. `ID_20260514123045`). The `written` field uses ISO 8601 with full time.
-
-⚠️ **`{color-name}` must be one of: `purple`, `gold`, `blue`, `pink`, `teal`** (see AGENTS.md convention).
-Choose by genre: RPG/fantasy → `purple`, Action/MOBA → `gold`, Sim/strategy → `blue`, Horror/indie → `pink`, Sports/casual → `teal`.
+⚠️ **`{color-name}` must be one of: `purple`, `gold`, `blue`, `pink`, `teal`**. Choose by genre.
 
 **5b. Set badge CSS class in `index.html`**
 
-⚠️ **Important**: AGENTS.md convention — use ONLY these 5 predefined color names. Do NOT create new badge classes.
-
-```css
-.game-card .badge.purple { color: #7c5cff; }
-.game-card .badge.gold { color: #ff8c00; }
-.game-card .badge.blue { color: #00bcd4; }
-.game-card .badge.pink { color: #ff6b9d; }
-.game-card .badge.teal { color: #26a69a; }
-```
-
-Choose by genre: RPG/fantasy → `purple`, Action/MOBA → `gold`, Sim/strategy → `blue`, Horror/indie → `pink`, Sports/casual → `teal`.
+⚠️ **Important**: AGENTS.md convention — use ONLY these 5 predefined color names. Do NOT create new badge classes. Choose the color based on the genre and apply the corresponding CSS class.
 
 **5c. (Do NOT manually edit index.html loadReport function)**
 
-⚠️ **STRICTLY FORBIDDEN**: Do NOT add manual `else if` cases to the `loadReport()` function in `index.html`. The dashboard system dynamically loads reports based on the `id` field in `reports.json`. Adding manual cases will break the dynamic loading system.
-
-The `loadReport(name)` function already handles loading by finding the report in `allReports` (loaded from `reports.json`) using the `id`. No code modification in `index.html` is required for new reports.
+⚠️ **STRICTLY FORBIDDEN**: Do NOT add manual `else if` cases to the `loadReport()` function in `index.html`. The dashboard system dynamically loads reports based on the `id` field in `reports.json`. No code modification in `index.html` is required for new reports.
 
 ## Example Output Structure
 
 ```
 index.html                    ← left-right dashboard (optional)
 content/
-  20260507_yihwan-analysis.html    ← game analysis page
-  20260507_project-zeta-analysis.html    ← game analysis page
-  20260607_gta6-analysis.html    ← game analysis page
-  20260508_yeonun-analysis.html  ← game analysis page
+  ID_20260507120000-analysis.html    ← game analysis page
+  ID_20260507153000-analysis.html    ← game analysis page
 ```
 
-Each analysis page is fully self-contained (no external dependencies except Google Fonts CDN) and can be opened directly in a browser.
+Each analysis page is fully self-contained (no external dependencies except Google Fonts/Pretendard CDN) and can be opened directly in a browser.
