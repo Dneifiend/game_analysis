@@ -160,5 +160,24 @@
       "레오니다"
     ],
     "url": "content/20260514_gta6-analysis.html"
+  },
+  {
+    "id": "subnautica2",
+    "badge": {
+      "class": "blue",
+      "text": "UNKNOWN WORLDS · KRAFTON"
+    },
+    "title": "서브노티카 2",
+    "genre": "Subnautica 2",
+    "desc": "새로운 심해, 새로운 공포, 새로운 생존<br>얼리 액세스 12시간만에 200만장 돌파",
+    "written": "2026-05-16T12:00:00",
+    "tags": [
+      "생존",
+      "오픈월드",
+      "해양 탐험",
+      "UE5",
+      "협동"
+    ],
+    "url": "content/20260516_subnautica2-analysis.html"
   }
 ]

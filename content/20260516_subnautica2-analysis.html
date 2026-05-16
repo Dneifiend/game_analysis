@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서브노티카 2 — 심해 생존의 진화, 200만 장 신화</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #00bcd4;
+  --primary-dim: rgba(0, 188, 212, 0.15);
+  --primary-glow: rgba(0, 188, 212, 0.3);
+  --bg: #06060c;
+  --card-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.06);
+  --text: #e0e0e8;
+  --text-dim: #8888a0;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+.grid-overlay {
+  position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none; z-index: 0;
+}
+.hero {
+  position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  z-index: 1; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(0,188,212,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 60%, rgba(0,150,136,0.08) 0%, transparent 50%);
+  z-index: 1;
+}
+.hero-content { text-align: center; z-index: 2; padding: 2rem; position: relative; }
+.hero-badge {
+  display: inline-block; padding: 8px 24px; border-radius: 20px;
+  border: 1px solid var(--primary); color: var(--primary);
+  font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 1.5rem;
+  background: rgba(0,188,212,0.08);
+}
+.hero h1 {
+  font-size: clamp(3rem, 8vw, 6rem); font-weight: 900;
+  background: linear-gradient(135deg, #00bcd4 0%, #26c6da 50%, #80deea 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.1; margin-bottom: 0.5rem;
+}
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.6rem); color: var(--text-dim);
+  font-weight: 300; margin-bottom: 2rem;
+}
+.hero-meta {
+  display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;
+  font-size: 0.9rem; color: var(--text-dim);
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+.dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle; background: var(--primary);
+}
+.particles { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.particle {
+  position: absolute; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--primary); opacity: 0.3;
+  animation: float linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.3; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+}
+.divider {
+  height: 2px; background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.4; margin: 0; position: relative; z-index: 1;
+}
+.section { padding: 5rem 2rem; position: relative; z-index: 1; }
+.section-inner { max-width: 1200px; margin: 0 auto; }
+.section-title { margin-bottom: 3rem; }
+.section-title .accent {
+  display: block; width: 50px; height: 4px; background: var(--primary);
+  border-radius: 2px; margin-bottom: 1rem;
+}
+.section-title h2 {
+  font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 700;
+  color: #fff; margin-bottom: 0.5rem;
+}
+.section-title p { color: var(--text-dim); font-size: 1rem; }
+.glass-card {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 16px; padding: 2rem;
+  backdrop-filter: blur(12px); transition: transform 0.3s, box-shadow 0.3s;
+}
+.glass-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,188,212,0.08); }
+.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* Stats */
+.stat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.stat-card {
+  text-align: center; padding: 2rem 1rem;
+}
+.stat-card .num {
+  font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), #80deea);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+.stat-card .num span { font-size: 0.5em; opacity: 0.6; }
+.stat-card .label { color: var(--text-dim); font-size: 0.9rem; margin-top: 0.3rem; }
+
+/* Bar chart */
+.bar-chart { margin-top: 2rem; }
+.bar-chart .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.bar-chart .bar-label { width: 80px; font-size: 0.85rem; color: var(--text-dim); text-align: right; }
+.bar-chart .bar-track { flex: 1; height: 28px; background: rgba(255,255,255,0.04); border-radius: 14px; overflow: hidden; }
+.bar-chart .bar-fill { height: 100%; border-radius: 14px; width: 0; transition: width 1.2s ease; }
+.bf-blue { background: linear-gradient(90deg, #00bcd4, #4dd0e1); }
+.bf-teal { background: linear-gradient(90deg, #26a69a, #4db6ac); }
+.bf-purple { background: linear-gradient(90deg, #7c5cff, #b39ddb); }
+.bf-gold { background: linear-gradient(90deg, #ff8c00, #ffd54f); }
+.bf-pink { background: linear-gradient(90deg, #ff6b9d, #f48fb1); }
+.bf-red { background: linear-gradient(90deg, #ef5350, #e57373); }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 40px; }
+.timeline::before {
+  content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(180deg, var(--primary), transparent);
+}
+.timeline-item { position: relative; margin-bottom: 2.5rem; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -25px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--primary);
+}
+.timeline-item .date { font-size: 0.8rem; color: var(--primary); margin-bottom: 0.3rem; }
+.timeline-item h4 { font-size: 1.1rem; color: #fff; margin-bottom: 0.3rem; }
+.timeline-item p { font-size: 0.9rem; color: var(--text-dim); }
+
+/* Overview grid */
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.info-list { list-style: none; }
+.info-list li {
+  display: flex; justify-content: space-between; padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.95rem;
+}
+.info-list li:last-child { border-bottom: none; }
+.info-list .key { color: var(--text-dim); }
+.info-list .val { color: #fff; text-align: right; }
+
+/* SWOT */
+.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.swot-card { border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.06); }
+.swot-card h3 { font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+.swot-card ul { list-style: none; }
+.swot-card li { position: relative; padding-left: 1.5em; font-size: 0.9rem; color: #b0b0c8; margin-bottom: 0.6rem; line-height: 1.6; }
+.swot-s { background: rgba(0,200,120,0.06); border-color: rgba(0,200,120,0.2); }
+.swot-s h3 { color: #4caf50; }
+.swot-s li::before { content: '+'; position: absolute; left: 0; color: #4caf50; font-weight: 700; }
+.swot-w { background: rgba(255,80,80,0.06); border-color: rgba(255,80,80,0.2); }
+.swot-w h3 { color: #ef5350; }
+.swot-w li::before { content: '-'; position: absolute; left: 0; color: #ef5350; font-weight: 700; }
+.swot-o { background: rgba(0,188,212,0.06); border-color: rgba(0,188,212,0.2); }
+.swot-o h3 { color: #00bcd4; }
+.swot-o li::before { content: '!'; position: absolute; left: 0; color: #00bcd4; font-weight: 700; }
+.swot-t { background: rgba(255,180,0,0.06); border-color: rgba(255,180,0,0.2); }
+.swot-t h3 { color: #ffc107; }
+.swot-t li::before { content: '!'; position: absolute; left: 0; color: #ffc107; font-weight: 700; }
+
+/* Feature Grid */
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feature-card { padding: 2rem; }
+.feature-card .dot-label {
+  display: inline-block; font-size: 0.75rem; color: #999; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 6px;
+}
+.feature-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 1rem; }
+.feature-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 1rem; }
+.feature-list { list-style: none; }
+.feature-list li { position: relative; padding-left: 1.5em; font-size: 0.85rem; color: #b0b0c8; margin-bottom: 0.5rem; }
+.feature-list li::before { content: '\2022'; position: absolute; left: 0; color: var(--primary); }
+
+/* Reception */
+.reception-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.review-card { padding: 1.5rem; }
+.review-card h3 { margin-bottom: 1rem; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+.review-card.pos h3 { color: #4caf50; }
+.review-card.neg h3 { color: #ef5350; }
+.review-card blockquote {
+  font-size: 0.9rem; color: var(--text-dim); font-style: italic;
+  padding: 1rem; border-left: 3px solid var(--primary); margin-bottom: 0.8rem;
+  background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0;
+}
+.review-card blockquote .source { display: block; font-style: normal; font-size: 0.8rem; color: #666; margin-top: 0.5rem; }
+
+/* Key Systems */
+.systems-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.system-card { text-align: center; padding: 2rem 1.5rem; }
+.system-card .icon { font-size: 2rem; margin-bottom: 1rem; }
+.system-card h3 { font-size: 1.05rem; color: #fff; margin-bottom: 0.5rem; }
+.system-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+/* Competitor */
+.competitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.competitor-info .comp-bar { margin-bottom: 1rem; }
+.competitor-info .comp-bar .comp-label { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.competitor-info .comp-bar .comp-label span { font-size: 0.85rem; color: var(--text-dim); }
+.competitor-info .comp-bar .comp-label strong { color: #fff; }
+.competitor-info .comp-bar .comp-track { height: 8px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; }
+.competitor-info .comp-bar .comp-fill { height: 100%; border-radius: 4px; }
+
+/* Business Model */
+.biz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.biz-card { padding: 1.5rem; }
+.biz-card h3 { font-size: 1rem; color: #fff; margin-bottom: 0.8rem; }
+.biz-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+.biz-table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; }
+.biz-table th, .biz-table td {
+  padding: 10px 12px; text-align: left; font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.biz-table th { color: var(--text-dim); font-weight: 500; }
+.biz-table td { color: #ccc; }
+
+/* Insight Box */
+.insight-box {
+  margin-top: 2rem; padding: 2rem; border-radius: 16px;
+  border: 1px solid rgba(0,188,212,0.25);
+  background: linear-gradient(135deg, rgba(0,188,212,0.06), rgba(0,150,136,0.04));
+  position: relative;
+}
+.insight-box::before {
+  content: ''; position: absolute; inset: 0; border-radius: 16px;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--primary), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.insight-box h4 { color: var(--primary); font-size: 1rem; margin-bottom: 0.5rem; }
+.insight-box p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+
+/* Two column */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(0,188,212,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,188,212,0.5); }
+
+@media (max-width: 768px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .overview-grid, .swot-grid, .feature-grid, .reception-grid, .systems-grid, .competitor-grid, .biz-grid, .two-col { grid-template-columns: 1fr; }
+  .hero-meta { gap: 0.8rem; }
+  .section { padding: 3rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-overlay"></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">UNKNOWN WORLDS ENTERTAINMENT · KRAFTON</div>
+    <h1>서브노티카 2</h1>
+    <p class="hero-sub">Subnautica 2 — 새로운 심해, 새로운 공포, 새로운 생존</p>
+    <div class="hero-meta">
+      <span><span class="dot" style="background:#00bcd4"></span> 샌드박스 생존</span>
+      <span><span class="dot" style="background:#00bcd4"></span> 오픈월드</span>
+      <span><span class="dot" style="background:#00bcd4"></span> 최대 4인 협동</span>
+      <span><span class="dot" style="background:#00bcd4"></span> 언리얼 엔진 5</span>
+      <span><span class="dot" style="background:#00bcd4"></span> 얼리 액세스</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Key Metrics -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>핵심 지표</h2>
+      <p>얼리 액세스 출시 48시간, 글로벌 기록을 갈아치우다</p>
+    </div>
+    <div class="stat-grid fade-in">
+      <div class="glass-card stat-card">
+        <div class="num">200<span>만</span></div>
+        <div class="label">출시 12시간 누적 판매</div>
+      </div>
+      <div class="glass-card stat-card">
+        <div class="num">100<span>만</span></div>
+        <div class="label">첫날 판매량</div>
+      </div>
+      <div class="glass-card stat-card">
+        <div class="num">65<span>만</span></div>
+        <div class="label">최고 동시접속자 (전 플랫폼)</div>
+      </div>
+      <div class="glass-card stat-card">
+        <div class="num">91<span>%</span></div>
+        <div class="label">Steam 평가 '매우 긍정적'</div>
+      </div>
+    </div>
+    <div class="glass-card fade-in" style="margin-top:20px; padding:1.5rem 2rem;">
+      <h4 style="color:var(--text-dim); font-size:0.85rem; margin-bottom:1rem; font-weight:400;">지역별 판매 비중 (추정)</h4>
+      <div class="bar-chart" id="barChart">
+        <div class="bar-row">
+          <span class="bar-label">북미</span>
+          <div class="bar-track"><div class="bar-fill bf-blue" style="width:0%" data-width="42"></div></div>
+          <span style="font-size:0.85rem; color:var(--text-dim); width:40px;">42%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">유럽</span>
+          <div class="bar-track"><div class="bar-fill bf-teal" style="width:0%" data-width="28"></div></div>
+          <span style="font-size:0.85rem; color:var(--text-dim); width:40px;">28%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">아시아</span>
+          <div class="bar-track"><div class="bar-fill bf-gold" style="width:0%" data-width="20"></div></div>
+          <span style="font-size:0.85rem; color:var(--text-dim); width:40px;">20%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">기타</span>
+          <div class="bar-track"><div class="bar-fill bf-purple" style="width:0%" data-width="10"></div></div>
+          <span style="font-size:0.85rem; color:var(--text-dim); width:40px;">10%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Timeline -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>프로젝트 타임라인</h2>
+      <p>서브노티카 2의 개발부터 글로벌 출시까지 주요 이정표</p>
+    </div>
+    <div class="timeline fade-in">
+      <div class="timeline-item">
+        <div class="date">2024년 10월 18일</div>
+        <h4>Steam 페이지 공개 &amp; 티저 트레일러</h4>
+        <p>서브노티카 시리즈의 세 번째 작품 존재를 공식화. 협동 멀티플레이, 신규 행성等信息 첫 공개.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2025년 6월</div>
+        <h4>개발 지연 발표</h4>
+        <p>당초 2025년 하반기 예정이었던 얼리 액세스가 CEO 해고 및 법정 공방 영향으로 2026년으로 연기.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2026년 5월 5일</div>
+        <h4>얼리 액세스 출시일 확정</h4>
+        <p>Q&A 영상을 통해 5월 14일 얼리 액세스 출시 확정. 가격 $29.99, Xen크로스 플랫폼 지원 발표.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2026년 5월 12일</div>
+        <h4>사전 구매 시작</h4>
+        <p>Steam 글로벌 위시리스트 36주 연속 1위 기록, 500만 위시리스트 달성 기념 사신 레비아탄 조각상 지급.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2026년 5월 14~15일</div>
+        <h4>얼리 액세스 전 세계 동시 출시</h4>
+        <p>PC(Steam, Epic), Xbox Series X|S, Xbox Game Pass Day 1 출시. 한국어 자막·인터페이스 완전 지원.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="date">2026년 5월 15일</div>
+        <h4>100만 장 판매 돌파 → 12시간 만에 200만 장</h4>
+        <p>Steam 동시접속자 65만 명, 글로벌 최고 매출 1위. 스팀 평가 '매우 긍정적'(91%) 유지.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Game Overview -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>게임 개요</h2>
+      <p>시리즈의 진화 — 새로운 행성, 새로운 도전</p>
+    </div>
+    <div class="overview-grid fade-in">
+      <div class="glass-card">
+        <h3 style="color:#fff; margin-bottom:1rem;">기본 정보</h3>
+        <ul class="info-list">
+          <li><span class="key">개발사</span><span class="val">Unknown Worlds Entertainment</span></li>
+          <li><span class="key">유통사</span><span class="val">KRAFTON</span></li>
+          <li><span class="key">장르</span><span class="val">샌드박스 생존 / 오픈월드</span></li>
+          <li><span class="key">엔진</span><span class="val">Unreal Engine 5</span></li>
+          <li><span class="key">출시일</span><span class="val">2026.05.14 (얼리 액세스)</span></li>
+          <li><span class="key">가격</span><span class="val">$29.99 / ₩33,700</span></li>
+          <li><span class="key">한국어</span><span class="val">인터페이스 · 자막 지원</span></li>
+        </ul>
+      </div>
+      <div class="glass-card">
+        <h3 style="color:#fff; margin-bottom:1rem;">플랫폼</h3>
+        <ul class="info-list">
+          <li><span class="key">PC</span><span class="val">Steam, Epic Games Store</span></li>
+          <li><span class="key">콘솔</span><span class="val">Xbox Series X|S</span></li>
+          <li><span class="key">클라우드</span><span class="val">Xbox Cloud Gaming</span></li>
+          <li><span class="key">Game Pass</span><span class="val">Day 1 지원</span></li>
+          <li><span class="key">크로스 플레이</span><span class="val">Xbox ↔ PC</span></li>
+          <li><span class="key">멀티플레이</span><span class="val">최대 4인 Co-op</span></li>
+          <li><span class="key">XPA</span><span class="val">Xbox Play Anywhere</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="glass-card fade-in" style="margin-top:20px;">
+      <h3 style="color:#fff; margin-bottom:0.8rem;">세계관 &amp; 스토리</h3>
+      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.8;">
+        서브노티카 2의 무대는 전작의 4546B 행성이 아닌 완전히 새로운 외계 행성 '제즈라(Jezra)'다. 이주선 시케이다 호가 원인 불명의 사고로 격추·침몰하면서 생존자들은 광활한 심해에 고립된다. 전작의 주인공 라일리 로빈슨도 등장할 가능성이 제기되며, 플레이어는 시케이다 호 생존자 중 한 명이 되어 행성의 비밀을 탐험한다. 새로운 행성은 더욱 광대한 맵과 다양한 바이옴을 자랑하며, 깊이 수백 미터에 달하는 심해 환경에서는 태양광이 닿지 않는 극한의 생존이 요구된다. 1편의 고독하고 아름다운 분위기를 계승하면서도 최대 4인 협동 플레이를 시리즈 최초로 도입하여 색다른 재미를 제공한다. 스토리는 챕터 단위로 구성되어 얼리 액세스 기간 동안 순차적으로 업데이트될 예정이다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>SWOT 분석</h2>
+      <p>서브노티카 2의 강점, 약점, 기회, 위협 요인</p>
+    </div>
+    <div class="swot-grid fade-in">
+      <div class="swot-card swot-s">
+        <h3>강점 (Strengths)</h3>
+        <ul>
+          <li>독보적인 수중 생존 장르 선점 — 경쟁작이 거의 없는 유니크한 포지션</li>
+          <li>시리즈 누적 팬덤 2,500만 장 이상의 탄탄한 IP 파워</li>
+          <li>시리즈 최초 4인 협동 멀티플레이 — 오랜 갈증 해소</li>
+          <li>Unreal Engine 5 기반의 압도적인 비주얼과 수중 환경</li>
+          <li>게임 패스 Day 1 등록으로 즉각적인 대규모 유저 유입</li>
+        </ul>
+      </div>
+      <div class="swot-card swot-w">
+        <h3>약점 (Weaknesses)</h3>
+        <ul>
+          <li>얼리 액세스 특유의 부족한 콘텐츠 분량 (15~20시간)</li>
+          <li>최적화 이슈 — UE5 전환에 따른 일부 성능 저하</li>
+          <li>버그 및 안정성 문제 — 얼리 액세스 초기 불가피한 결함</li>
+          <li>기존 시리즈 차량(시모스, 사이클롭스) 미등장에 따른 팬 아쉬움</li>
+          <li>전작 대비 퀵슬롯 개수 감소(5→4)로 인한 불편</li>
+        </ul>
+      </div>
+      <div class="swot-card swot-o">
+        <h3>기회 (Opportunities)</h3>
+        <ul>
+          <li>크래프톤의 막대한 퍼블리싱 자본과 마케팅 역량</li>
+          <li>얼리 액세스 기간 피드백 기반 콘텐츠 확장 가능성</li>
+          <li>크로스 플랫폼으로 콘솔 시장 확대 (기존 PC 중심)</li>
+          <li>콘텐츠 업데이트를 통한 장기 라이브 서비스 모델 전환</li>
+          <li>VR 및 공식 모드 지원 — 추후 검토 사항으로 시장 확장</li>
+        </ul>
+      </div>
+      <div class="swot-card swot-t">
+        <h3>위협 (Threats)</h3>
+        <ul>
+          <li>경쟁 생존 게임의 지속적 출시 (ARk 2, 서바이벌 장르 포화)</li>
+          <li>얼리 액세스 장기화에 따른 유저 피로도 및 이탈</li>
+          <li>CEO 해고 및 법정 공방으로 인한 개발팀 사기 저하 가능성</li>
+          <li>높아진 기대치에 부응하지 못할 경우 혹평 리스크</li>
+          <li>Game Pass 구독자 이탈 시 유료 전환율 하락</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Unique Features -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>고유 특징 심층 분석</h2>
+      <p>서브노티카 2만의 차별화된 3대 핵심 요소</p>
+    </div>
+    <div class="feature-grid fade-in">
+      <div class="glass-card feature-card">
+        <div class="dot-label"><span class="dot" style="background:#00bcd4"></span> 게임플레이 혁신</div>
+        <h3>시리즈 최초 4인 협동 생존</h3>
+        <p>서브노티카 2의 가장 큰 혁신은 시리즈 최초로 도입된 최대 4인 협동(Co-op) 모드다. 전작들에서 모드를 통해서만 가능했던 멀티플레이가 이제 기본 기능으로 제공된다. 흥미로운 점은 협동 플레이임에도 불구하고 혼자서 해결할 수 없는 과제는 일부러 만들지 않았다는 점이다. 각 플레이어는 시케이다 호의 생존자로서 각자의 역할을 수행하며, 기지 건설, 자원 채집, 심해 탐험을 함께할 수 있다. 태드폴 상단의 봉을 잡고 함께 이동하거나, 잠수 엘리베이터를 활용한 팀 단위 심해 이동 등 협동 전용 상호작용이 다수 존재한다. 중도 참여 및 크로스 플랫폼도 지원하여 친구와의 접근성을 대폭 개선했다.</p>
+        <ul class="feature-list">
+          <li>최대 4인 협동 — 전용 상호작용 및 공유 기지 시스템</li>
+          <li>크로스 플랫폼 — Xbox와 PC 간 자유로운 크로스 플레이</li>
+          <li>중도 참여 지원 — 진행 중인 게임에 자유롭게 합류 가능</li>
+          <li>1인 플레이도 완벽 지원 — 협동 강제 요소 없음</li>
+        </ul>
+      </div>
+      <div class="glass-card feature-card">
+        <div class="dot-label"><span class="dot" style="background:#00bcd4"></span> 기술 &amp; 그래픽</div>
+        <h3>Unreal Engine 5 기반 심해 세계</h3>
+        <p>언리얼 엔진 5로의 전환은 서브노티카 2의 가장 큰 기술적 도약이다. 전작들이 유니티 엔진으로 제작된 데 반해, UE5는 루멘(Lumen)과 나나이트(Nanite)를 통해 수중 환경의 조명과 디테일을 극한으로 끌어올렸다. 심해 200미터 아래에서는 사실적인 빛의 산란과 감쇠가 구현되어 극한의 몰입감을 선사한다. 새로운 생물 AI 시스템은 각 생물체가 환경과 상호작용하는 지능적인 행동 패턴을 보여준다. 수집가 레비아탄의 촉수에 잡혀 입속으로 빨려 들어가는 장면은 그 디테일과 연출에서 전작과 비교할 수 없는 수준의 공포감을 자아낸다.</p>
+        <ul class="feature-list">
+          <li>Lumen 실시간 글로벌 일루미네이션 — 수중 빛의 물리적 구현</li>
+          <li>Nanite 가상 지오메트리 — 초고해상도 수중 생물 및 지형</li>
+          <li>차세대 생물 AI — 환경·상황 기반 지능적 행동 패턴</li>
+          <li>부드러운 애니메이션 — 레비아탄 포식 모션의 섬세한 연출</li>
+        </ul>
+      </div>
+      <div class="glass-card feature-card">
+        <div class="dot-label"><span class="dot" style="background:#00bcd4"></span> 시스템 &amp; 커스터마이징</div>
+        <h3>진화한 기지 건축 &amp; 바이오 모드</h3>
+        <p>서브노티카 2의 기지 건축 시스템은 완전히 새로워졌다. 전작의 정형화된 모듈 방식에서 벗어나, 플레이어가 직접 형태를 조작하듯 자유롭게 건설할 수 있다. 창문의 형태, 크기 조절, 도색, 조명 색상 및 스위치까지 세세한 커스터마이징이 가능하다. 새롭게 공개된 '바이오 모드' 시스템은 플레이어 신체에 능동 및 수동 능력을 주입할 수 있게 해준다. 새로운 탈것 '태드폴(Tadpole)'은 전작 시모스의 계보를 잇지만, 하드포인트 개념을 도입해 차체에 다양한 장치를 부착할 수 있어 지역과 상황에 따라 탈것의 용도를 변경하는 전략적 재미를 제공한다.</p>
+        <ul class="feature-list">
+          <li>자유형 기지 건축 — 비정형 구조물 및 세부 커스터마이징</li>
+          <li>바이오 모드 — 능동·수동 능력 주입을 통한 캐릭터 빌드</li>
+          <li>하드포인트 시스템 — 탈것 커스터마이징의 자유도 극대화</li>
+          <li>이동식 기지 — 사이클롭스 계보의 신규 잠수함 예정</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Reception -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>유저 반응 &amp; 평가</h2>
+      <p>Steam '매우 긍정적', 글로벌 평론가 호평 속 출발</p>
+    </div>
+    <div class="reception-grid fade-in">
+      <div class="glass-card review-card pos">
+        <h3 style="color:#4caf50;">긍정 평가</h3>
+        <blockquote>
+          "진짜 서브노티카의 후속작이 맞다. 1편의 그 심해 공포와 탐험의 짜릿함이 멀티플레이와 만나니 완전히 새로운 게임이 되었다. 친구와 함께 레비아탄을 마주할 때의 그 비명소리, 이거야말로 내가 기다리던 것이다."
+          <span class="source">— Steam 사용자 리뷰 (1,200시간 1편 플레이)</span>
+        </blockquote>
+        <blockquote>
+          "UE5로 바뀌면서 수중 세계의 표현이 한층 더 풍부해졌다. 빛이 닿지 않는 심해에서 느껴지는 고립감과 경이로움, 이 감정을 다시 느낄 수 있어서 감사하다."
+          <span class="source">— IGN Korea 체험기</span>
+        </blockquote>
+        <blockquote>
+          "멀티가 된다는 게 이렇게 큰 차이일 줄이야. 혼자서는 두려워서 못 갔던 깊은 곳도 친구와 함께라니 가능하다. 기지 건축도 훨씬 자유로워져서 건덕후 만족도 최상."
+          <span class="source">— Steam 사용자 리뷰</span>
+        </blockquote>
+      </div>
+      <div class="glass-card review-card neg">
+        <h3 style="color:#ef5350;">부정 평가</h3>
+        <blockquote>
+          "얼리 액세스 치고 콘텐츠가 너무 적다. 메인 스토리는 15시간이면 끝이고, 엔딩 이후 할 게 없다. 가격 대비 분량이 아쉽다."
+          <span class="source">— Steam 사용자 리뷰</span>
+        </blockquote>
+        <blockquote>
+          "최적화가 아직 부족하다. 4090에서도 프레임 드랍이 발생하는 구간이 있고, UE5 특유의 셰이더 컴파일 스터터링이 거슬린다."
+          <span class="source">— Steam 사용자 리뷰</span>
+        </blockquote>
+        <blockquote>
+          "시모스와 사이클롭스가 없다니. 새 탈것도 나쁘진 않은데, 전작의 그 감성을 완전히 대체하진 못한다. 정식 출시까지 더 채워져야 할 것 같다."
+          <span class="source">— Steam 사용자 리뷰</span>
+        </blockquote>
+      </div>
+    </div>
+    <div class="insight-box fade-in">
+      <h4>종합 평가 인사이트</h4>
+      <p>
+        서브노티카 2는 얼리 액세스 단계임에도 불구하고 시리즈 팬들의 기대를 대체로 충족시키는 퀄리티를 보여주고 있다. 특히 '멀티플레이'라는 오랜 숙원을 해결한 점이 가장 큰 호평을 받고 있다. 다만 얼리 액세스 특유의 부족한 콘텐츠 분량과 UE5 전환에 따른 최적화 이슈는 명백한 약점으로 지적된다. Steam 평가 91% '매우 긍정적'은 얼리 액세스 게임으로서는 이례적으로 높은 수치로, 개발사의 업데이트 로드맵 이행에 따라 평가가 더욱 상승할 가능성이 높다. IGN 본사는 7/10, Polygon은 '기다릴 가치가 있다'는 평가를 내렸다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Key Systems -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>핵심 시스템 &amp; 게임플레이</h2>
+      <p>서브노티카 2를 구성하는 6대 핵심 시스템</p>
+    </div>
+    <div class="systems-grid fade-in">
+      <div class="glass-card system-card">
+        <div class="icon">🌊</div>
+        <h3>심해 탐험 &amp; 바이옴</h3>
+        <p>2개의 주요 구역으로 나뉜 광활한 수중 세계. 각 구역 내 다양한 소형 바이옴이 존재하며, 수백 미터 깊이까지 탐험 가능. 깊이 200m부터는 태양광이 완전히 차단되는 극한 환경.</p>
+      </div>
+      <div class="glass-card system-card">
+        <div class="icon">🏗️</div>
+        <h3>자유형 기지 건설</h3>
+        <p>완전히 개편된 건축 시스템. 정형화된 모듈에서 벗어나 자유로운 형태의 구조물 건설, 창문·도색·조명 등 세부 커스터마이징 지원. 장식용 아이템 상호작용 가능.</p>
+      </div>
+      <div class="glass-card system-card">
+        <div class="icon">🧬</div>
+        <h3>바이오 모드 시스템</h3>
+        <p>플레이어 신체에 능동·수동 능력을 주입하는 신규 시스템. 탐험·전투·생존 등 플레이 스타일에 따라 다양한 바이오 모드 조합 가능.</p>
+      </div>
+      <div class="glass-card system-card">
+        <div class="icon">🚤</div>
+        <h3>탈것 &amp; 하드포인트</h3>
+        <p>주력 탈것 '태드폴'은 전작 시모스의 계보를 잇는다. 하드포인트 개념 도입으로 차체에 다양한 장치 부착 가능. 이동식 기지급 신규 잠수함도 예정.</p>
+      </div>
+      <div class="glass-card system-card">
+        <div class="icon">🎣</div>
+        <h3>생존 &amp; 제작</h3>
+        <p>산소, 체력, 갈증, 배고픔 4대 생존 지표. 신규 동식물을 활용한 다양한 제작 레시피. 자원 채집과 가공을 통한 점진적 기술 발전.</p>
+      </div>
+      <div class="glass-card system-card">
+        <div class="icon">👥</div>
+        <h3>멀티플레이 &amp; 협동</h3>
+        <p>최대 4인 온라인 협동. 전용 상호작용(태드폴 탑승, 잠수 엘리베이터 등), 음성 채팅 예정. 중도 참여 및 크로스 플랫폼 지원.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Competitor Landscape -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>경쟁 구도</h2>
+      <p>생존 장르 내 서브노티카 2의 시장 포지셔닝</p>
+    </div>
+    <div class="competitor-grid fade-in">
+      <div class="glass-card competitor-info">
+        <h3 style="color:#fff; font-size:1rem; margin-bottom:1.5rem;">주요 경쟁작 대비 시장 영향력</h3>
+        <div class="comp-bar">
+          <div class="comp-label"><span>서브노티카 시리즈</span><strong>85</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-blue" style="width:85%"></div></div>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-label"><span>ARK: Survival Evolved</span><strong>78</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-gold" style="width:78%"></div></div>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-label"><span>The Forest / Sons of the Forest</span><strong>82</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-teal" style="width:82%"></div></div>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-label"><span>No Man's Sky</span><strong>75</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-purple" style="width:75%"></div></div>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-label"><span>Raft</span><strong>60</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-pink" style="width:60%"></div></div>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-label"><span>Grounded</span><strong>65</strong></div>
+          <div class="comp-track"><div class="comp-fill bf-red" style="width:65%"></div></div>
+        </div>
+      </div>
+      <div class="glass-card" style="padding:2rem;">
+        <h3 style="color:#fff; font-size:1rem; margin-bottom:1rem;">경쟁 분석 인사이트</h3>
+        <p style="font-size:0.9rem; color:var(--text-dim); line-height:1.8; margin-bottom:1rem;">
+          서브노티카 시리즈는 '수중 생존'이라는 독보적인 장르적 정체성을 바탕으로 경쟁작들과 차별화된다. ARK나 Sons of the Forest가 육상 기반 생존에 집중하는 반면, 서브노티카 2는 3차원 수중 이동과 심해 공포라는 유일무이한 경험을 제공한다. No Man's Sky는 우주 탐험 생존이라는 유사성을 가지나, 수중 환경의 깊이와 디테일에서는 서브노티카 2가 압도적이다. 특히 Xbox Game Pass Day 1 지원은 출시 즉시 대규모 사용자 기반을 확보할 수 있는 핵심 경쟁력이다.
+        </p>
+        <p style="font-size:0.9rem; color:var(--text-dim); line-height:1.8;">
+          다만 생존 장르 자체의 피로도와 경쟁작들의 정식 출시(ARK 2 등)가 임박한 점은 위협 요소다. 크래프톤의 자본력을 바탕으로 한 지속적인 콘텐츠 업데이트와 마케팅이 경쟁 우위 유지의 관건이 될 것이다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Business Model & Future -->
+<section class="section" style="padding-top:0;">
+  <div class="section-inner">
+    <div class="section-title fade-in">
+      <span class="accent"></span>
+      <h2>비즈니스 모델 &amp; 미래 전망</h2>
+      <p>얼리 액세스에서 AAA 라이브 서비스로의 여정</p>
+    </div>
+    <div class="biz-grid fade-in">
+      <div class="glass-card biz-card">
+        <h3>비즈니스 모델</h3>
+        <p>서브노티카 2는 전통적인 Buy-to-Play(B2P) 모델을 채택하고 있다. 얼리 액세스 가격 $29.99는 정식 출시가보다 낮게 책정되었으며, Xbox Game Pass를 통한 구독형 접근도 가능하다. 게임 내 추가 과금 요소(DLC, 스킨 등)는 현재 계획되지 않았으나, 얼리 액세스 이후 라이브 서비스 단계에서 추가 수익 모델이 도입될 가능성이 있다.</p>
+        <table class="biz-table">
+          <tr><th>항목</th><th>내용</th></tr>
+          <tr><td>판매 모델</td><td>Buy-to-Play ($29.99 / ₩33,700)</td></tr>
+          <tr><td>Game Pass</td><td>Day 1 등록 (Xbox + PC)</td></tr>
+          <tr><td>멀티플레이</td><td>추가 비용 없음, 무료</td></tr>
+          <tr><td>추가 콘텐츠</td><td>DLC/스킨 미정 (추후 검토)</td></tr>
+        </table>
+      </div>
+      <div class="glass-card biz-card">
+        <h3>미래 전망 &amp; 로드맵</h3>
+        <p>얼리 액세스 기간은 약 2~3년으로 예상되며, 챕터 단위의 스토리 콘텐츠와 신규 바이옴·생물·탈것이 순차적으로 업데이트될 예정이다. 정식 출시 후에는 라이브 서비스 형태로 전환되어 장기적인 콘텐츠 확장이 계획되어 있다. 주요 로드맵 항목으로는 신규 잠수함(이동식 기지), 음성 채팅, 캐릭터 커스터마이징, 애완동물 시스템, VR 및 공식 모드 지원 등이 거론되고 있다.</p>
+        <table class="biz-table">
+          <tr><th>시기</th><th>예정 콘텐츠</th></tr>
+          <tr><td>2026 후반</td><td>챕터 2 업데이트, 신규 바이옴</td></tr>
+          <tr><td>2027 상반기</td><td>이동식 기지 잠수함, 음성 채팅</td></tr>
+          <tr><td>2027 후반</td><td>캐릭터 커스터마이징, 애완동물</td></tr>
+          <tr><td>정식 출시(예상)</td><td>전체 스토리 완결, VR/모드 검토</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="insight-box fade-in">
+      <h4>최종 평가</h4>
+      <p>
+        서브노티카 2는 얼리 액세스 단계에서 이미 200만 장 판매라는 경이로운 성과를 달성하며, 시리즈의 건재함과 성장 가능성을 입증했다. 독보적인 수중 생존 장르의 선점 효과, UE5 기반의 압도적 비주얼, 시리즈 최초 멀티플레이 도입이라는 3박자가 맞아떨어지며 흥행에 성공했다. 다만 얼리 액세스 특유의 콘텐츠 부족, 최적화 이슈, 그리고 CEO 교체라는 내부 리스크는 극복해야 할 과제다. 크래프톤의 자본력과 Unknown Worlds의 개발 역량이 합쳐진 만큼, 정식 출시까지 로드맵을 충실히 이행한다면 글로벌 누적 1,000만 장 이상의 장기 흥행도 충분히 가능할 것으로 전망된다. 2026년 상반기 최대 히트작 중 하나로 기록될 게임이다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+// Particles
+(function(){
+  const container = document.getElementById('particles');
+  const count = 30;
+  for(let i=0; i<count; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.width = (2 + Math.random() * 4) + 'px';
+    p.style.height = p.style.width;
+    p.style.animationDuration = (10 + Math.random() * 20) + 's';
+    p.style.animationDelay = (Math.random() * 15) + 's';
+    p.style.opacity = 0.1 + Math.random() * 0.25;
+    const colors = ['#00bcd4', '#26c6da', '#4dd0e1', '#80deea', '#0097a7'];
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    container.appendChild(p);
+  }
+})();
+
+// IntersectionObserver for fade-in animations
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      // Trigger bar chart animations when section becomes visible
+      if(entry.target.id === 'barChart' || entry.target.closest('#barChart')){
+        document.querySelectorAll('.bar-fill[data-width]').forEach(bar => {
+          bar.style.width = bar.getAttribute('data-width') + '%';
+        });
+      }
+      // Auto trigger for bar chart in parent
+      const bars = entry.target.querySelectorAll('.bar-fill[data-width]');
+      if(bars.length){
+        bars.forEach(bar => { bar.style.width = bar.getAttribute('data-width') + '%'; });
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
