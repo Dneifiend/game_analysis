@@ -1,3 +1,5 @@
 node_modules/
 **/node_modules/
 .opencode/
+localServer.bat
+run_llama-cpp_server.bat
